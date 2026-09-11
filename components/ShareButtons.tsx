@@ -1,0 +1,71 @@
+"use client";
+import { useState } from "react";
+import { useLanguage } from "@/lib/i18n";
+
+export default function ShareButtons({ title, path }: { title: string; path: string }) {
+  const { t } = useLanguage();
+  const [copied, setCopied] = useState(false);
+
+  // Built at click-time so it always reflects the actual deployed domain, not a hardcoded one.
+  function fullUrl() {
+    if (typeof window === "undefined") return path;
+    return `${window.location.origin}${path}`;
+  }
+
+  const links = [
+    {
+      label: "WhatsApp",
+      href: () => `https://wa.me/?text=${encodeURIComponent(title + " " + fullUrl())}`,
+      icon: "💬"
+    },
+    {
+      label: "X",
+      href: () => `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(fullUrl())}`,
+      icon: "𝕏"
+    },
+    {
+      label: "Facebook",
+      href: () => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullUrl())}`,
+      icon: "f"
+    },
+    {
+      label: "LinkedIn",
+      href: () => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(fullUrl())}`,
+      icon: "in"
+    }
+  ];
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(fullUrl());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // clipboard API unavailable — silently ignore, user can still use the share buttons
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-2 flex-wrap no-print">
+      <span className="text-xs uppercase tracking-wide text-ink/50 mr-1">{t("share")}</span>
+      {links.map((l) => (
+        <a
+          key={l.label}
+          href={l.href()}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Share on ${l.label}`}
+          className="w-8 h-8 flex items-center justify-center border border-line text-sm hover:bg-ink hover:text-white transition-colors"
+        >
+          {l.icon}
+        </a>
+      ))}
+      <button
+        onClick={copyLink}
+        className="h-8 px-3 flex items-center justify-center border border-line text-xs hover:bg-ink hover:text-white transition-colors"
+      >
+        {copied ? "Copied!" : "Copy link"}
+      </button>
+    </div>
+  );
+}

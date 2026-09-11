@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-source-serif: 'Source Serif 4', Georgia, serif;
+  --font-inter: 'Inter', system-ui, sans-serif;
+}
+
+body {
+  background-color: #FAF8F3;
+  color: #101827;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+.animate-ticker {
+  animation: ticker 26s linear infinite;
+}
+
+/* Article body links, when not otherwise styled */
+.prose-content a {
+  color: #B3261E;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Print / "Save as PDF" — strip chrome, keep the story readable on paper */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+  main {
+    max-width: 100% !important;
+  }
+  article {
+    max-width: 100% !important;
+  }
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+}

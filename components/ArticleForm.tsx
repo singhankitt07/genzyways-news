@@ -1,0 +1,210 @@
+"use client";
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+
+const CATEGORIES = ["Current Affairs", "Tech News", "AI World", "Business", "Opinion"];
+
+type Initial = {
+  id?: string;
+  title?: string;
+  summary?: string;
+  content?: string;
+  category?: string;
+  imageUrl?: string | null;
+  author?: string;
+  breaking?: boolean;
+  published?: boolean;
+};
+
+export default function ArticleForm({ initial }: { initial?: Initial }) {
+  const router = useRouter();
+  const isEdit = !!initial?.id;
+  const [form, setForm] = useState({
+    title: initial?.title || "",
+    summary: initial?.summary || "",
+    content: initial?.content || "",
+    category: initial?.category || CATEGORIES[0],
+    imageUrl: initial?.imageUrl || "",
+    author: initial?.author || "Staff Reporter",
+    breaking: initial?.breaking || false,
+    published: initial?.published || false
+  });
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const contentRef = useRef<HTMLTextAreaElement>(null);
+
+  function wrapSelection(before: string, after: string = before) {
+    const el = contentRef.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const selected = form.content.slice(start, end) || "text";
+    const next = form.content.slice(0, start) + before + selected + after + form.content.slice(end);
+    setForm({ ...form, content: next });
+    requestAnimationFrame(() => {
+      el.focus();
+      el.selectionStart = start + before.length;
+      el.selectionEnd = start + before.length + selected.length;
+    });
+  }
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError("");
+    const body = new FormData();
+    body.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body });
+    const data = await res.json();
+    setUploading(false);
+    if (!res.ok) {
+      setError(data.error || "Upload failed.");
+      return;
+    }
+    setForm({ ...form, imageUrl: data.url });
+  }
+
+  async function handleSubmit(e: React.FormEvent, publishOverride?: boolean) {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    const payload = { ...form, published: publishOverride ?? form.published };
+    const res = await fetch(isEdit ? `/api/articles/${initial!.id}` : "/api/articles", {
+      method: isEdit ? "PATCH" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    setSaving(false);
+    if (!res.ok) {
+      setError("Something went wrong saving this article.");
+      return;
+    }
+    router.push("/admin");
+    router.refresh();
+  }
+
+  return (
+    <form onSubmit={(e) => handleSubmit(e)} className="space-y-5 max-w-2xl">
+      <div>
+        <label className="block text-sm mb-1">Headline</label>
+        <input
+          required
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+          className="w-full border border-line px-3 py-2 bg-white text-lg font-serif"
+        />
+      </div>
+      <div>
+        <label className="block text-sm mb-1">Summary (shown on homepage / listings)</label>
+        <textarea
+          required
+          rows={2}
+          value={form.summary}
+          onChange={(e) => setForm({ ...form, summary: e.target.value })}
+          className="w-full border border-line px-3 py-2 bg-white"
+        />
+      </div>
+      <div>
+        <label className="block text-sm mb-1">Article body (blank line = new paragraph)</label>
+        <div className="flex gap-2 mb-1.5">
+          <button type="button" onClick={() => wrapSelection("**")} className="border border-line px-2.5 py-1 text-sm font-bold hover:bg-ink/5">
+            B
+          </button>
+          <button type="button" onClick={() => wrapSelection("*")} className="border border-line px-2.5 py-1 text-sm italic hover:bg-ink/5">
+            I
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const url = prompt("Link URL:");
+              if (url) wrapSelection("[", `](${url})`);
+            }}
+            className="border border-line px-2.5 py-1 text-sm hover:bg-ink/5"
+          >
+            Link
+          </button>
+        </div>
+        <textarea
+          ref={contentRef}
+          required
+          rows={12}
+          value={form.content}
+          onChange={(e) => setForm({ ...form, content: e.target.value })}
+          className="w-full border border-line px-3 py-2 bg-white"
+        />
+      </div>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm mb-1">Category</label>
+          <select
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
+            className="w-full border border-line px-3 py-2 bg-white"
+          >
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Byline</label>
+          <input
+            value={form.author}
+            onChange={(e) => setForm({ ...form, author: e.target.value })}
+            className="w-full border border-line px-3 py-2 bg-white"
+          />
+        </div>
+      </div>
+      <div>
+        <label className="block text-sm mb-1">Cover image</label>
+        <div className="flex gap-3 items-center">
+          <input
+            value={form.imageUrl}
+            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+            placeholder="Paste an image URL, or upload a file"
+            className="flex-1 border border-line px-3 py-2 bg-white"
+          />
+          <label className="border border-line px-3 py-2 text-sm cursor-pointer hover:bg-ink/5 whitespace-nowrap">
+            {uploading ? "Uploading..." : "Upload file"}
+            <input type="file" accept="image/*" onChange={handleFileUpload} disabled={uploading} className="hidden" />
+          </label>
+        </div>
+        {form.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={form.imageUrl} alt="" className="mt-2 h-32 object-cover border border-line" />
+        )}
+      </div>
+      <div className="flex gap-6">
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.breaking}
+            onChange={(e) => setForm({ ...form, breaking: e.target.checked })}
+          />
+          Mark as Breaking News
+        </label>
+      </div>
+      {error && <p className="text-press text-sm">{error}</p>}
+      <div className="flex gap-3 pt-2">
+        <button
+          type="button"
+          disabled={saving}
+          onClick={(e) => handleSubmit(e as any, false)}
+          className="border border-ink px-4 py-2 hover:bg-ink/5 disabled:opacity-50"
+        >
+          Save as Draft
+        </button>
+        <button
+          type="button"
+          disabled={saving}
+          onClick={(e) => handleSubmit(e as any, true)}
+          className="bg-press text-white px-4 py-2 hover:bg-press/90 disabled:opacity-50"
+        >
+          {saving ? "Saving..." : "Publish"}
+        </button>
+      </div>
+    </form>
+  );
+}
