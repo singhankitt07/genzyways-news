@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
   title: "GenzyWayNews | Current Affairs, Tech & AI",
   description: "Current affairs, daily tech news, and the latest AI world developments — in English, Hindi, or Hinglish.",
+  other: {
+    "google-adsense-account": "ca-pub-7431298506667016"
+  },
   openGraph: {
     type: "website",
     siteName: "GenzyWayNews",
