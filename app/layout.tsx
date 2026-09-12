@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import CookieConsent from "@/components/CookieConsent";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
+import AdSenseLoader from "@/components/AdSenseLoader";
 
 const sourceSerif = Source_Serif_4({ subsets: ["latin"], variable: "--font-source-serif" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -46,6 +47,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="font-sans">
         <SessionProviderWrapper>
           <GoogleAnalytics />
+          <AdSenseLoader />
           <CookieConsent />
           <LanguageProvider>
             <Masthead />
