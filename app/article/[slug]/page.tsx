@@ -17,7 +17,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   if (!article || !article.published) return {};
 
   const url = `/article/${article.slug}`;
-  const images = article.imageUrl ? [{ url: article.imageUrl }] : undefined;
+  const images = article.imageUrl
+    ? [{ url: article.imageUrl, alt: article.title }]
+    : [{ url: "/og-image.svg", width: 1200, height: 630, alt: "GenzyWayNews logo" }];
 
   return {
     title: `${article.title} | GenzyWayNews`,
@@ -35,10 +37,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       authors: [article.author]
     },
     twitter: {
-      card: article.imageUrl ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: article.title,
       description: article.summary,
-      images: article.imageUrl ? [article.imageUrl] : undefined
+      images: [images[0].url]
     }
   };
 }

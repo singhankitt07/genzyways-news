@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
   title: "GenzyWayNews | Current Affairs, Tech & AI",
   description: "Current affairs, daily tech news, and the latest AI world developments — in English, Hindi, or Hinglish.",
+  icons: { icon: "/og-image.svg" },
   other: {
     "google-adsense-account": "ca-pub-7431298506667016"
   },
@@ -25,7 +26,14 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "GenzyWayNews",
     title: "GenzyWayNews | Current Affairs, Tech & AI",
-    description: "Current affairs, daily tech news, and the latest AI world developments."
+    description: "Current affairs, daily tech news, and the latest AI world developments.",
+    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "GenzyWayNews logo" }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GenzyWayNews | Current Affairs, Tech & AI",
+    description: "Current affairs, daily tech news, and the latest AI world developments.",
+    images: ["/og-image.svg"]
   }
 };
 

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">GenzyWayNews</title>
+  <desc id="desc">Current Affairs, Tech and AI news from GenzyWayNews</desc>
+  <rect width="1200" height="630" fill="#FAF8F3"/>
+  <rect x="64" y="64" width="502" height="502" rx="44" fill="#101827"/>
+  <path d="M190 240c38-50 89-73 143-73 65 0 116 31 144 82" fill="none" stroke="#E7B85B" stroke-width="24" stroke-linecap="round"/>
+  <path d="M224 293c27-29 63-44 105-44 48 0 85 17 110 50" fill="none" stroke="#E7B85B" stroke-width="24" stroke-linecap="round"/>
+  <path d="M198 423h92V331h88v92h88" fill="none" stroke="#FAF8F3" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="334" cy="448" r="23" fill="#B3261E"/>
+  <text x="650" y="290" fill="#101827" font-family="Georgia, serif" font-size="72" font-weight="700">GenzyWayNews</text>
+  <text x="654" y="360" fill="#9C6B1F" font-family="Arial, sans-serif" font-size="25" font-weight="700" letter-spacing="7">SIGNAL. CONTEXT. NOW.</text>
+  <text x="654" y="424" fill="#101827" font-family="Arial, sans-serif" font-size="28">Current Affairs  |  Tech  |  AI</text>
+</svg>
