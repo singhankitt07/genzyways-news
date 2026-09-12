@@ -7,6 +7,9 @@ import ShareButtons from "@/components/ShareButtons";
 import PrintButton from "@/components/PrintButton";
 import RelatedArticles from "@/components/RelatedArticles";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import ArticleAccessPrompt from "@/components/ArticleAccessPrompt";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const article = await prisma.article.findUnique({ where: { slug: params.slug } });
@@ -42,6 +45,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
   const article = await prisma.article.findUnique({ where: { slug: params.slug } });
   if (!article || !article.published) notFound();
+  const session = await getServerSession(authOptions);
+  const isReader = Boolean(session?.user);
+  const paragraphs = article.content.split("\n\n");
+  const visibleParagraphs = isReader ? paragraphs : paragraphs.slice(0, Math.max(1, Math.ceil(paragraphs.length / 2)));
 
   return (
     <>
@@ -67,10 +74,11 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           <img src={article.imageUrl} alt="" className="w-full aspect-[16/9] object-cover mb-8" />
         )}
         <div className="prose-content font-serif text-lg leading-relaxed space-y-5">
-          {article.content.split("\n\n").map((para, i) => (
+          {visibleParagraphs.map((para, i) => (
             <p key={i}>{renderInline(para)}</p>
           ))}
         </div>
+        {!isReader && <ArticleAccessPrompt />}
 
         <RelatedArticles category={article.category} excludeId={article.id} />
       </article>

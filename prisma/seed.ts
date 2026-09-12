@@ -8,11 +8,11 @@ async function main() {
   const password = process.env.ADMIN_PASSWORD || "ChangeThisPassword123!";
   const hash = await bcrypt.hash(password, 10);
 
-  await prisma.user.deleteMany({ where: { NOT: { email } } });
+  await prisma.user.deleteMany({ where: { role: "ADMIN", NOT: { email } } });
   await prisma.user.upsert({
     where: { email },
-    update: { password: hash },
-    create: { email, password: hash, name: "Editor" }
+    update: { password: hash, role: "ADMIN" },
+    create: { email, password: hash, name: "Editor", role: "ADMIN" }
   });
   console.log(`Admin user ready: ${email}`);
 

@@ -30,6 +30,15 @@ export default function PrivacyPage() {
           </p>
         </section>
         <section>
+          <h2 className="font-serif text-xl mb-2 text-ink">Reader accounts</h2>
+          <p>
+            Reader account passwords are stored as one-way bcrypt hashes. We use the account
+            only to authenticate access to full articles. We do not collect precise location
+            data for this feature; standard server and security logs may contain technical
+            information handled by our hosting provider.
+          </p>
+        </section>
+        <section>
           <h2 className="font-serif text-xl mb-2 text-ink">Analytics</h2>
           <p>
             With your consent and when enabled, we use Google Analytics to understand visits,
