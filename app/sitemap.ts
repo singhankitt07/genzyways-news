@@ -6,7 +6,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: base, changeFrequency: "hourly", priority: 1 },
-    ...["national", "international", "business", "technology", "opinion"].map((slug) => ({
+    { url: `${base}/about`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${base}/contact`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${base}/privacy`, changeFrequency: "yearly", priority: 0.2 },
+    ...["current-affairs", "tech-news", "ai-world", "business", "opinion"].map((slug) => ({
       url: `${base}/category/${slug}`,
       changeFrequency: "hourly" as const,
       priority: 0.8

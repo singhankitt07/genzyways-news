@@ -6,6 +6,7 @@ import Ticker from "@/components/Ticker";
 import Footer from "@/components/Footer";
 import { LanguageProvider } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 
 const sourceSerif = Source_Serif_4({ subsets: ["latin"], variable: "--font-source-serif" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -41,6 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={`${sourceSerif.variable} ${inter.variable}`}>
       <body className="font-sans">
+        <GoogleAnalytics />
         <LanguageProvider>
           <Masthead />
           {breakingTitles.length > 0 && <Ticker items={breakingTitles} />}

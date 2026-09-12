@@ -30,6 +30,14 @@ export default function PrivacyPage() {
           </p>
         </section>
         <section>
+          <h2 className="font-serif text-xl mb-2 text-ink">Analytics</h2>
+          <p>
+            With your consent and when enabled, we use Google Analytics to understand visits,
+            page views, and general traffic patterns. Google may process technical information
+            such as device and browser details. You can control cookies through your browser.
+          </p>
+        </section>
+        <section>
           <h2 className="font-serif text-xl mb-2 text-ink">Third-Party Links</h2>
           <p>
             Articles may link to external sites. We are not responsible for the privacy

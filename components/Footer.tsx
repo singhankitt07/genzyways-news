@@ -24,6 +24,7 @@ export default function Footer() {
         <div>
           <p className="text-xs uppercase tracking-wide text-paper/40 mb-3">More</p>
           <ul className="space-y-1.5">
+            <li><Link href="/about" className="hover:text-white">About</Link></li>
             <li><Link href="/contact" className="hover:text-white">{t("contactUs")}</Link></li>
             <li><Link href="/privacy" className="hover:text-white">{t("privacyPolicy")}</Link></li>
             <li><a href="/admin/login" className="hover:text-white">{t("staffLogin")}</a></li>
