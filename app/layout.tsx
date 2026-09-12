@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import CookieConsent from "@/components/CookieConsent";
+import SessionProviderWrapper from "@/components/SessionProviderWrapper";
 
 const sourceSerif = Source_Serif_4({ subsets: ["latin"], variable: "--font-source-serif" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -43,14 +44,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={`${sourceSerif.variable} ${inter.variable}`}>
       <body className="font-sans">
-        <GoogleAnalytics />
-        <CookieConsent />
-        <LanguageProvider>
-          <Masthead />
-          {breakingTitles.length > 0 && <Ticker items={breakingTitles} />}
-          <main className="max-w-6xl mx-auto px-4">{children}</main>
-          <Footer />
-        </LanguageProvider>
+        <SessionProviderWrapper>
+          <GoogleAnalytics />
+          <CookieConsent />
+          <LanguageProvider>
+            <Masthead />
+            {breakingTitles.length > 0 && <Ticker items={breakingTitles} />}
+            <main className="max-w-6xl mx-auto px-4">{children}</main>
+            <Footer />
+          </LanguageProvider>
+        </SessionProviderWrapper>
       </body>
     </html>
   );
