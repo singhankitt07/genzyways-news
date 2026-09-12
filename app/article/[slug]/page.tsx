@@ -47,8 +47,11 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   if (!article || !article.published) notFound();
   const session = await getServerSession(authOptions);
   const isReader = Boolean(session?.user);
-  const paragraphs = article.content.split("\n\n");
-  const visibleParagraphs = isReader ? paragraphs : paragraphs.slice(0, Math.max(1, Math.ceil(paragraphs.length / 2)));
+  const previewLength = Math.max(1, Math.ceil(article.content.length * 0.2));
+  const previewEnd = article.content.lastIndexOf(" ", previewLength);
+  const previewContent = article.content.slice(0, previewEnd > 0 ? previewEnd : previewLength);
+  const visibleContent = isReader ? article.content : previewContent;
+  const visibleParagraphs = visibleContent.split("\n\n");
 
   return (
     <>
