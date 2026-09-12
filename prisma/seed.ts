@@ -11,8 +11,8 @@ async function main() {
   await prisma.user.deleteMany({ where: { role: "ADMIN", NOT: { email } } });
   await prisma.user.upsert({
     where: { email },
-    update: { password: hash, role: "ADMIN" },
-    create: { email, password: hash, name: "Editor", role: "ADMIN" }
+    update: { password: hash, role: "ADMIN", name: "Abhi" },
+    create: { email, password: hash, name: "Abhi", role: "ADMIN" }
   });
   console.log(`Admin user ready: ${email}`);
 
