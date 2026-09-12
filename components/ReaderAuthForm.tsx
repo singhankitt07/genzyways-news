@@ -1,8 +1,8 @@
 "use client";
 
-import { signIn } from "next-auth/react";
+import { getProviders, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ReaderAuthForm({ mode }: { mode: "login" | "register" }) {
   const router = useRouter();
@@ -10,6 +10,11 @@ export default function ReaderAuthForm({ mode }: { mode: "login" | "register" })
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleAvailable, setGoogleAvailable] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    getProviders().then((providers) => setGoogleAvailable(Boolean(providers?.google))).catch(() => setGoogleAvailable(false));
+  }, []);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -41,6 +46,10 @@ export default function ReaderAuthForm({ mode }: { mode: "login" | "register" })
   }
 
   async function continueWithGoogle() {
+    if (!googleAvailable) {
+      setError("Google sign-in is not configured yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in Vercel.");
+      return;
+    }
     await signIn("google", { callbackUrl: "/" });
   }
 
@@ -58,7 +67,7 @@ export default function ReaderAuthForm({ mode }: { mode: "login" | "register" })
       <button type="submit" disabled={loading} className="w-full bg-ink text-white py-2.5 hover:bg-ink/90 disabled:opacity-50">
         {loading ? "Please wait..." : mode === "login" ? "Sign in" : "Create account"}
       </button>
-      {mode === "login" && (
+      {mode === "login" && googleAvailable !== false && (
         <>
           <div className="flex items-center gap-3 text-xs text-ink/45"><span className="h-px bg-line flex-1" />or<span className="h-px bg-line flex-1" /></div>
           <button type="button" onClick={continueWithGoogle} className="w-full border border-line bg-white py-2.5 hover:bg-ink/5">Continue with Google</button>
