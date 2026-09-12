@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n";
+import LiveTimestamp from "./LiveTimestamp";
 
-export default function Ticker({ items }: { items: { title: string; slug: string }[] }) {
+export default function Ticker({ items }: { items: { title: string; slug: string; live?: boolean; updatedAt?: string }[] }) {
   const { t } = useLanguage();
   return (
     <div className="bg-press text-white overflow-hidden no-print">
@@ -11,8 +12,10 @@ export default function Ticker({ items }: { items: { title: string; slug: string
         <div className="overflow-hidden whitespace-nowrap flex-1">
           <div className="inline-block animate-ticker">
             {items.map((item) => (
-              <Link key={item.slug} href={`/article/${item.slug}`} className="mx-6 hover:underline">
+              <Link key={item.slug} href={`/article/${item.slug}`} className="mx-6 hover:underline inline-flex items-center gap-2">
+                {item.live && <span className="live-dot font-semibold text-[10px]">LIVE</span>}
                 {item.title}
+                {item.live && item.updatedAt && <time className="text-white/65 text-xs">updated <LiveTimestamp value={item.updatedAt} /></time>}
               </Link>
             ))}
           </div>

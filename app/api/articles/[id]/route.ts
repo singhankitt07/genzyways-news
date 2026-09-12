@@ -17,11 +17,11 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   if (!isAdminSession(session)) return NextResponse.json({ error: "Owner access required" }, { status: 403 });
 
   const body = await req.json();
-  const { title, summary, content, category, imageUrl, author, breaking, published } = body;
+  const { title, summary, content, category, imageUrl, author, breaking, live, subscriberOnly, published } = body;
 
   const article = await prisma.article.update({
     where: { id: params.id },
-    data: { title, summary, content, category, imageUrl: imageUrl || null, author, breaking: !!breaking, published: !!published }
+    data: { title, summary, content, category, imageUrl: imageUrl || null, author, breaking: !!breaking, live: !!live, subscriberOnly: !!subscriberOnly, published: !!published }
   });
 
   return NextResponse.json(article);

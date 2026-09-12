@@ -8,34 +8,50 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(cuid())
-  email    String @unique
-  password String
-  name     String @default("Editor")
-  role     String @default("READER")
-  age      Int?
-  dateOfBirth DateTime?
-  country  String?
-  state    String?
-  city     String?
-  address  String?
-  pinCode  String?
-  preferences String?
+  id           String        @id @default(cuid())
+  email        String        @unique
+  password     String
+  name         String        @default("Editor")
+  role         String        @default("READER")
+  age          Int?
+  dateOfBirth  DateTime?
+  country      String?
+  state        String?
+  city         String?
+  address      String?
+  pinCode      String?
+  preferences  String?
+  subscription Subscription?
 }
 
 model Article {
-  id        String   @id @default(cuid())
-  title     String
-  slug      String   @unique
-  summary   String
-  content   String
-  imageUrl  String?
-  category  String
-  author    String   @default("Staff Reporter")
-  breaking  Boolean  @default(false)
-  published Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  title          String
+  slug           String   @unique
+  summary        String
+  content        String
+  imageUrl       String?
+  category       String
+  author         String   @default("Staff Reporter")
+  breaking       Boolean  @default(false)
+  live           Boolean  @default(false)
+  subscriberOnly Boolean  @default(false)
+  published      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan                 String
+  status               String    @default("INACTIVE")
+  stripeCustomerId     String?
+  stripeSubscriptionId String?   @unique
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 }
 
 model Subscriber {

@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const CATEGORIES = ["Current Affairs", "Tech News", "AI World", "Business", "Opinion"];
+const CATEGORIES = ["Current Affairs", "Tech News", "AI World", "Business", "Opinion", "Cricket", "India News", "Entertainment", "World News", "Lifestyle"];
 
 type Initial = {
   id?: string;
@@ -13,6 +13,8 @@ type Initial = {
   imageUrl?: string | null;
   author?: string;
   breaking?: boolean;
+  live?: boolean;
+  subscriberOnly?: boolean;
   published?: boolean;
 };
 
@@ -27,6 +29,8 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
     imageUrl: initial?.imageUrl || "",
     author: initial?.author || "Staff Reporter",
     breaking: initial?.breaking || false,
+    live: initial?.live || false,
+    subscriberOnly: initial?.subscriberOnly || false,
     published: initial?.published || false
   });
   const [saving, setSaving] = useState(false);
@@ -190,6 +194,14 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
             onChange={(e) => setForm({ ...form, breaking: e.target.checked })}
           />
           Mark as Breaking News
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={form.live} onChange={(e) => setForm({ ...form, live: e.target.checked })} />
+          Mark as Live coverage
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={form.subscriberOnly} onChange={(e) => setForm({ ...form, subscriberOnly: e.target.checked })} />
+          Subscribers only
         </label>
       </div>
       {error && <p className="text-press text-sm">{error}</p>}

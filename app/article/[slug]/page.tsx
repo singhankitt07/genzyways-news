@@ -11,6 +11,7 @@ import ArticleAccessPrompt from "@/components/ArticleAccessPrompt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import AdSense from "@/components/AdSense";
+import LiveTimestamp from "@/components/LiveTimestamp";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const article = await prisma.article.findUnique({ where: { slug: params.slug } });
@@ -50,16 +51,20 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   if (!article || !article.published) notFound();
   const session = await getServerSession(authOptions);
   const isReader = Boolean(session?.user);
+  const userId = (session?.user as { id?: string } | undefined)?.id;
+  const subscription = userId ? await prisma.subscription.findUnique({ where: { userId } }) : null;
+  const hasSubscription = subscription?.status === "ACTIVE";
+  const hasAccess = !article.subscriberOnly ? isReader : hasSubscription;
   const previewLength = Math.max(1, Math.ceil(article.content.length * 0.2));
   const previewEnd = article.content.lastIndexOf(" ", previewLength);
   const previewContent = article.content.slice(0, previewEnd > 0 ? previewEnd : previewLength);
-  const visibleContent = isReader ? article.content : previewContent;
+  const visibleContent = hasAccess ? article.content : previewContent;
   const visibleParagraphs = visibleContent.split("\n\n");
 
   return (
     <>
       <article className="py-10 max-w-2xl mx-auto">
-        <div className="mb-2"><CategoryBadge category={article.category} /></div>
+        <div className="mb-2 flex items-center gap-2"><CategoryBadge category={article.category} />{article.live && <span className="live-dot text-xs font-semibold">LIVE · <LiveTimestamp value={article.updatedAt} /></span>}{article.subscriberOnly && <span className="text-xs uppercase tracking-wider text-gold">Subscriber edition</span>}</div>
         <h1 className="font-serif text-4xl sm:text-5xl leading-tight mb-4">{article.title}</h1>
         <p className="text-lg text-ink/70 mb-4">{article.summary}</p>
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-ink/50 border-b border-line pb-6 mb-8">
@@ -84,7 +89,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             <p key={i}>{renderInline(para)}</p>
           ))}
         </div>
-        {!isReader && <ArticleAccessPrompt />}
+        {!hasAccess && <ArticleAccessPrompt subscriberOnly={article.subscriberOnly} />}
 
         <AdSense slot={process.env.NEXT_PUBLIC_ADSENSE_ARTICLE_SLOT} />
 

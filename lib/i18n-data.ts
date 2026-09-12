@@ -10,6 +10,7 @@ export const dictionary: Dict = {
     hinglish: "Current affairs, tech aur AI — har din."
   },
   breaking: { en: "BREAKING", hi: "ताज़ा खबर", hinglish: "BREAKING" },
+  live: { en: "LIVE", hi: "लाइव", hinglish: "LIVE" },
   staffLogin: { en: "Staff Login", hi: "स्टाफ लॉगिन", hinglish: "Staff Login" },
   viewSite: { en: "View site", hi: "साइट देखें", hinglish: "Site dekho" },
   signOut: { en: "Sign out", hi: "साइन आउट", hinglish: "Sign out" },
@@ -37,7 +38,12 @@ export const categories: { slug: string; label: Record<Lang, string> }[] = [
   { slug: "tech-news", label: { en: "Tech News", hi: "टेक न्यूज़", hinglish: "Tech News" } },
   { slug: "ai-world", label: { en: "AI World", hi: "एआई वर्ल्ड", hinglish: "AI World" } },
   { slug: "business", label: { en: "Business", hi: "बिज़नेस", hinglish: "Business" } },
-  { slug: "opinion", label: { en: "Opinion", hi: "राय", hinglish: "Opinion" } }
+  { slug: "opinion", label: { en: "Opinion", hi: "राय", hinglish: "Opinion" } },
+  { slug: "cricket", label: { en: "Cricket", hi: "क्रिकेट", hinglish: "Cricket" } },
+  { slug: "india-news", label: { en: "India News", hi: "भारत न्यूज़", hinglish: "India News" } },
+  { slug: "entertainment", label: { en: "Entertainment", hi: "मनोरंजन", hinglish: "Entertainment" } },
+  { slug: "world-news", label: { en: "World News", hi: "विश्व न्यूज़", hinglish: "World News" } },
+  { slug: "lifestyle", label: { en: "Lifestyle", hi: "लाइफस्टाइल", hinglish: "Lifestyle" } }
 ];
 
 // Articles are always stored in the DB using the English label as the canonical

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import CategoryBadge from "./CategoryBadge";
+import LiveTimestamp from "./LiveTimestamp";
 
 type Props = {
   title: string;
@@ -7,10 +8,12 @@ type Props = {
   summary: string;
   category: string;
   imageUrl?: string | null;
+  live?: boolean;
+  updatedAt?: Date | string;
   size?: "lead" | "normal";
 };
 
-export default function ArticleCard({ title, slug, summary, category, imageUrl, size = "normal" }: Props) {
+export default function ArticleCard({ title, slug, summary, category, imageUrl, live, updatedAt, size = "normal" }: Props) {
   const isLead = size === "lead";
   return (
     <div className={`group ${isLead ? "" : "p-3 -m-3 hover:bg-white hover:shadow-md transition-all duration-200 rounded-sm"}`}>
@@ -26,7 +29,7 @@ export default function ArticleCard({ title, slug, summary, category, imageUrl, 
           )}
         </div>
       </Link>
-      <div className="mb-1.5"><CategoryBadge category={category} /></div>
+      <div className="mb-1.5 flex items-center gap-2"><CategoryBadge category={category} />{live && <span className="live-dot text-[10px] font-semibold">LIVE{updatedAt ? <> · <LiveTimestamp value={updatedAt} /></> : ""}</span>}</div>
       <Link href={`/article/${slug}`} className="block">
         <h3 className={`font-serif leading-snug group-hover:text-press transition-colors ${isLead ? "text-3xl sm:text-4xl" : "text-lg"}`}>
           {title}

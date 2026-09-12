@@ -40,15 +40,15 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  let breakingTitles: { title: string; slug: string }[] = [];
+  let breakingTitles: { title: string; slug: string; live?: boolean; updatedAt?: string }[] = [];
   try {
     const breaking = await prisma.article.findMany({
-      where: { breaking: true, published: true },
+      where: { published: true, OR: [{ breaking: true }, { live: true }] },
       orderBy: { createdAt: "desc" },
       take: 6,
-      select: { title: true, slug: true }
+      select: { title: true, slug: true, live: true, updatedAt: true }
     });
-    breakingTitles = breaking;
+    breakingTitles = breaking.map((item) => ({ ...item, updatedAt: item.updatedAt.toISOString() }));
   } catch {
     breakingTitles = [];
   }

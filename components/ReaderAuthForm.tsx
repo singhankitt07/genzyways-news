@@ -40,6 +40,10 @@ export default function ReaderAuthForm({ mode }: { mode: "login" | "register" })
     router.refresh();
   }
 
+  async function continueWithGoogle() {
+    await signIn("google", { callbackUrl: "/" });
+  }
+
   return (
     <form onSubmit={submit} className="space-y-4">
       <div>
@@ -54,6 +58,12 @@ export default function ReaderAuthForm({ mode }: { mode: "login" | "register" })
       <button type="submit" disabled={loading} className="w-full bg-ink text-white py-2.5 hover:bg-ink/90 disabled:opacity-50">
         {loading ? "Please wait..." : mode === "login" ? "Sign in" : "Create account"}
       </button>
+      {mode === "login" && (
+        <>
+          <div className="flex items-center gap-3 text-xs text-ink/45"><span className="h-px bg-line flex-1" />or<span className="h-px bg-line flex-1" /></div>
+          <button type="button" onClick={continueWithGoogle} className="w-full border border-line bg-white py-2.5 hover:bg-ink/5">Continue with Google</button>
+        </>
+      )}
     </form>
   );
 }
