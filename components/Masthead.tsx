@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useLanguage, categories } from "@/lib/i18n";
 import LanguageSwitcher from "./LanguageSwitcher";
+import BrandMark from "./BrandMark";
 
 export default function Masthead() {
   const { lang, t } = useLanguage();
@@ -9,9 +10,7 @@ export default function Masthead() {
     <header className="bg-paper sticky top-0 z-20 shadow-sm no-print">
       <div className="max-w-6xl mx-auto px-4 pt-6 pb-3 flex items-end justify-between gap-4">
         <div>
-          <Link href="/" className="font-serif text-3xl sm:text-4xl tracking-tight text-ink block hover:text-press transition-colors">
-            {t("siteName")}
-          </Link>
+          <BrandMark />
           <p className="text-xs text-ink/50 mt-1">{t("tagline")}</p>
         </div>
         <div className="flex items-center gap-3 shrink-0">

@@ -1,12 +1,16 @@
 "use client";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
+import BrandMark from "./BrandMark";
 
 export default function AdminNav() {
   return (
     <div className="flex items-center justify-between border-b border-line pb-4 mb-8">
       <div className="flex items-center gap-6">
-        <Link href="/admin" className="font-serif text-2xl">Newsroom</Link>
+        <div className="flex items-center gap-4">
+          <BrandMark compact />
+          <Link href="/admin" className="font-serif text-2xl">Newsroom</Link>
+        </div>
         <Link href="/admin/articles/new" className="text-sm text-press font-semibold">+ New Article</Link>
       </div>
       <div className="flex items-center gap-4 text-sm">
