@@ -31,13 +31,27 @@ export async function POST(request: Request) {
     }
   }
 
-  if (event.type === "customer.subscription.deleted" || event.type === "customer.subscription.updated") {
-    const subscription = event.data.object as Stripe.Subscription;
+  if (event.type === "customer.subscription.created" || event.type === "customer.subscription.deleted" || event.type === "customer.subscription.updated") {
+    const subscription = event.data.object as Stripe.Subscription & { current_period_end?: number };
     const userId = subscription.metadata?.userId;
     if (userId) {
       await prisma.subscription.updateMany({
         where: { userId },
-        data: { status: subscription.status === "active" ? "ACTIVE" : "INACTIVE" }
+        data: {
+          status: subscription.status === "active" || subscription.status === "trialing" ? "ACTIVE" : "INACTIVE",
+          currentPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null,
+          stripeSubscriptionId: subscription.id
+        }
+      });
+    }
+  }
+
+  if (event.type === "invoice.payment_failed") {
+    const invoice = event.data.object as Stripe.Invoice & { subscription?: string | Stripe.Subscription };
+    if (invoice.subscription) {
+      await prisma.subscription.updateMany({
+        where: { stripeSubscriptionId: String(invoice.subscription) },
+        data: { status: "PAST_DUE" }
       });
     }
   }

@@ -48,7 +48,7 @@ export default function WeatherWidget() {
     }, () => setStatus("Allow location for local weather"), { maximumAge: 900000, timeout: 12000, enableHighAccuracy: false });
   }, []);
 
-  if (!weather) return <span className="hidden lg:block text-[11px] text-ink/50">{status}</span>;
+  if (!weather) return <span className="text-[11px] text-ink/50 truncate max-w-44">{status}</span>;
   const location = [weather.city, weather.region, weather.country].filter(Boolean).join(", ");
-  return <span className="hidden sm:block text-[11px] text-ink/60" title="Weather is based on your browser location and is not stored by GenzyWayNews">{location} · {weather.temperature}°C · {weatherLabel(weather.weatherCode)}</span>;
+  return <span className="text-[11px] text-ink/60 truncate max-w-52" title="Weather is based on your browser location and is not stored by GenzyWayNews">{location} · {weather.temperature}°C · {weatherLabel(weather.weatherCode)}</span>;
 }
