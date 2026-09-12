@@ -40,3 +40,8 @@ export const authOptions: NextAuthOptions = {
     }
   }
 };
+
+export function isAdminSession(session: unknown) {
+  const user = (session as { user?: { role?: string } } | null | undefined)?.user;
+  return user?.role === "ADMIN";
+}

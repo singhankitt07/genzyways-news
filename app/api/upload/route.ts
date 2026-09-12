@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions, isAdminSession } from "@/lib/auth";
 import { put } from "@vercel/blob";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -10,7 +10,7 @@ import path from "node:path";
 // Vercel injects BLOB_READ_WRITE_TOKEN automatically once one is attached.
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAdminSession(session)) return NextResponse.json({ error: "Owner access required" }, { status: 403 });
 
   const form = await req.formData();
   const file = form.get("file") as File | null;

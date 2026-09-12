@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions, isAdminSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAdminSession(session)) return NextResponse.json({ error: "Owner access required" }, { status: 403 });
 
   const article = await prisma.article.findUnique({ where: { id: params.id } });
   if (!article) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -14,7 +14,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAdminSession(session)) return NextResponse.json({ error: "Owner access required" }, { status: 403 });
 
   const body = await req.json();
   const { title, summary, content, category, imageUrl, author, breaking, published } = body;
@@ -29,7 +29,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAdminSession(session)) return NextResponse.json({ error: "Owner access required" }, { status: 403 });
 
   await prisma.article.delete({ where: { id: params.id } });
   return NextResponse.json({ ok: true });
