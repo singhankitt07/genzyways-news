@@ -32,6 +32,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [uploadedFileName, setUploadedFileName] = useState("");
   const contentRef = useRef<HTMLTextAreaElement>(null);
 
   function wrapSelection(before: string, after: string = before) {
@@ -64,6 +65,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
       return;
     }
     setForm({ ...form, imageUrl: data.url });
+    setUploadedFileName(file.name);
   }
 
   async function handleSubmit(e: React.FormEvent, publishOverride?: boolean) {
@@ -159,18 +161,22 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
       </div>
       <div>
         <label className="block text-sm mb-1">Cover image</label>
-        <div className="flex gap-3 items-center">
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
           <input
             value={form.imageUrl}
-            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+            onChange={(e) => {
+              setForm({ ...form, imageUrl: e.target.value });
+              setUploadedFileName("");
+            }}
             placeholder="Paste an image URL, or upload a file"
-            className="flex-1 border border-line px-3 py-2 bg-white"
+            className="w-full min-w-0 flex-1 border border-line px-3 py-2 bg-white"
           />
-          <label className="border border-line px-3 py-2 text-sm cursor-pointer hover:bg-ink/5 whitespace-nowrap">
+          <label className="w-full sm:w-auto border border-line px-3 py-2 text-sm text-center cursor-pointer hover:bg-ink/5 whitespace-nowrap">
             {uploading ? "Uploading..." : "Upload file"}
             <input type="file" accept="image/*" onChange={handleFileUpload} disabled={uploading} className="hidden" />
           </label>
         </div>
+        {uploadedFileName && <p className="mt-1 text-xs text-ink/60">Uploaded: {uploadedFileName}</p>}
         {form.imageUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={form.imageUrl} alt="" className="mt-2 h-32 object-cover border border-line" />

@@ -29,7 +29,11 @@ Open http://localhost:3000 for the site, http://localhost:3000/admin/login to si
 
 ## 2. Deploy it live (free tier works to start)
 
-**git 
+**Step 1 - Prepare the project for Vercel.**
+
+1. Create or sign in to your Vercel account at https://vercel.com.
+2. Create a new Vercel project and connect this application to it.
+3. Keep the project root set to this folder and use the default Next.js build settings.
 
 **Step 2 — Create a production database (Neon, free tier).**
 1. Go to https://neon.tech, sign up, create a project.
@@ -45,14 +49,13 @@ Open http://localhost:3000 for the site, http://localhost:3000/admin/login to si
 4. Commit that change.
 
 **Step 3 — Deploy on Vercel.**
-1. Go to https://vercel.com, sign up, click "Add New Project", import your GitHub repo.
-2. In the project's Environment Variables, add:
+1. In the Vercel project's Environment Variables, add:
    - `DATABASE_URL` — your Neon connection string
    - `NEXTAUTH_SECRET` — a random 32-byte string (`openssl rand -base64 32`)
    - `NEXTAUTH_URL` — your production URL, e.g. `https://yoursite.vercel.app`
    - `ADMIN_EMAIL` / `ADMIN_PASSWORD` — your real login (only needed once, for seeding)
-3. Deploy.
-4. After the first deploy, run the migration + seed against production once, from your
+2. Click **Deploy**.
+3. After the first deploy, run the migration + seed against production once, from your
    local machine, by temporarily pointing your local `.env`'s `DATABASE_URL` at the Neon
    URL and running:
    ```bash

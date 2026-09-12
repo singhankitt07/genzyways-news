@@ -10,6 +10,27 @@
 body {
   background-color: #FAF8F3;
   color: #101827;
+  overflow-x: hidden;
+}
+
+img,
+video,
+svg,
+canvas {
+  max-width: 100%;
+}
+
+table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+textarea,
+input,
+select,
+button {
+  max-width: 100%;
 }
 
 .line-clamp-3 {
