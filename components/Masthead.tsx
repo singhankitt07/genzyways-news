@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useLanguage, categories } from "@/lib/i18n";
 import LanguageSwitcher from "./LanguageSwitcher";
 import BrandMark from "./BrandMark";
+import AccountMenu from "./AccountMenu";
 
 export default function Masthead() {
   const { lang, t } = useLanguage();
@@ -14,6 +15,7 @@ export default function Masthead() {
           <p className="text-xs text-ink/50 mt-1">{t("tagline")}</p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
+          <AccountMenu />
           <span className="hidden sm:block text-xs text-ink/50 font-sans">
             {new Date().toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", {
               weekday: "long",

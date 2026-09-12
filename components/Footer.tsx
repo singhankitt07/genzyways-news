@@ -26,6 +26,7 @@ export default function Footer() {
           <ul className="space-y-1.5">
             <li><Link href="/about" className="hover:text-white">About</Link></li>
             <li><Link href="/account/login" className="hover:text-white">Reader sign in</Link></li>
+            <li><Link href="/account/profile" className="hover:text-white">My profile</Link></li>
             <li><Link href="/contact" className="hover:text-white">{t("contactUs")}</Link></li>
             <li><Link href="/privacy" className="hover:text-white">{t("privacyPolicy")}</Link></li>
             <li><a href="/admin/login" className="hover:text-white">{t("staffLogin")}</a></li>

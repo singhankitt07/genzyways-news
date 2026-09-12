@@ -13,6 +13,14 @@ model User {
   password String
   name     String @default("Editor")
   role     String @default("READER")
+  age      Int?
+  dateOfBirth DateTime?
+  country  String?
+  state    String?
+  city     String?
+  address  String?
+  pinCode  String?
+  preferences String?
 }
 
 model Article {

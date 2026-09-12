@@ -39,6 +39,14 @@ export default function PrivacyPage() {
           </p>
         </section>
         <section>
+          <h2 className="font-serif text-xl mb-2 text-ink">Profile and weather</h2>
+          <p>
+            Profile details are optional and used to personalize your account. If you allow
+            browser location access, the weather widget requests current conditions from
+            Open-Meteo. GenzyWayNews does not store your precise coordinates.
+          </p>
+        </section>
+        <section>
           <h2 className="font-serif text-xl mb-2 text-ink">Analytics</h2>
           <p>
             With your consent and when enabled, we use Google Analytics to understand visits,
