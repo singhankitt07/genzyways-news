@@ -10,6 +10,7 @@ import NewsletterSignup from "@/components/NewsletterSignup";
 import ArticleAccessPrompt from "@/components/ArticleAccessPrompt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import AdSense from "@/components/AdSense";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const article = await prisma.article.findUnique({ where: { slug: params.slug } });
@@ -82,6 +83,8 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           ))}
         </div>
         {!isReader && <ArticleAccessPrompt />}
+
+        <AdSense slot={process.env.NEXT_PUBLIC_ADSENSE_ARTICLE_SLOT} />
 
         <RelatedArticles category={article.category} excludeId={article.id} />
       </article>

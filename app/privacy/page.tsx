@@ -55,6 +55,14 @@ export default function PrivacyPage() {
           </p>
         </section>
         <section>
+          <h2 className="font-serif text-xl mb-2 text-ink">Advertising</h2>
+          <p>
+            If Google AdSense is enabled, Google and its partners may use cookies or similar
+            technologies to serve and measure advertisements. Advertising is enabled only after
+            the site's consent choice and is subject to Google's policies.
+          </p>
+        </section>
+        <section>
           <h2 className="font-serif text-xl mb-2 text-ink">Third-Party Links</h2>
           <p>
             Articles may link to external sites. We are not responsible for the privacy

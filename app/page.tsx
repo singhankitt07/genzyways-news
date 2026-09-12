@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import ArticleCard from "@/components/ArticleCard";
 import EmptyState from "@/components/EmptyState";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import AdSense from "@/components/AdSense";
 
 export default async function HomePage() {
   const articles = await prisma.article.findMany({
@@ -21,6 +22,7 @@ export default async function HomePage() {
       <div className="mb-10 pb-10 border-b border-line">
         <ArticleCard {...lead} size="lead" />
       </div>
+      <AdSense slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT} />
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 mb-14">
         {rest.map((a) => (
           <ArticleCard key={a.id} {...a} />
