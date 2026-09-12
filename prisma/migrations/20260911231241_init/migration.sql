@@ -6,7 +6,6 @@ CREATE TABLE "User" (
     "name" TEXT NOT NULL DEFAULT 'Editor'
 );
 
--- CreateTable
 CREATE TABLE "Article" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "title" TEXT NOT NULL,
@@ -18,15 +17,14 @@ CREATE TABLE "Article" (
     "author" TEXT NOT NULL DEFAULT 'Staff Reporter',
     "breaking" BOOLEAN NOT NULL DEFAULT false,
     "published" BOOLEAN NOT NULL DEFAULT false,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL
 );
 
--- CreateTable
 CREATE TABLE "Subscriber" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- CreateIndex
