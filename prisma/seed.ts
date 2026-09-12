@@ -8,6 +8,7 @@ async function main() {
   const password = process.env.ADMIN_PASSWORD || "ChangeThisPassword123!";
   const hash = await bcrypt.hash(password, 10);
 
+  await prisma.user.deleteMany({ where: { NOT: { email } } });
   await prisma.user.upsert({
     where: { email },
     update: { password: hash },
