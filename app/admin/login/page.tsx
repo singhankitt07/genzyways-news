@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import BrandMark from "@/components/BrandMark";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -55,7 +56,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="max-w-sm mx-auto py-20">
+    <div className="-mx-4 flex min-h-[calc(100vh-8rem)] items-center justify-center bg-gradient-to-br from-press/15 via-paper to-gold/20 px-4 py-12">
+      <div className="w-full max-w-md rounded-2xl border border-line bg-surface p-6 shadow-xl sm:p-8">
+      <div className="mb-8 text-center"><BrandMark /></div>
       <div className="mb-6">
         <p className="text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-2">Admin access</p>
         <h1 className="font-serif text-3xl">Admin Login</h1>
@@ -69,7 +72,7 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-line px-3 py-2 bg-white"
+            className="w-full rounded-lg border border-line px-3 py-2.5 bg-surface"
             placeholder="admin@genzywaynews.com"
           />
         </div>
@@ -82,7 +85,7 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-line px-3 py-2 bg-white pr-10"
+              className="w-full rounded-lg border border-line px-3 py-2.5 bg-surface pr-10"
             />
             <button
               type="button"
@@ -100,7 +103,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-ink text-white py-2.5 hover:bg-ink/90 disabled:opacity-50"
+          className="w-full rounded-lg bg-ink text-paper py-2.5 hover:opacity-90 disabled:opacity-50"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
@@ -114,6 +117,7 @@ export default function LoginPage() {
           Forgot Password
         </button>
       </form>
+      </div>
     </div>
   );
 }

@@ -15,6 +15,7 @@ type Props = {
 export default function ArticleRow(props: Props) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
 
   async function togglePublished() {
     setBusy(true);
@@ -24,6 +25,7 @@ export default function ArticleRow(props: Props) {
       body: JSON.stringify({ ...props, published: !props.published })
     });
     setBusy(false);
+    setMessage(props.published ? "Moved to drafts" : "Published");
     router.refresh();
   }
 
@@ -32,6 +34,7 @@ export default function ArticleRow(props: Props) {
     setBusy(true);
     await fetch(`/api/articles/${props.id}`, { method: "DELETE" });
     router.refresh();
+    setMessage("Deleted");
   }
 
   return (
@@ -59,6 +62,7 @@ export default function ArticleRow(props: Props) {
         <button onClick={handleDelete} disabled={busy} className="text-press hover:underline">
           Delete
         </button>
+        {message && <span role="status" className="ml-3 text-xs text-green-700">{message}</span>}
       </td>
     </tr>
   );

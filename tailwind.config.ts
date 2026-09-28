@@ -5,11 +5,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#101827",
-        paper: "#FAF8F3",
-        press: "#B3261E",
-        gold: "#9C6B1F",
-        line: "#DDD6C7"
+        ink: "var(--color-text-primary)",
+        paper: "var(--color-background)",
+        surface: "var(--color-surface)",
+        press: "var(--color-accent)",
+        gold: "var(--color-link)",
+        line: "var(--color-border)"
       },
       fontFamily: {
         serif: ["var(--font-source-serif)", "Georgia", "serif"],

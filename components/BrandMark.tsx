@@ -18,11 +18,11 @@ export default function BrandMark({ compact = false }: BrandMarkProps) {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <rect width="64" height="64" rx="16" fill="#101827" />
-        <path d="M16 22.5C20.4 16.7 26.3 14 32.4 14c7.4 0 13.2 3.5 16.4 9.4" stroke="#E7B85B" strokeWidth="3" strokeLinecap="round" />
-        <path d="M20 28.5c3.1-3.3 7.2-5 12-5 5.5 0 9.7 2 12.5 5.7" stroke="#E7B85B" strokeWidth="3" strokeLinecap="round" />
-        <path d="M17 42h10.5V31.5H37V42h10" stroke="#FAF8F3" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="32" cy="45.5" r="3" fill="#B3261E" />
+        <rect width="64" height="64" rx="16" fill="var(--color-text-primary)" />
+        <path d="M16 22.5C20.4 16.7 26.3 14 32.4 14c7.4 0 13.2 3.5 16.4 9.4" stroke="var(--color-link)" strokeWidth="3" strokeLinecap="round" />
+        <path d="M20 28.5c3.1-3.3 7.2-5 12-5 5.5 0 9.7 2 12.5 5.7" stroke="var(--color-link)" strokeWidth="3" strokeLinecap="round" />
+        <path d="M17 42h10.5V31.5H37V42h10" stroke="var(--color-background)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="32" cy="45.5" r="3" fill="var(--color-accent)" />
       </svg>
       {!compact && (
         <span className="leading-none">

@@ -2,23 +2,22 @@
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import BrandMark from "./BrandMark";
+import ThemeToggle from "./ThemeToggle";
+import { useState } from "react";
 
-export default function AdminNav() {
+export default function AdminNav({ title = "Dashboard" }: { title?: string }) {
+  const [open, setOpen] = useState(false);
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-4 mb-8">
-      <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-        <div className="flex items-center gap-4">
-          <BrandMark compact />
-          <Link href="/admin" className="font-serif text-2xl">Newsroom</Link>
-        </div>
-        <Link href="/admin/articles/new" className="text-sm text-press font-semibold">+ New Article</Link>
+    <div className="mb-8 flex min-h-[4rem] items-center justify-between gap-4 border-b border-line pb-4">
+      <button type="button" onClick={() => setOpen(true)} aria-label="Open admin navigation" aria-expanded={open} className="lg:hidden h-10 w-10 rounded-lg border border-line text-ink">☰</button>
+      <div className="flex items-center gap-3"><BrandMark compact /><div><p className="text-xs uppercase tracking-widest text-ink/50">Newsroom</p><h1 className="font-serif text-2xl">{title}</h1></div></div>
+      <div className="flex items-center gap-3">
+        <label className="hidden md:block"><span className="sr-only">Search admin</span><input className="w-40 rounded-lg border border-line bg-surface px-3 py-2 text-sm" placeholder="Search articles" /></label>
+        <ThemeToggle />
+        <details className="relative hidden sm:block"><summary className="cursor-pointer list-none rounded-lg border border-line px-3 py-2 text-sm">Profile</summary><div className="absolute right-0 top-12 z-20 w-36 rounded-lg border border-line bg-surface p-2 shadow-lg"><Link href="/" className="block rounded px-2 py-2 text-sm hover:bg-ink/10">View site</Link><button onClick={() => signOut({ callbackUrl: "/" })} className="block w-full rounded px-2 py-2 text-left text-sm hover:bg-ink/10">Sign out</button></div></details>
       </div>
-      <div className="flex flex-wrap items-center gap-4 text-sm">
-        <Link href="/" className="text-ink/60 hover:text-ink">View site</Link>
-        <button onClick={() => signOut({ callbackUrl: "/" })} className="text-ink/60 hover:text-ink">
-          Sign out
-        </button>
-      </div>
+      {open && <div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={() => setOpen(false)}><aside className="h-full w-72 bg-paper p-5 shadow-xl" onClick={(event) => event.stopPropagation()}><div className="mb-6 flex items-center justify-between"><BrandMark compact /><button type="button" onClick={() => setOpen(false)} aria-label="Close admin navigation">&times;</button></div><nav className="space-y-1"><Link onClick={() => setOpen(false)} className="block rounded-lg bg-ink/10 px-3 py-3 font-medium" href="/admin">Dashboard</Link><Link onClick={() => setOpen(false)} className="block rounded-lg px-3 py-3 font-medium hover:bg-ink/10" href="/admin/articles/new">New Article</Link></nav></aside></div>}
+      <div className="hidden lg:flex fixed left-0 top-0 h-screen w-56 flex-col border-r border-line bg-paper p-5"><BrandMark compact /><nav className="mt-10 space-y-1"><Link className="block rounded-lg bg-ink/10 px-3 py-3 font-medium" href="/admin">Dashboard</Link><Link className="block rounded-lg px-3 py-3 font-medium hover:bg-ink/10" href="/admin/articles/new">New Article</Link></nav></div>
     </div>
   );
 }

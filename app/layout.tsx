@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Source_Serif_4, Inter } from "next/font/google";
+import { Source_Serif_4, Inter, Noto_Sans_Devanagari } from "next/font/google";
 import "./globals.css";
 import Masthead from "@/components/Masthead";
 import Ticker from "@/components/Ticker";
@@ -10,9 +10,11 @@ import GoogleAnalytics from "@/components/GoogleAnalytics";
 import CookieConsent from "@/components/CookieConsent";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
 import AdSenseLoader from "@/components/AdSenseLoader";
+import ThemeProvider from "@/components/ThemeProvider";
 
 const sourceSerif = Source_Serif_4({ subsets: ["latin"], variable: "--font-source-serif" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const notoHindi = Noto_Sans_Devanagari({ subsets: ["devanagari"], variable: "--font-noto-hindi" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
@@ -54,9 +56,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <html lang="en" className={`${sourceSerif.variable} ${inter.variable}`}>
+    <html lang="en" className={`${sourceSerif.variable} ${inter.variable} ${notoHindi.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `try { const saved = localStorage.getItem('genzywaynews-theme'); const system = window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.dataset.theme = saved === 'dark' || (saved !== 'light' && system) ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }` }} />
+      </head>
       <body className="font-sans">
-        <SessionProviderWrapper>
+        <ThemeProvider>
+          <SessionProviderWrapper>
           <GoogleAnalytics />
           <AdSenseLoader />
           <CookieConsent />
@@ -66,7 +72,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <main className="max-w-6xl mx-auto px-4">{children}</main>
             <Footer />
           </LanguageProvider>
-        </SessionProviderWrapper>
+          </SessionProviderWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );
