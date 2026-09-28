@@ -7,7 +7,21 @@ import ArticleRow from "@/components/ArticleRow";
 
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
-  if (!isAdminSession(session)) redirect(session ? "/" : "/admin/login");
+
+  if (!session) {
+    redirect("/admin/login");
+  }
+
+  if (!isAdminSession(session)) {
+    return (
+      <div className="max-w-xl mx-auto py-16 text-center">
+        <p className="text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-3">Access denied</p>
+        <h1 className="font-serif text-4xl mb-4">You are not authorized to access the Admin Panel.</h1>
+        <p className="text-ink/60 mb-8">Please sign in with an administrator account to continue.</p>
+        <a href="/admin/login" className="inline-block bg-ink text-white px-5 py-3">Return to admin login</a>
+      </div>
+    );
+  }
 
   const articles = await prisma.article.findMany({ orderBy: { createdAt: "desc" } });
 

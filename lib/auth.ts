@@ -4,23 +4,45 @@ import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
+async function validateCredentials(email: string | undefined, password: string | undefined, expectedRole?: "ADMIN" | "READER") {
+  if (!email || !password) return null;
+  const lookup = email.trim();
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [{ email: lookup.toLowerCase() }, { name: lookup }]
+    }
+  });
+  if (!user) return null;
+  if (expectedRole && user.role !== expectedRole) return null;
+  const valid = await bcrypt.compare(password, user.password);
+  if (!valid) return null;
+  return { id: user.id, email: user.email, name: user.name, role: user.role };
+}
+
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   pages: { signIn: "/account/login" },
   providers: [
     CredentialsProvider({
+      id: "credentials",
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
-        const user = await prisma.user.findUnique({ where: { email: credentials.email } });
-        if (!user) return null;
-        const valid = await bcrypt.compare(credentials.password, user.password);
-        if (!valid) return null;
-        return { id: user.id, email: user.email, name: user.name, role: user.role };
+        return validateCredentials(credentials?.email, credentials?.password, "READER");
+      }
+    }),
+    CredentialsProvider({
+      id: "admin-credentials",
+      name: "Admin Credentials",
+      credentials: {
+        email: { label: "Email or username", type: "text" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        return validateCredentials(credentials?.email, credentials?.password, "ADMIN");
       }
     }),
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
