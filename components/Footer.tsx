@@ -5,7 +5,7 @@ import { useLanguage } from "@/lib/i18n";
 export default function Footer() {
   const { t } = useLanguage();
   return (
-    <footer className="border-t border-line mt-16 bg-ink text-paper/80 no-print">
+    <footer className="border-t border-line mt-0 bg-ink text-paper/80 no-print">
       <div className="max-w-6xl mx-auto px-4 py-10 grid sm:grid-cols-3 gap-8 text-sm">
         <div>
           <p className="font-serif text-xl text-white mb-2">{t("siteName")}</p>

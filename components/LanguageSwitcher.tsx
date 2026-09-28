@@ -13,7 +13,7 @@ export default function LanguageSwitcher() {
     <select
       value={lang}
       onChange={(e) => setLang(e.target.value as Lang)}
-      className="border border-line bg-white text-xs px-2 py-1"
+      className="rounded-md border border-line bg-surface text-ink text-xs px-2 py-1"
       aria-label="Choose language"
     >
       {OPTIONS.map((o) => (

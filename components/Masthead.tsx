@@ -21,13 +21,6 @@ export default function Masthead() {
           <span className="hidden sm:block"><BrandMark /></span>
           <span className="sm:hidden"><BrandMark compact /></span>
         </div>
-        <nav className="hidden lg:block min-w-0 flex-1" aria-label="Primary navigation">
-          <ul className="flex items-center justify-center gap-5 overflow-x-auto text-sm">
-            {categories.slice(0, 7).map((cat) => (
-              <li key={cat.slug} className="whitespace-nowrap"><Link href={`/category/${cat.slug}`} className="py-2 font-medium text-ink/75 hover:text-press">{cat.label[lang]}</Link></li>
-            ))}
-          </ul>
-        </nav>
         <div className="flex items-center justify-end gap-2 shrink-0">
           <form action="/" className="hidden lg:flex items-center rounded-lg border border-line bg-surface px-2">
             <label htmlFor="site-search" className="sr-only">Search news</label>
@@ -60,6 +53,15 @@ export default function Masthead() {
           <WeatherWidget />
         </div>
       </div>
+      <nav className="border-t border-line bg-surface" aria-label="News categories">
+        <div className="max-w-6xl mx-auto overflow-x-auto px-4">
+          <ul className="flex min-w-max items-center justify-center gap-5 text-sm">
+            {categories.map((cat) => (
+              <li key={cat.slug} className="whitespace-nowrap"><Link href={`/category/${cat.slug}`} className="inline-block border-b-2 border-transparent py-3 font-semibold text-ink/75 hover:border-press hover:text-press">{cat.label[lang]}</Link></li>
+            ))}
+          </ul>
+        </div>
+      </nav>
     </header>
   );
 }
