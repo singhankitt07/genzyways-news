@@ -11,6 +11,7 @@ import CookieConsent from "@/components/CookieConsent";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
 import AdSenseLoader from "@/components/AdSenseLoader";
 import ThemeProvider from "@/components/ThemeProvider";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const sourceSerif = Source_Serif_4({ subsets: ["latin"], variable: "--font-source-serif" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -71,6 +72,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             {breakingTitles.length > 0 && <Ticker items={breakingTitles} />}
             <main className="max-w-6xl mx-auto px-4">{children}</main>
             <Footer />
+            <ScrollToTop />
           </LanguageProvider>
           </SessionProviderWrapper>
         </ThemeProvider>
