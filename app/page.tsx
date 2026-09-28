@@ -25,7 +25,7 @@ export default async function HomePage() {
       <div className="mb-10 grid gap-8 border-b border-line pb-10 lg:grid-cols-[minmax(0,1fr)_320px]">
         <ArticleCard {...lead} size="lead" />
         <div className="grid content-start items-start gap-6 sm:grid-cols-2 lg:flex lg:flex-col">
-          {supporting.map((article) => <ArticleCard key={article.id} {...article} />)}
+          {supporting.map((article) => <ArticleCard key={article.id} {...article} size="compact" />)}
         </div>
       </div>
       <AdSense slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT} />
