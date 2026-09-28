@@ -56,6 +56,7 @@ export default function Masthead() {
       <nav className="border-t border-line bg-surface" aria-label="News categories">
         <div className="max-w-6xl mx-auto overflow-x-auto px-4">
           <ul className="flex min-w-max items-center justify-center gap-5 text-sm">
+            <li className="whitespace-nowrap"><Link href="/" className="inline-block border-b-2 border-transparent py-3 font-semibold text-ink/75 hover:border-press hover:text-press">{lang === "hi" ? "होम" : lang === "hinglish" ? "Home" : "Home"}</Link></li>
             {categories.map((cat) => (
               <li key={cat.slug} className="whitespace-nowrap"><Link href={`/category/${cat.slug}`} className="inline-block border-b-2 border-transparent py-3 font-semibold text-ink/75 hover:border-press hover:text-press">{cat.label[lang]}</Link></li>
             ))}
