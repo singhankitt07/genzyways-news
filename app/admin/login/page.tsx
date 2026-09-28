@@ -10,11 +10,13 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resetMessage, setResetMessage] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setResetMessage("");
     const res = await signIn("admin-credentials", { email, password, redirect: false });
     setLoading(false);
     if (res?.error) {
@@ -22,6 +24,33 @@ export default function LoginPage() {
     } else {
       router.push("/admin");
       router.refresh();
+    }
+  }
+
+  async function handleForgotPassword() {
+    if (!email.trim()) {
+      setError("Enter your registered email address first.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    setResetMessage("");
+    try {
+      const response = await fetch("/api/account/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      const data = await response.json();
+      setLoading(false);
+      if (!response.ok) {
+        setError(data.error || "Unable to reset your password.");
+        return;
+      }
+      setResetMessage(data.message || "A new password has been sent to your email address.");
+    } catch {
+      setLoading(false);
+      setError("Unable to send a password reset email right now.");
     }
   }
 
@@ -66,6 +95,7 @@ export default function LoginPage() {
         </div>
 
         {error && <p className="text-press text-sm">{error}</p>}
+        {resetMessage && <p className="text-green-700 text-sm">{resetMessage}</p>}
 
         <button
           type="submit"
@@ -77,8 +107,9 @@ export default function LoginPage() {
 
         <button
           type="button"
-          onClick={() => setError("Password reset is not configured yet. Please contact the website owner.")}
+          onClick={handleForgotPassword}
           className="text-sm text-press underline"
+          disabled={loading}
         >
           Forgot Password
         </button>

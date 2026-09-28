@@ -9,6 +9,7 @@ export default function ReaderAuthForm({ mode }: { mode: "login" | "register" })
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [resetMessage, setResetMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleAvailable, setGoogleAvailable] = useState<boolean | null>(null);
 
@@ -20,6 +21,7 @@ export default function ReaderAuthForm({ mode }: { mode: "login" | "register" })
     event.preventDefault();
     setLoading(true);
     setError("");
+    setResetMessage("");
 
     if (mode === "register") {
       const response = await fetch("/api/account/register", {
@@ -45,6 +47,33 @@ export default function ReaderAuthForm({ mode }: { mode: "login" | "register" })
     router.refresh();
   }
 
+  async function handleForgotPassword() {
+    if (!email.trim()) {
+      setError("Enter the email address connected to your account.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    setResetMessage("");
+    try {
+      const response = await fetch("/api/account/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      const data = await response.json();
+      setLoading(false);
+      if (!response.ok) {
+        setError(data.error || "Unable to reset your password.");
+        return;
+      }
+      setResetMessage(data.message || "A new password has been sent to your email address.");
+    } catch {
+      setLoading(false);
+      setError("Unable to send password reset instructions right now.");
+    }
+  }
+
   async function continueWithGoogle() {
     if (!googleAvailable) {
       setError("Google sign-in is not configured yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in Vercel.");
@@ -64,9 +93,15 @@ export default function ReaderAuthForm({ mode }: { mode: "login" | "register" })
         <input id="reader-password" type="password" minLength={8} required value={password} onChange={(event) => setPassword(event.target.value)} className="w-full border border-line px-3 py-2 bg-white" />
       </div>
       {error && <p className="text-press text-sm">{error}</p>}
+      {resetMessage && <p className="text-green-700 text-sm">{resetMessage}</p>}
       <button type="submit" disabled={loading} className="w-full bg-ink text-white py-2.5 hover:bg-ink/90 disabled:opacity-50">
         {loading ? "Please wait..." : mode === "login" ? "Sign in" : "Create account"}
       </button>
+      {mode === "login" && (
+        <button type="button" onClick={handleForgotPassword} className="text-sm text-press underline" disabled={loading}>
+          Forgot Password
+        </button>
+      )}
       {mode === "login" && googleAvailable !== false && (
         <>
           <div className="flex items-center gap-3 text-xs text-ink/45"><span className="h-px bg-line flex-1" />or<span className="h-px bg-line flex-1" /></div>
