@@ -53,8 +53,8 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   const isReader = Boolean(session?.user);
   const userId = (session?.user as { id?: string } | undefined)?.id;
   const subscription = userId ? await prisma.subscription.findUnique({ where: { userId } }) : null;
-  const hasSubscription = subscription?.status === "ACTIVE" && subscription.plan !== "DAILY_NEWS";
-  const hasAccess = !article.subscriberOnly || isReader && hasSubscription;
+  const hasSubscription = subscription?.status === "ACTIVE";
+  const hasAccess = hasSubscription;
   const previewLength = Math.max(1, Math.ceil(article.content.length * 0.2));
   const previewEnd = article.content.lastIndexOf(" ", previewLength);
   const previewContent = article.content.slice(0, previewEnd > 0 ? previewEnd : previewLength);
@@ -89,7 +89,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             <p key={i}>{renderInline(para)}</p>
           ))}
         </div>
-        {!hasAccess && <ArticleAccessPrompt subscriberOnly={article.subscriberOnly} />}
+        {!hasAccess && <ArticleAccessPrompt />}
 
         <AdSense slot={process.env.NEXT_PUBLIC_ADSENSE_ARTICLE_SLOT} />
 
