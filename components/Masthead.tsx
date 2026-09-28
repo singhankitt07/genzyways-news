@@ -9,7 +9,7 @@ import ThemeToggle from "./ThemeToggle";
 import { useState } from "react";
 
 export default function Masthead() {
-  const { lang, t } = useLanguage();
+  const { lang } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <header className="bg-paper/95 backdrop-blur sticky top-0 z-30 shadow-sm no-print">
@@ -18,9 +18,10 @@ export default function Masthead() {
           <button type="button" onClick={() => setMenuOpen(true)} aria-label="Open navigation menu" aria-expanded={menuOpen} className="md:hidden h-10 w-10 rounded-lg border border-line inline-flex items-center justify-center text-ink hover:bg-ink/10">
             <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
           </button>
-          <BrandMark />
+          <span className="hidden sm:block"><BrandMark /></span>
+          <span className="sm:hidden"><BrandMark compact /></span>
         </div>
-        <nav className="hidden md:block flex-1" aria-label="Primary navigation">
+        <nav className="hidden lg:block min-w-0 flex-1" aria-label="Primary navigation">
           <ul className="flex items-center justify-center gap-5 overflow-x-auto text-sm">
             {categories.slice(0, 7).map((cat) => (
               <li key={cat.slug} className="whitespace-nowrap"><Link href={`/category/${cat.slug}`} className="py-2 font-medium text-ink/75 hover:text-press">{cat.label[lang]}</Link></li>
