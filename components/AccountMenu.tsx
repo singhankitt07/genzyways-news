@@ -10,7 +10,7 @@ export default function AccountMenu() {
   if (!session?.user) {
     return (
       <div className="flex items-center gap-3">
-        <Link href="/account/login" className="text-xs font-semibold text-accent-on-dark hover:underline">Reader sign in</Link>
+        <Link href="/account/login" className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent-on-dark hover:underline"><svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="3.5" /><path d="M5 20c.8-3.4 3.1-5 7-5s6.2 1.6 7 5" /></svg>Login</Link>
       </div>
     );
   }

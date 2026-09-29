@@ -18,7 +18,7 @@ export default async function PlansPage() {
         <p className="text-ink/65 mt-4">New readers can preview 20% of every article. Subscribe once for ₹99 and unlock the full newsroom.</p>
       </div>
       {active && <p className="border-l-2 border-gold pl-4 text-sm mb-8">Your subscription is active. All articles are unlocked.</p>}
-      {!session?.user && <p className="text-sm mb-8">Sign in before subscribing. <Link href="/account/login" className="text-press underline">Reader sign in</Link></p>}
+      {!session?.user && <p className="text-sm mb-8">Sign in before subscribing. <Link href="/account/login" className="inline-flex items-center gap-1.5 text-press underline"><svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="3.5" /><path d="M5 20c.8-3.4 3.1-5 7-5s6.2 1.6 7 5" /></svg>Login</Link></p>}
       <article className="max-w-md border border-line bg-surface p-7">
         <p className="text-xs uppercase tracking-[0.2em] text-gold font-semibold">Full Access</p>
         <p className="font-serif text-5xl mt-4">₹99 <span className="text-base font-sans text-ink/55">one-time</span></p>
