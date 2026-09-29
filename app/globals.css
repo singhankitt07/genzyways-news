@@ -517,6 +517,48 @@ body:has(.admin-shell) main {
   min-height: 44px;
 }
 
+.masthead-date-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.masthead-date-label {
+  min-width: 0;
+}
+
+.masthead-date-weather {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.masthead-mobile-actions {
+  display: none;
+}
+
+.mobile-account-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0 12px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mobile-account-button:hover,
+.mobile-account-button:focus-visible {
+  border-color: var(--accent);
+  background: var(--surface-hover);
+  color: var(--accent-text-on-dark);
+}
+
 .menu-toggle,
 .search-link,
 .search-form,
@@ -1103,6 +1145,38 @@ textarea {
   .masthead-nav {
     min-height: 44px;
   }
+
+  .masthead-date-content {
+    display: grid;
+    gap: 6px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .masthead-date-weather {
+    min-height: 30px;
+    gap: 5px;
+  }
+
+  .masthead-date-weather .weather-location {
+    display: inline;
+    max-width: 88px;
+  }
+
+  .masthead-date-weather .weather-aqi small {
+    display: inline;
+  }
+
+  .masthead-mobile-actions {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 6px;
+  }
+
 
   .weather-widget {
     gap: 5px;
