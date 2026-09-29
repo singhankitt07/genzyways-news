@@ -19,7 +19,7 @@ export default function ThemeToggle() {
   return (
     <div className="flex items-center rounded-lg border border-line bg-surface p-1" aria-label="Choose color theme" role="group">
       {OPTIONS.map((option) => (
-        <button key={option.value} type="button" aria-label={`${option.label} theme`} aria-pressed={theme === option.value} onClick={() => setTheme(option.value)} className={`inline-flex h-11 min-w-11 shrink-0 items-center justify-center rounded-md ${theme === option.value ? "bg-press text-on-accent" : "text-ink/70 hover:bg-surface-hover hover:text-ink"}`}>
+        <button key={option.value} type="button" aria-label={`${option.label} theme`} aria-pressed={theme === option.value} onClick={() => setTheme(option.value)} className={`tap-target inline-flex h-11 items-center justify-center rounded-md ${theme === option.value ? "bg-press text-on-accent" : "text-ink/70 hover:bg-surface-hover hover:text-ink"}`}>
           <Icon type={option.value} />
         </button>
       ))}

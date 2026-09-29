@@ -126,6 +126,12 @@ input[type="button"] {
   min-height: 44px;
 }
 
+.tap-target {
+  min-width: 44px;
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
 .scroll-nav {
   scrollbar-width: none;
   scroll-snap-type: x proximity;
