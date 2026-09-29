@@ -42,9 +42,12 @@ model User {
 model Article {
   id             String   @id @default(cuid())
   title          String
+  titleHi        String?
   slug           String   @unique
   summary        String
+  summaryHi      String?
   content        String
+  contentHi      String?
   imageUrl       String?
   sourceName     String?
   sourceUrl      String?

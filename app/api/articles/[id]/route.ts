@@ -17,11 +17,11 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   if (!isAdminSession(session)) return NextResponse.json({ error: "Owner access required" }, { status: 403 });
 
   const body = await req.json();
-  const { title, summary, content, category, imageUrl, sourceName, sourceUrl, author, breaking, live, subscriberOnly, published } = body;
+  const { title, titleHi, summary, summaryHi, content, contentHi, category, imageUrl, sourceName, sourceUrl, author, breaking, live, subscriberOnly, published } = body;
 
   const article = await prisma.article.update({
     where: { id: params.id },
-    data: { title, summary, content, category, imageUrl: imageUrl || null, sourceName: typeof sourceName === "string" ? sourceName.trim().slice(0, 120) || null : null, sourceUrl: typeof sourceUrl === "string" && /^https?:\/\//i.test(sourceUrl.trim()) ? sourceUrl.trim().slice(0, 500) : null, author, breaking: !!breaking, live: !!live, subscriberOnly: !!subscriberOnly, published: !!published }
+    data: { title, titleHi: typeof titleHi === "string" ? titleHi.trim().slice(0, 240) || null : null, summary, summaryHi: typeof summaryHi === "string" ? summaryHi.trim().slice(0, 1000) || null : null, content, contentHi: typeof contentHi === "string" ? contentHi.trim() || null : null, category, imageUrl: imageUrl || null, sourceName: typeof sourceName === "string" ? sourceName.trim().slice(0, 120) || null : null, sourceUrl: typeof sourceUrl === "string" && /^https?:\/\//i.test(sourceUrl.trim()) ? sourceUrl.trim().slice(0, 500) : null, author, breaking: !!breaking, live: !!live, subscriberOnly: !!subscriberOnly, published: !!published }
   });
 
   return NextResponse.json(article);

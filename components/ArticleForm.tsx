@@ -7,8 +7,11 @@ const CATEGORIES = ["Current Affairs", "Tech News", "AI World", "Business", "Opi
 type Initial = {
   id?: string;
   title?: string;
+  titleHi?: string | null;
   summary?: string;
+  summaryHi?: string | null;
   content?: string;
+  contentHi?: string | null;
   category?: string;
   imageUrl?: string | null;
   sourceName?: string | null;
@@ -25,8 +28,11 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
   const isEdit = !!initial?.id;
   const [form, setForm] = useState({
     title: initial?.title || "",
+    titleHi: initial?.titleHi || "",
     summary: initial?.summary || "",
+    summaryHi: initial?.summaryHi || "",
     content: initial?.content || "",
+    contentHi: initial?.contentHi || "",
     category: initial?.category || CATEGORIES[0],
     imageUrl: initial?.imageUrl || "",
     sourceName: initial?.sourceName || "",
@@ -106,6 +112,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
           className="w-full border border-line bg-surface px-3 py-2 text-lg font-serif"
         />
       </div>
+      <div className="border-t border-line pt-5"><p className="section-kicker mb-3">Hindi newsroom version</p><label className="block text-sm mb-3">Hindi headline<input value={form.titleHi} onChange={(e) => setForm({ ...form, titleHi: e.target.value })} placeholder="हिंदी हेडलाइन" className="mt-1 w-full border border-line bg-surface px-3 py-2 text-lg font-serif" /></label><label className="block text-sm mb-3">Hindi summary<textarea rows={2} value={form.summaryHi} onChange={(e) => setForm({ ...form, summaryHi: e.target.value })} placeholder="हिंदी सारांश" className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label><label className="block text-sm">Hindi article body<textarea rows={10} value={form.contentHi} onChange={(e) => setForm({ ...form, contentHi: e.target.value })} placeholder="हिंदी में पूरा लेख लिखें। पैराग्राफ के बीच खाली लाइन रखें।" className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label></div>
       <div>
         <label className="block text-sm mb-1">Summary (shown on homepage / listings)</label>
         <textarea
