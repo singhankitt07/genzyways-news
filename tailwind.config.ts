@@ -8,6 +8,7 @@ const config: Config = {
         ink: "var(--color-text-primary)",
         paper: "var(--color-background)",
         surface: "var(--color-surface)",
+        footer: "var(--color-footer-background)",
         press: "var(--color-accent)",
         gold: "var(--color-link)",
         line: "var(--color-border)"

@@ -13,7 +13,7 @@ const SOCIAL_LINKS = [
 export default function Footer() {
   const { t } = useLanguage();
   return (
-    <footer className="border-t border-line mt-0 bg-ink text-white/80 no-print">
+    <footer className="border-t border-line mt-0 bg-footer text-white/80 no-print">
       <div className="max-w-6xl mx-auto px-4 py-10 grid gap-8 text-sm sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <BrandMark compact />

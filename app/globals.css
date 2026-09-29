@@ -27,6 +27,8 @@
   --color-accent: #b3261e;
   --color-link: #8c5d16;
   --color-shadow: rgba(16, 24, 39, 0.12);
+  --color-footer-background: #101827;
+  --color-footer-background: #101827;
   color-scheme: light;
 }
 
@@ -40,6 +42,7 @@
   --color-accent: #f06a5d;
   --color-link: #e7b85b;
   --color-shadow: rgba(0, 0, 0, 0.32);
+  --color-footer-background: #0b0d11;
   color-scheme: dark;
 }
 
