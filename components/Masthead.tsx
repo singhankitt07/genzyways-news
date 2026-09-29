@@ -63,7 +63,7 @@ export default function Masthead() {
   }, [menuOpen]);
 
   return (
-    <header ref={headerRef} className={`theme-header masthead sticky top-0 z-30 no-print ${headerHidden && !menuOpen ? "masthead-hidden" : ""}`}>
+    <header ref={headerRef} style={{ "--menu-top": `${menuTop}px` } as React.CSSProperties} className={`theme-header masthead sticky top-0 z-30 no-print ${headerHidden && !menuOpen ? "masthead-hidden" : ""}`}>
       <div className="masthead-top mx-auto grid max-w-7xl items-center gap-3 px-4 py-3 lg:grid-cols-[1fr_auto_1fr]">
         <div className="hidden min-w-0 items-center gap-3 text-xs text-ink/65 lg:flex"><span className="font-semibold uppercase tracking-[0.14em] text-press">Today</span><span className="truncate">{today}</span><span className="hidden xl:inline">· <WeatherWidget /></span></div>
         <div className="flex items-center justify-between lg:justify-center"><button type="button" onClick={openMenu} aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={menuOpen} aria-controls="site-mega-menu" className="menu-toggle tap-target inline-flex items-center justify-center border border-line md:hidden"><MenuIcon open={menuOpen} /></button><Logo /></div>
