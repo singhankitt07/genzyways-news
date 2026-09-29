@@ -3,6 +3,17 @@
 @tailwind utilities;
 
 :root {
+  --bp-phone: 480px;
+  --bp-tablet: 768px;
+  --bp-laptop: 1024px;
+  --bp-desktop: 1280px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
   --font-source-serif: var(--font-noto-hindi), 'Source Serif 4', Georgia, serif;
   --font-inter: 'Inter', system-ui, sans-serif;
   --bg: #faf8f3;
@@ -103,6 +114,44 @@ body {
   overflow-x: hidden;
   transition: background-color 180ms ease, color 180ms ease;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+button,
+select,
+input[type="submit"],
+input[type="button"] {
+  min-height: 44px;
+}
+
+.scroll-nav {
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+}
+
+.scroll-nav::-webkit-scrollbar { display: none; }
+.scroll-nav > ul > li { scroll-snap-align: start; }
+
+.scroll-nav-shell {
+  position: relative;
+}
+
+.scroll-nav-shell::before,
+.scroll-nav-shell::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.scroll-nav-shell::before { left: 0; background: linear-gradient(90deg, var(--surface), transparent); }
+.scroll-nav-shell::after { right: 0; background: linear-gradient(270deg, var(--surface), transparent); }
 
 img,
 video,
@@ -239,6 +288,8 @@ textarea {
   animation: ticker 26s linear infinite;
 }
 
+.ticker-paused { animation-play-state: paused; }
+
 .live-dot::before {
   content: "";
   display: inline-block;
@@ -275,6 +326,18 @@ textarea {
 
 @media (max-width: 767px) {
   html { font-size: 15px; }
+  input,
+  select,
+  textarea { font-size: 16px; }
+  .mobile-safe-bottom { padding-bottom: calc(var(--space-4) + var(--safe-bottom)); }
+  .back-to-top { bottom: calc(var(--space-5) + var(--safe-bottom)); right: max(var(--space-5), env(safe-area-inset-right, 0px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
 
 /* Print / "Save as PDF" — strip chrome, keep the story readable on paper */

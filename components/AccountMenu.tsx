@@ -11,7 +11,6 @@ export default function AccountMenu() {
     return (
       <div className="flex items-center gap-3">
         <Link href="/account/login" className="text-xs font-semibold text-accent-on-dark hover:underline">Reader sign in</Link>
-        <Link href="/admin/login" className="text-xs font-semibold text-ink hover:text-accent-on-dark">Admin Login</Link>
       </div>
     );
   }

@@ -46,7 +46,7 @@ export default function ShareButtons({ title, path }: { title: string; path: str
   }
 
   return (
-    <div className="flex items-center gap-2 flex-wrap no-print">
+    <div className="flex max-w-full flex-wrap items-center gap-2 no-print">
       <span className="text-xs uppercase tracking-wide text-ink/50 mr-1">{t("share")}</span>
       {links.map((l) => (
         <a

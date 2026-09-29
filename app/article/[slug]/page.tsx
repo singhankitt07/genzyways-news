@@ -63,7 +63,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
   return (
     <>
-      <article className="py-10 max-w-[720px] mx-auto">
+      <article className="mx-auto w-full max-w-[720px] px-0 py-10">
         <div className="mb-2 flex items-center gap-2"><CategoryBadge category={article.category} />{article.live && <span className="live-dot text-xs font-semibold">LIVE · <LiveTimestamp value={article.updatedAt} /></span>}{article.subscriberOnly && <span className="text-xs uppercase tracking-wider text-gold">Subscriber edition</span>}</div>
         <h1 className="font-serif text-4xl sm:text-5xl leading-tight mb-4">{article.title}</h1>
         <p className="text-lg text-ink/70 mb-4">{article.summary}</p>
@@ -84,7 +84,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           // eslint-disable-next-line @next/next/no-img-element
           <img src={article.imageUrl} alt="" className="w-full aspect-[16/9] object-cover mb-8" />
         )}
-        <div className="prose-content font-sans text-lg leading-[1.7] space-y-5">
+        <div className="prose-content space-y-5 font-sans text-[17px] leading-[1.7] sm:text-lg">
           {visibleParagraphs.map((para, i) => (
             <p key={i}>{renderInline(para)}</p>
           ))}
@@ -96,7 +96,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         <RelatedArticles category={article.category} excludeId={article.id} />
       </article>
 
-      <div className="max-w-[720px] mx-auto pb-16 no-print">
+      <div className="mx-auto w-full max-w-[720px] pb-16 no-print">
         <NewsletterSignup />
       </div>
     </>

@@ -186,7 +186,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
           <img src={form.imageUrl} alt="" className="mt-2 h-32 object-cover border border-line" />
         )}
       </div>
-      <div className="flex gap-6">
+      <div className="flex flex-wrap gap-4 sm:gap-6">
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -205,12 +205,12 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
         </label>
       </div>
       {error && <p className="text-press text-sm">{error}</p>}
-      <div className="flex gap-3 pt-2">
+      <div className="flex flex-col gap-3 pt-2 sm:flex-row">
         <button
           type="button"
           disabled={saving}
           onClick={(e) => handleSubmit(e as any, false)}
-          className="border border-ink px-4 py-2 hover:bg-ink/5 disabled:opacity-50"
+          className="button-secondary w-full sm:w-auto"
         >
           Save as Draft
         </button>

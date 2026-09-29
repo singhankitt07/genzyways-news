@@ -52,7 +52,7 @@ export default function NewsletterSignup() {
         <button
           type="submit"
           disabled={status === "loading"}
-          className="button-primary whitespace-nowrap px-5 py-2.5"
+          className="button-primary w-full whitespace-nowrap px-5 py-2.5 sm:w-auto"
         >
           {status === "loading" ? "Subscribing..." : "Subscribe"}
         </button>
