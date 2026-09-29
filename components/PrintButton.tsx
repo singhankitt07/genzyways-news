@@ -6,7 +6,7 @@ export default function PrintButton() {
   return (
     <button
       onClick={() => window.print()}
-      className="h-8 px-3 flex items-center gap-1.5 border border-line text-xs hover:bg-ink hover:text-white transition-colors no-print"
+      className="button-secondary h-8 gap-1.5 px-3 text-xs no-print"
     >
       🖨️ {t("downloadPdf")}
     </button>

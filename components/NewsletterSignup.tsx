@@ -27,17 +27,17 @@ export default function NewsletterSignup() {
 
   if (status === "done") {
     return (
-      <div className="bg-ink text-white p-6 sm:p-8 text-center no-print">
-        <p className="font-serif text-xl">You're subscribed! 🎉</p>
-        <p className="text-white/60 text-sm mt-1">We'll send new stories straight to your inbox.</p>
+      <div className="newsletter-box p-6 text-center sm:p-8 no-print">
+        <p className="newsletter-heading font-serif text-xl">You're subscribed!</p>
+        <p className="newsletter-description mt-1 text-sm">We'll send new stories straight to your inbox.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-ink text-white p-6 sm:p-8 no-print">
-      <p className="font-serif text-xl mb-1">Never miss a story</p>
-      <p className="text-white/60 text-sm mb-4">
+    <div className="newsletter-box p-6 sm:p-8 no-print">
+      <p className="newsletter-heading font-serif text-xl mb-1">Never miss a story</p>
+      <p className="newsletter-description text-sm mb-4">
         Get Current Affairs, Tech, and AI World updates in your inbox — no spam, unsubscribe any time.
       </p>
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
@@ -47,17 +47,17 @@ export default function NewsletterSignup() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          className="flex-1 px-3 py-2.5 text-ink bg-white"
+          className="newsletter-input flex-1 border border-line px-3 py-2.5 focus:border-press"
         />
         <button
           type="submit"
           disabled={status === "loading"}
-          className="bg-press px-5 py-2.5 font-medium hover:bg-press/90 disabled:opacity-50 whitespace-nowrap"
+          className="button-primary whitespace-nowrap px-5 py-2.5"
         >
           {status === "loading" ? "Subscribing..." : "Subscribe"}
         </button>
       </form>
-      {status === "error" && <p className="text-red-300 text-sm mt-2">{errorMsg}</p>}
+      {status === "error" && <p className="mt-2 text-sm text-press">{errorMsg}</p>}
     </div>
   );
 }

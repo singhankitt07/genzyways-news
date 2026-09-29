@@ -30,7 +30,7 @@ export default function ContactPage() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full border border-line px-3 py-2 bg-white"
+            className="w-full border border-line bg-surface px-3 py-2"
           />
         </div>
         <div>
@@ -40,7 +40,7 @@ export default function ContactPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-line px-3 py-2 bg-white"
+            className="w-full border border-line bg-surface px-3 py-2"
           />
         </div>
         <div>
@@ -50,10 +50,10 @@ export default function ContactPage() {
             rows={5}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-full border border-line px-3 py-2 bg-white"
+            className="w-full border border-line bg-surface px-3 py-2"
           />
         </div>
-        <button type="submit" className="bg-press text-white px-5 py-2.5 hover:bg-press/90">
+        <button type="submit" className="button-primary">
           Send Message
         </button>
       </form>

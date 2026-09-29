@@ -19,18 +19,18 @@ export default function ProfileForm() {
   return (
     <form onSubmit={save} className="space-y-6">
       <div className="grid sm:grid-cols-2 gap-4">
-        <label className="text-sm">Name<input value={profile.name} onChange={(e) => update("name", e.target.value)} className="mt-1 w-full border border-line px-3 py-2 bg-white" required /></label>
+        <label className="text-sm">Name<input value={profile.name} onChange={(e) => update("name", e.target.value)} className="mt-1 w-full border border-line bg-surface px-3 py-2" required /></label>
         <label className="text-sm">Email<input value={profile.email} className="mt-1 w-full border border-line px-3 py-2 bg-paper text-ink/50" readOnly /></label>
-        <label className="text-sm">Age<input type="number" min="13" max="120" value={profile.age ?? ""} onChange={(e) => update("age", e.target.value)} className="mt-1 w-full border border-line px-3 py-2 bg-white" /></label>
-        <label className="text-sm">Date of birth<input type="date" value={profile.dateOfBirth} onChange={(e) => update("dateOfBirth", e.target.value)} className="mt-1 w-full border border-line px-3 py-2 bg-white" /></label>
-        <label className="text-sm">Country<input value={profile.country} onChange={(e) => update("country", e.target.value)} placeholder="India or USA" className="mt-1 w-full border border-line px-3 py-2 bg-white" /></label>
-        <label className="text-sm">State / province<input value={profile.state} onChange={(e) => update("state", e.target.value)} className="mt-1 w-full border border-line px-3 py-2 bg-white" /></label>
-        <label className="text-sm">City<input value={profile.city} onChange={(e) => update("city", e.target.value)} className="mt-1 w-full border border-line px-3 py-2 bg-white" /></label>
-        <label className="text-sm">PIN / ZIP code<input value={profile.pinCode} onChange={(e) => update("pinCode", e.target.value)} className="mt-1 w-full border border-line px-3 py-2 bg-white" /></label>
+        <label className="text-sm">Age<input type="number" min="13" max="120" value={profile.age ?? ""} onChange={(e) => update("age", e.target.value)} className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label>
+        <label className="text-sm">Date of birth<input type="date" value={profile.dateOfBirth} onChange={(e) => update("dateOfBirth", e.target.value)} className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label>
+        <label className="text-sm">Country<input value={profile.country} onChange={(e) => update("country", e.target.value)} placeholder="India or USA" className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label>
+        <label className="text-sm">State / province<input value={profile.state} onChange={(e) => update("state", e.target.value)} className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label>
+        <label className="text-sm">City<input value={profile.city} onChange={(e) => update("city", e.target.value)} className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label>
+        <label className="text-sm">PIN / ZIP code<input value={profile.pinCode} onChange={(e) => update("pinCode", e.target.value)} className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label>
       </div>
-      <label className="block text-sm">Address<textarea value={profile.address} onChange={(e) => update("address", e.target.value)} rows={3} className="mt-1 w-full border border-line px-3 py-2 bg-white" /></label>
-      <label className="block text-sm">News preferences <span className="text-ink/50">(for example: AI World, Business)</span><textarea value={profile.preferences} onChange={(e) => update("preferences", e.target.value)} rows={3} className="mt-1 w-full border border-line px-3 py-2 bg-white" /></label>
-      <button className="bg-ink px-5 py-2.5 text-sm text-white" type="submit">Save profile</button>
+      <label className="block text-sm">Address<textarea value={profile.address} onChange={(e) => update("address", e.target.value)} rows={3} className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label>
+      <label className="block text-sm">News preferences <span className="text-ink/50">(for example: AI World, Business)</span><textarea value={profile.preferences} onChange={(e) => update("preferences", e.target.value)} rows={3} className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label>
+      <button className="button-primary text-sm" type="submit">Save profile</button>
       {message && <p className="text-sm text-ink/70">{message}</p>}
     </form>
   );

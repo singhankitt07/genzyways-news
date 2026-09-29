@@ -33,7 +33,7 @@ export default function ArticleCard({ title, slug, summary, category, imageUrl, 
     );
   }
   return (
-    <div className={`group ${isLead ? "" : "p-3 -m-3 hover:bg-white hover:shadow-md transition-all duration-200 rounded-sm"}`}>
+    <div className={`group ${isLead ? "" : "rounded-lg p-3 -m-3 transition-all duration-200 hover:-translate-y-0.5 hover:bg-surface-hover hover:shadow-md"}`}>
       <Link href={`/article/${slug}`} className="block">
         <div className={`relative overflow-hidden bg-gradient-to-br from-line to-ink/10 mb-3 aspect-[16/9] rounded-lg`}>
           {imageUrl && (
@@ -49,7 +49,7 @@ export default function ArticleCard({ title, slug, summary, category, imageUrl, 
       </Link>
       <div className="mb-1.5 flex items-center gap-2"><CategoryBadge category={category} />{live ? <span className="live-dot text-[10px] font-semibold">LIVE{updatedAt ? <> · <LiveTimestamp value={updatedAt} /></> : ""}</span> : updatedAt ? <span className="text-[11px] text-ink/50"><LiveTimestamp value={updatedAt} /></span> : null}</div>
       <Link href={`/article/${slug}`} className="block">
-        <h3 className={`font-serif leading-snug line-clamp-3 group-hover:text-press transition-colors ${isLead ? "text-3xl sm:text-4xl" : "text-lg"}`}>
+        <h3 className={`font-serif leading-snug line-clamp-3 transition-colors group-hover:text-accent-on-dark group-hover:underline ${isLead ? "text-3xl sm:text-4xl" : "text-lg"}`}>
           {title}
         </h3>
         <p className={`text-ink/70 mt-2 ${isLead ? "text-base" : "text-sm"} line-clamp-3`}>{summary}</p>

@@ -99,7 +99,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
           required
           value={form.title}
           onChange={(e) => setForm({ ...form, title: e.target.value })}
-          className="w-full border border-line px-3 py-2 bg-white text-lg font-serif"
+          className="w-full border border-line bg-surface px-3 py-2 text-lg font-serif"
         />
       </div>
       <div>
@@ -109,7 +109,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
           rows={2}
           value={form.summary}
           onChange={(e) => setForm({ ...form, summary: e.target.value })}
-          className="w-full border border-line px-3 py-2 bg-white"
+          className="w-full border border-line bg-surface px-3 py-2"
         />
       </div>
       <div>
@@ -138,7 +138,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
           rows={12}
           value={form.content}
           onChange={(e) => setForm({ ...form, content: e.target.value })}
-          className="w-full border border-line px-3 py-2 bg-white"
+          className="w-full border border-line bg-surface px-3 py-2"
         />
       </div>
       <div className="grid sm:grid-cols-2 gap-4">
@@ -147,7 +147,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
           <select
             value={form.category}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
-            className="w-full border border-line px-3 py-2 bg-white"
+            className="w-full border border-line bg-surface px-3 py-2"
           >
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>{c}</option>
@@ -159,7 +159,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
           <input
             value={form.author}
             onChange={(e) => setForm({ ...form, author: e.target.value })}
-            className="w-full border border-line px-3 py-2 bg-white"
+            className="w-full border border-line bg-surface px-3 py-2"
           />
         </div>
       </div>
@@ -173,7 +173,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
               setUploadedFileName("");
             }}
             placeholder="Paste an image URL, or upload a file"
-            className="w-full min-w-0 flex-1 border border-line px-3 py-2 bg-white"
+            className="w-full min-w-0 flex-1 border border-line bg-surface px-3 py-2"
           />
           <label className="w-full sm:w-auto border border-line px-3 py-2 text-sm text-center cursor-pointer hover:bg-ink/5 whitespace-nowrap">
             {uploading ? "Uploading..." : "Upload file"}
@@ -218,7 +218,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
           type="button"
           disabled={saving}
           onClick={(e) => handleSubmit(e as any, true)}
-          className="bg-press text-white px-4 py-2 hover:bg-press/90 disabled:opacity-50"
+          className="button-primary"
         >
           {saving ? "Saving..." : "Publish"}
         </button>

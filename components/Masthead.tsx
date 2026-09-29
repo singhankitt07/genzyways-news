@@ -12,7 +12,7 @@ export default function Masthead() {
   const { lang } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <header className="bg-paper/95 backdrop-blur sticky top-0 z-30 shadow-sm no-print">
+    <header className="theme-header sticky top-0 z-30 shadow-sm no-print">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
           <button type="button" onClick={() => setMenuOpen(true)} aria-label="Open navigation menu" aria-expanded={menuOpen} className="md:hidden h-10 w-10 rounded-lg border border-line inline-flex items-center justify-center text-ink hover:bg-ink/10">
@@ -25,7 +25,7 @@ export default function Masthead() {
           <form action="/" className="hidden lg:flex items-center rounded-lg border border-line bg-surface px-2">
             <label htmlFor="site-search" className="sr-only">Search news</label>
             <input id="site-search" name="q" placeholder="Search" className="w-28 border-0 bg-transparent px-2 py-2 text-sm outline-none" />
-            <button type="submit" aria-label="Search news" className="p-1 text-ink/60 hover:text-press"><svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg></button>
+            <button type="submit" aria-label="Search news" className="p-1 text-ink/70 hover:text-press"><svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg></button>
           </form>
           <ThemeToggle />
           <div className="hidden xl:block"><AccountMenu /></div>
@@ -56,9 +56,9 @@ export default function Masthead() {
       <nav className="border-t border-line bg-surface" aria-label="News categories">
         <div className="max-w-6xl mx-auto overflow-x-auto px-4">
           <ul className="flex min-w-max items-center justify-center gap-5 text-sm">
-            <li className="whitespace-nowrap"><Link href="/" className="inline-block border-b-2 border-transparent py-3 font-semibold text-ink/75 hover:border-press hover:text-press">{lang === "hi" ? "होम" : lang === "hinglish" ? "Home" : "Home"}</Link></li>
+            <li className="whitespace-nowrap"><Link href="/" className="inline-block border-b-2 border-transparent py-3 font-semibold text-ink hover:border-press hover:text-accent-on-dark">{lang === "hi" ? "होम" : "Home"}</Link></li>
             {categories.map((cat) => (
-              <li key={cat.slug} className="whitespace-nowrap"><Link href={`/category/${cat.slug}`} className="inline-block border-b-2 border-transparent py-3 font-semibold text-ink/75 hover:border-press hover:text-press">{cat.label[lang]}</Link></li>
+              <li key={cat.slug} className="whitespace-nowrap"><Link href={`/category/${cat.slug}`} className="inline-block border-b-2 border-transparent py-3 font-semibold text-ink hover:border-press hover:text-accent-on-dark">{cat.label[lang]}</Link></li>
             ))}
           </ul>
         </div>

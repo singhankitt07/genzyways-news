@@ -57,7 +57,7 @@ export default function RazorpayCheckout({ email }: { email?: string | null }) {
   }
 
   return <>
-    <button type="button" onClick={subscribe} disabled={loading} className="w-full bg-press text-white py-3 hover:bg-press/90 disabled:opacity-50">{loading ? "Opening secure checkout..." : "Subscribe for ₹99"}</button>
+    <button type="button" onClick={subscribe} disabled={loading} className="button-primary w-full">{loading ? "Opening secure checkout..." : "Subscribe for ₹99"}</button>
     {error && <p className="text-press text-xs mt-3">{error}</p>}
   </>;
 }

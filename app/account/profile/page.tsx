@@ -14,7 +14,7 @@ export default async function ProfilePage() {
       <h1 className="font-serif text-4xl mb-2">Hello, {session.user.name || "Reader"}</h1>
       <p className="text-ink/60 mb-8">Personalize your news feed and optional profile details.</p>
       {isAdminSession(session) && (
-        <div className="border border-line bg-white px-4 py-4 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="border border-line bg-surface px-4 py-4 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <p className="font-semibold">Owner access</p>
             <p className="text-sm text-ink/60">Manage every article, draft, image, and publication status.</p>

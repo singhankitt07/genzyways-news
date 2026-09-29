@@ -13,41 +13,41 @@ const SOCIAL_LINKS = [
 export default function Footer() {
   const { t } = useLanguage();
   return (
-    <footer className="border-t border-line mt-0 bg-footer text-white/80 no-print">
+    <footer className="border-t border-footer-border mt-0 bg-footer text-footer-text no-print">
       <div className="max-w-6xl mx-auto px-4 py-10 grid gap-8 text-sm sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <BrandMark compact />
-          <p className="mt-3 text-white/60">{t("tagline")}</p>
+          <p className="mt-3 text-footer-muted">{t("tagline")}</p>
           <div className="mt-5 flex items-center gap-2" aria-label="GenzyWayNews social media">
-            {SOCIAL_LINKS.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={`GenzyWayNews on ${social.label}`} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white/80 hover:border-white hover:bg-white hover:text-ink">{social.icon}</a>)}
+            {SOCIAL_LINKS.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={`GenzyWayNews on ${social.label}`} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-footer-border text-footer-text hover:border-footer-text hover:bg-footer-text hover:text-footer">{social.icon}</a>)}
           </div>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-wide text-paper/40 mb-3">Sections</p>
+          <p className="text-xs uppercase tracking-wide text-footer-muted mb-3">Sections</p>
           <ul className="space-y-1.5">
-            <li><Link href="/" className="hover:text-white">Home</Link></li>
-            <li><Link href="/category/current-affairs" className="hover:text-white">Current Affairs</Link></li>
-            <li><Link href="/category/tech-news" className="hover:text-white">Tech News</Link></li>
-            <li><Link href="/category/ai-world" className="hover:text-white">AI World</Link></li>
-            <li><Link href="/category/business" className="hover:text-white">Business</Link></li>
-            <li><Link href="/category/opinion" className="hover:text-white">Opinion</Link></li>
+            <li><Link href="/" className="hover:text-footer-text">Home</Link></li>
+            <li><Link href="/category/current-affairs" className="hover:text-footer-text">Current Affairs</Link></li>
+            <li><Link href="/category/tech-news" className="hover:text-footer-text">Tech News</Link></li>
+            <li><Link href="/category/ai-world" className="hover:text-footer-text">AI World</Link></li>
+            <li><Link href="/category/business" className="hover:text-footer-text">Business</Link></li>
+            <li><Link href="/category/opinion" className="hover:text-footer-text">Opinion</Link></li>
           </ul>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-wide text-paper/40 mb-3">More</p>
+          <p className="text-xs uppercase tracking-wide text-footer-muted mb-3">More</p>
           <ul className="space-y-1.5">
-            <li><Link href="/about" className="hover:text-white">About</Link></li>
-            <li><Link href="/account/login" className="hover:text-white">Reader sign in</Link></li>
-            <li><Link href="/account/profile" className="hover:text-white">My profile</Link></li>
-            <li><Link href="/contact" className="hover:text-white">{t("contactUs")}</Link></li>
-            <li><Link href="/privacy" className="hover:text-white">{t("privacyPolicy")}</Link></li>
-            <li><Link href="/terms" className="hover:text-white">Terms of Use</Link></li>
-            <li><a href="/admin/login" className="hover:text-white">{t("staffLogin")}</a></li>
+            <li><Link href="/about" className="hover:text-footer-text">About</Link></li>
+            <li><Link href="/account/login" className="hover:text-footer-text">Reader sign in</Link></li>
+            <li><Link href="/account/profile" className="hover:text-footer-text">My profile</Link></li>
+            <li><Link href="/contact" className="hover:text-footer-text">{t("contactUs")}</Link></li>
+            <li><Link href="/privacy" className="hover:text-footer-text">{t("privacyPolicy")}</Link></li>
+            <li><Link href="/terms" className="hover:text-footer-text">Terms of Use</Link></li>
+            <li><a href="/admin/login" className="hover:text-footer-text">{t("staffLogin")}</a></li>
           </ul>
         </div>
       </div>
-      <div className="border-t border-white/10">
-        <p className="max-w-6xl mx-auto px-4 py-4 text-xs text-white/50">
+      <div className="border-t border-footer-border">
+        <p className="max-w-6xl mx-auto px-4 py-4 text-xs text-footer-muted">
           &copy; {new Date().getFullYear()} GenzyWayNews. All rights reserved. GenzyWayNews and its logo are trademarks of the newsroom.
         </p>
       </div>

@@ -86,15 +86,15 @@ export default function ReaderAuthForm({ mode }: { mode: "login" | "register" })
     <form onSubmit={submit} className="space-y-4">
       <div>
         <label className="block text-sm mb-1" htmlFor="reader-email">Email</label>
-        <input id="reader-email" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="w-full border border-line px-3 py-2 bg-white" />
+        <input id="reader-email" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="w-full border border-line bg-surface px-3 py-2" />
       </div>
       <div>
         <label className="block text-sm mb-1" htmlFor="reader-password">Password</label>
-        <input id="reader-password" type="password" minLength={8} required value={password} onChange={(event) => setPassword(event.target.value)} className="w-full border border-line px-3 py-2 bg-white" />
+        <input id="reader-password" type="password" minLength={8} required value={password} onChange={(event) => setPassword(event.target.value)} className="w-full border border-line bg-surface px-3 py-2" />
       </div>
       {error && <p className="text-press text-sm">{error}</p>}
       {resetMessage && <p className="text-green-700 text-sm">{resetMessage}</p>}
-      <button type="submit" disabled={loading} className="w-full bg-ink text-white py-2.5 hover:bg-ink/90 disabled:opacity-50">
+      <button type="submit" disabled={loading} className="button-primary w-full">
         {loading ? "Please wait..." : mode === "login" ? "Sign in" : "Create account"}
       </button>
       {mode === "login" && (
@@ -105,7 +105,7 @@ export default function ReaderAuthForm({ mode }: { mode: "login" | "register" })
       {mode === "login" && googleAvailable !== false && (
         <>
           <div className="flex items-center gap-3 text-xs text-ink/45"><span className="h-px bg-line flex-1" />or<span className="h-px bg-line flex-1" /></div>
-          <button type="button" onClick={continueWithGoogle} className="w-full border border-line bg-white py-2.5 hover:bg-ink/5">Continue with Google</button>
+          <button type="button" onClick={continueWithGoogle} className="button-secondary w-full">Continue with Google</button>
         </>
       )}
     </form>

@@ -5,44 +5,95 @@
 :root {
   --font-source-serif: var(--font-noto-hindi), 'Source Serif 4', Georgia, serif;
   --font-inter: 'Inter', system-ui, sans-serif;
-  --color-background: #faf8f3;
-  --color-surface: #ffffff;
-  --color-surface-muted: #f2efe8;
-  --color-text-primary: #101827;
-  --color-text-secondary: #5d6675;
-  --color-border: #ddd6c7;
-  --color-accent: #b3261e;
+  --bg: #faf8f3;
+  --surface: #ffffff;
+  --surface-hover: #f2efe8;
+  --border: #ddd6c7;
+  --text-primary: #101827;
+  --text-secondary: #5d6675;
+  --text-muted: #697386;
+  --accent: #b3261e;
+  --accent-hover: #8f1d17;
+  --accent-text-on-dark: #b3261e;
+  --on-accent: #ffffff;
+  --color-background: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-hover);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-link: #9c6b1f;
   --color-shadow: rgba(16, 24, 39, 0.12);
+  --color-footer-background: #101827;
+  --color-action-background: #101827;
+  --color-footer-text: #ffffff;
+  --color-footer-muted: rgba(255, 255, 255, 0.68);
+  --color-footer-border: rgba(255, 255, 255, 0.14);
   color-scheme: light;
 }
 
 [data-theme="light"] {
-  --color-background: #faf8f3;
-  --color-surface: #ffffff;
-  --color-surface-muted: #f2efe8;
-  --color-text-primary: #101827;
-  --color-text-secondary: #5d6675;
-  --color-border: #ddd6c7;
-  --color-accent: #b3261e;
+  --bg: #faf8f3;
+  --surface: #ffffff;
+  --surface-hover: #f2efe8;
+  --border: #ddd6c7;
+  --text-primary: #101827;
+  --text-secondary: #5d6675;
+  --text-muted: #697386;
+  --accent: #b3261e;
+  --accent-hover: #8f1d17;
+  --accent-text-on-dark: #8f1d17;
+  --on-accent: #ffffff;
+  --color-background: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-hover);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-link: #8c5d16;
   --color-shadow: rgba(16, 24, 39, 0.12);
   --color-footer-background: #101827;
-  --color-footer-background: #101827;
+  --color-action-background: #101827;
+  --color-footer-text: #ffffff;
+  --color-footer-muted: rgba(255, 255, 255, 0.68);
+  --color-footer-border: rgba(255, 255, 255, 0.14);
   color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --color-background: #0f1115;
-  --color-surface: #171a21;
-  --color-surface-muted: #20242d;
-  --color-text-primary: #f4f1ea;
-  --color-text-secondary: #b8bec9;
-  --color-border: #343a46;
-  --color-accent: #f06a5d;
+  --bg: #0f1115;
+  --surface: #171a21;
+  --surface-hover: #1e222b;
+  --border: #2a2f3a;
+  --text-primary: #f2f4f7;
+  --text-secondary: #a8b0bd;
+  --text-muted: #7b8494;
+  --accent: #f26b5b;
+  --accent-hover: #ff8a7a;
+  --accent-text-on-dark: #ff8a7a;
+  --on-accent: #ffffff;
+  --color-background: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-hover);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-link: #e7b85b;
   --color-shadow: rgba(0, 0, 0, 0.32);
   --color-footer-background: #0b0d11;
+  --color-action-background: #f2f4f7;
+  --color-footer-text: #f2f4f7;
+  --color-footer-muted: #a8b0bd;
+  --color-footer-border: #2a2f3a;
   color-scheme: dark;
 }
 
@@ -75,9 +126,22 @@ button {
 input,
 select,
 textarea {
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  border-color: var(--color-border);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
 button,
@@ -89,7 +153,7 @@ textarea {
 }
 
 :focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--color-accent) 65%, white);
+  outline: 3px solid color-mix(in srgb, var(--color-accent) 65%, var(--on-accent));
   outline-offset: 3px;
 }
 
@@ -98,6 +162,73 @@ textarea {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.button-primary,
+.button-secondary,
+.button-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease, opacity 200ms ease, transform 200ms ease;
+}
+
+.button-primary {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.button-primary:hover { background: var(--accent-hover); }
+.button-primary:disabled,
+.button-secondary:disabled,
+.button-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.button-secondary {
+  border: 1px solid var(--text-secondary);
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.button-secondary:hover { background: var(--surface-hover); }
+
+.button-ghost {
+  background: transparent;
+  color: var(--accent-text-on-dark);
+}
+
+.button-ghost:hover { background: var(--surface-hover); }
+
+.newsletter-box {
+  background: var(--color-action-background);
+  color: var(--on-accent);
+}
+
+.newsletter-heading { color: var(--on-accent); }
+.newsletter-description { color: color-mix(in srgb, var(--on-accent) 68%, transparent); }
+.newsletter-input { background: var(--surface); color: var(--text-primary); }
+
+[data-theme="dark"] .newsletter-box {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .newsletter-heading { color: var(--text-primary); }
+[data-theme="dark"] .newsletter-description { color: var(--text-secondary); }
+[data-theme="dark"] .newsletter-input { background: var(--bg); color: var(--text-primary); }
+
+.theme-header {
+  background: rgba(15, 17, 21, 0.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+}
+
+[data-theme="light"] .theme-header {
+  background: color-mix(in srgb, var(--surface) 95%, transparent);
 }
 
 @keyframes ticker {

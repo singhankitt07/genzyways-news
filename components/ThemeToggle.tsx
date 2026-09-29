@@ -17,9 +17,9 @@ const OPTIONS: { value: ThemeChoice; label: string }[] = [
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   return (
-    <div className="flex items-center rounded-lg border border-line bg-paper/80 p-1" aria-label="Choose color theme" role="group">
+    <div className="flex items-center rounded-lg border border-line bg-surface p-1" aria-label="Choose color theme" role="group">
       {OPTIONS.map((option) => (
-        <button key={option.value} type="button" aria-label={`${option.label} theme`} aria-pressed={theme === option.value} onClick={() => setTheme(option.value)} className={`inline-flex h-8 w-8 items-center justify-center rounded-md ${theme === option.value ? "bg-ink text-paper" : "text-ink/60 hover:bg-ink/10 hover:text-ink"}`}>
+        <button key={option.value} type="button" aria-label={`${option.label} theme`} aria-pressed={theme === option.value} onClick={() => setTheme(option.value)} className={`inline-flex h-8 w-8 items-center justify-center rounded-md ${theme === option.value ? "bg-press text-on-accent" : "text-ink/70 hover:bg-surface-hover hover:text-ink"}`}>
           <Icon type={option.value} />
         </button>
       ))}

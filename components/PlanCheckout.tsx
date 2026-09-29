@@ -23,11 +23,11 @@ export default function PlanCheckout({ plan, label, price, description }: { plan
   }
 
   return (
-    <article className="border border-line bg-white p-6 flex flex-col min-h-64">
+    <article className="border border-line bg-surface p-6 flex flex-col min-h-64">
       <p className="text-xs uppercase tracking-[0.2em] text-gold font-semibold">{label}</p>
       <p className="font-serif text-3xl mt-4">{price}</p>
       <p className="text-sm text-ink/65 mt-3 flex-1">{description}</p>
-      <button type="button" onClick={choosePlan} disabled={loading} className="mt-6 bg-ink text-white py-2.5 hover:bg-press disabled:opacity-50">{loading ? "Opening checkout..." : plan === "daily-news" ? "Activate free plan" : "Choose plan"}</button>
+      <button type="button" onClick={choosePlan} disabled={loading} className="button-primary mt-6">{loading ? "Opening checkout..." : plan === "daily-news" ? "Activate free plan" : "Choose plan"}</button>
       {error && <p className="text-press text-xs mt-3">{error}</p>}
     </article>
   );

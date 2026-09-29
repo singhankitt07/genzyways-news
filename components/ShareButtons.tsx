@@ -55,14 +55,14 @@ export default function ShareButtons({ title, path }: { title: string; path: str
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Share on ${l.label}`}
-          className="w-8 h-8 flex items-center justify-center border border-line text-sm hover:bg-ink hover:text-white transition-colors"
+          className="button-secondary h-8 w-8 p-0 text-sm"
         >
           {l.icon}
         </a>
       ))}
       <button
         onClick={copyLink}
-        className="h-8 px-3 flex items-center justify-center border border-line text-xs hover:bg-ink hover:text-white transition-colors"
+        className="button-secondary h-8 px-3 text-xs"
       >
         {copied ? "Copied!" : "Copy link"}
       </button>
