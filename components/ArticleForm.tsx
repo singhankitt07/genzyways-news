@@ -11,6 +11,8 @@ type Initial = {
   content?: string;
   category?: string;
   imageUrl?: string | null;
+  sourceName?: string | null;
+  sourceUrl?: string | null;
   author?: string;
   breaking?: boolean;
   live?: boolean;
@@ -27,6 +29,8 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
     content: initial?.content || "",
     category: initial?.category || CATEGORIES[0],
     imageUrl: initial?.imageUrl || "",
+    sourceName: initial?.sourceName || "",
+    sourceUrl: initial?.sourceUrl || "",
     author: initial?.author || "Staff Reporter",
     breaking: initial?.breaking || false,
     live: initial?.live || false,
@@ -163,6 +167,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
           />
         </div>
       </div>
+      <div className="grid gap-4 sm:grid-cols-2"><label className="block text-sm">Source name<input value={form.sourceName} onChange={(e) => setForm({ ...form, sourceName: e.target.value })} placeholder="Official source or publication" className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label><label className="block text-sm">Source URL<input type="url" value={form.sourceUrl} onChange={(e) => setForm({ ...form, sourceUrl: e.target.value })} placeholder="https://source.example/article" className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label></div>
       <div>
         <label className="block text-sm mb-1">Cover image</label>
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center">

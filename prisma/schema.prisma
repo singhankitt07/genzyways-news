@@ -45,6 +45,8 @@ model Article {
   summary        String
   content        String
   imageUrl       String?
+  sourceName     String?
+  sourceUrl      String?
   category       String
   author         String   @default("Staff Reporter")
   breaking       Boolean  @default(false)
