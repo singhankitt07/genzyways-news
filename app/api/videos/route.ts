@@ -6,7 +6,12 @@ import { cleanText } from "@/lib/reader";
 
 export async function GET(request: Request) {
   const kind = new URL(request.url).searchParams.get("kind");
-  const videos = await prisma.mediaVideo.findMany({ where: { published: true, ...(kind === "SHORT" || kind === "VIDEO" ? { kind } : {}) }, orderBy: { createdAt: "desc" } });
+  const admin = new URL(request.url).searchParams.get("admin") === "1";
+  if (admin) {
+    const session = await getServerSession(authOptions);
+    if (!isAdminSession(session)) return NextResponse.json({ error: "Owner access required." }, { status: 403 });
+  }
+  const videos = await prisma.mediaVideo.findMany({ where: { ...(admin ? {} : { published: true }), ...(kind === "SHORT" || kind === "VIDEO" ? { kind } : {}) }, orderBy: { createdAt: "desc" } });
   return NextResponse.json({ videos });
 }
 
