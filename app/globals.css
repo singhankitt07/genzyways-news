@@ -324,7 +324,7 @@ textarea {
 
 .brand-logo {
   display: inline-flex;
-  height: 48px;
+  height: 48px !important;
   width: auto;
   align-items: center;
   flex-shrink: 0;
@@ -359,8 +359,8 @@ textarea {
 .brand-logo-icon-only { height: 40px; }
 
 @media (max-width: 767px) {
-  .brand-logo { height: 36px; }
-  .brand-logo-icon-only { height: 36px; }
+  .brand-logo { height: 36px !important; }
+  .brand-logo-icon-only { height: 36px !important; }
 }
 
 @media (max-width: 359px) {
