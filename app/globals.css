@@ -307,6 +307,9 @@ body:has(.admin-shell) main {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent);
 }
 
+.mobile-search-form { min-width: 0; }
+.mobile-search-form:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent); }
+
 .search-form input,
 .search-form input:focus,
 .mobile-drawer form input,
@@ -378,6 +381,8 @@ body:has(.admin-shell) main {
 }
 
 .mobile-drawer-backdrop {
+  height: 100dvh;
+  width: 100vw;
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(3px);
 }
