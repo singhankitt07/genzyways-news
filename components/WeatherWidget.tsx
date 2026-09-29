@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-type Weather = { temperature: number; weatherCode: number; city: string; region?: string; country?: string };
+type Weather = { temperature: number; weatherCode: number; city: string; region?: string; country?: string; aqi?: number | null; pm25?: number | null; updatedAt: number };
+const CACHE_KEY = "genzywaynews-weather";
+const REFRESH_MS = 15 * 60 * 1000;
 
 function weatherLabel(code: number) {
   if (code === 0) return "Clear";
@@ -12,43 +14,70 @@ function weatherLabel(code: number) {
   return "Storm";
 }
 
+function aqiLabel(value?: number | null) {
+  if (value == null) return "AQI unavailable";
+  if (value <= 50) return "Good";
+  if (value <= 100) return "Moderate";
+  if (value <= 150) return "Sensitive";
+  if (value <= 200) return "Unhealthy";
+  if (value <= 300) return "Very unhealthy";
+  return "Hazardous";
+}
+
+function WeatherIcon({ code }: { code: number }) {
+  const cloudy = code >= 1 && code <= 3;
+  const rainy = code >= 51 && code <= 67;
+  const snowy = code >= 71 && code <= 77;
+  const stormy = code >= 80 || code === 95 || code === 96 || code === 99;
+  return <span className={`weather-icon weather-icon-${stormy ? "storm" : rainy ? "rain" : snowy ? "snow" : cloudy ? "cloud" : "clear"}`} aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="16" cy="14" r="5" className="weather-sun" />{!stormy && !rainy && !snowy && <path d="M16 3v3m0 16v3M5 14h3m16 0h3M8.2 6.2l2.1 2.1m11.4 11.4 2.1 2.1M8.2 21.8l2.1-2.1m11.4-11.4 2.1-2.1" className="weather-sun" />}{(cloudy || rainy || snowy || stormy) && <path d="M8 23h14a5 5 0 0 0 .5-9.97A7.5 7.5 0 0 0 8 15a4 4 0 0 0 0 8Z" className="weather-cloud" />}{rainy && <path d="m11 26-1 2m6-2-1 2m6-2-1 2" className="weather-rain" />}{snowy && <path d="M11 27h.01m5 0h.01m5 0h.01" className="weather-snow" />}{stormy && <path d="m17 18-3 5h3l-2 5 6-8h-3l2-5Z" className="weather-storm" />}</svg></span>;
+}
+
 export default function WeatherWidget() {
   const [weather, setWeather] = useState<Weather | null>(null);
   const [status, setStatus] = useState("Allow location for local weather");
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("genzywaynews-weather");
-    if (saved) {
-      const cached: Weather = JSON.parse(saved);
-      if (cached.city !== "Your location") setWeather(cached);
-    }
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(async ({ coords }) => {
+    let active = true;
+    const cached = window.localStorage.getItem(CACHE_KEY);
+    if (cached) {
       try {
-        const [weatherResponse, locationResponse] = await Promise.all([
-          fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&current=temperature_2m,weather_code&timezone=auto`),
+        const saved = JSON.parse(cached) as Weather;
+        if (saved.city !== "Your location") setWeather(saved);
+      } catch {
+        window.localStorage.removeItem(CACHE_KEY);
+      }
+    }
+
+    async function load(coords: GeolocationCoordinates) {
+      try {
+        const query = `latitude=${coords.latitude}&longitude=${coords.longitude}&timezone=auto`;
+        const [weatherResponse, airResponse, locationResponse] = await Promise.all([
+          fetch(`https://api.open-meteo.com/v1/forecast?${query}&current=temperature_2m,weather_code`),
+          fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?${query}&current=us_aqi,pm2_5,pm10`),
           fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${coords.latitude}&longitude=${coords.longitude}&localityLanguage=en`)
         ]);
         if (!weatherResponse.ok || !locationResponse.ok) throw new Error("Weather lookup failed");
         const data = await weatherResponse.json();
+        const air = airResponse.ok ? await airResponse.json() : null;
         const location = await locationResponse.json();
-        const city = location.city || location.locality || location.principalSubdivision || "Your location";
-        const next = {
-          temperature: Math.round(data.current.temperature_2m),
-          weatherCode: data.current.weather_code,
-          city,
-          region: location.principalSubdivision,
-          country: location.countryName
-        };
+        const next: Weather = { temperature: Math.round(data.current.temperature_2m), weatherCode: data.current.weather_code, city: location.city || location.locality || location.principalSubdivision || "Your location", region: location.principalSubdivision, country: location.countryName, aqi: air?.current?.us_aqi ?? null, pm25: air?.current?.pm2_5 ?? null, updatedAt: Date.now() };
+        if (!active) return;
         setWeather(next);
-        window.localStorage.setItem("genzywaynews-weather", JSON.stringify(next));
+        window.localStorage.setItem(CACHE_KEY, JSON.stringify(next));
+        setStatus("");
       } catch {
-        setStatus("Weather unavailable - check location permission");
+        if (active) setStatus("Weather unavailable");
       }
-    }, () => setStatus("Allow location for local weather"), { maximumAge: 900000, timeout: 12000, enableHighAccuracy: false });
+    }
+
+    const requestLocation = () => navigator.geolocation.getCurrentPosition(({ coords }) => load(coords), () => setStatus("Allow location for local weather"), { maximumAge: REFRESH_MS, timeout: 12000, enableHighAccuracy: false });
+    if (navigator.geolocation) requestLocation();
+    else setStatus("Weather unavailable");
+    const refresh = window.setInterval(requestLocation, REFRESH_MS);
+    return () => { active = false; window.clearInterval(refresh); };
   }, []);
 
-  if (!weather) return <span className="text-[11px] text-ink/50 truncate max-w-44">{status}</span>;
+  if (!weather) return <span className="weather-widget weather-widget-loading"><span className="weather-icon weather-icon-cloud" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M8 23h14a5 5 0 0 0 .5-9.97A7.5 7.5 0 0 0 8 15a4 4 0 0 0 0 8Z" /></svg></span><span>{status}</span></span>;
   const location = [weather.city, weather.region, weather.country].filter(Boolean).join(", ");
-  return <span className="text-[11px] text-ink/60 truncate max-w-52" title="Weather is based on your browser location and is not stored by GenzyWayNews">{location} · {weather.temperature}°C · {weatherLabel(weather.weatherCode)}</span>;
+  return <span className="weather-widget" title={`Live weather for ${location}. Air quality: ${aqiLabel(weather.aqi)}. Data refreshes every 15 minutes.`}><WeatherIcon code={weather.weatherCode} /><span className="weather-reading"><strong>{weather.temperature}°C</strong><span>{weatherLabel(weather.weatherCode)}</span></span><span className={`weather-aqi weather-aqi-${weather.aqi == null ? "unknown" : weather.aqi <= 50 ? "good" : weather.aqi <= 100 ? "moderate" : "poor"}`}><b>AQI</b> {weather.aqi == null ? "—" : Math.round(weather.aqi)}<small>{aqiLabel(weather.aqi)}</small></span><span className="weather-location">{location}</span></span>;
 }
