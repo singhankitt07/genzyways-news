@@ -9,6 +9,7 @@ const config: Config = {
         paper: "var(--color-background)",
         background: "var(--bg)",
         surface: "var(--color-surface)",
+        "surface-hover": "var(--surface-hover)",
         footer: "var(--color-footer-background)",
         "footer-text": "var(--color-footer-text)",
         "footer-muted": "var(--color-footer-muted)",
