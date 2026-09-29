@@ -1,15 +1,16 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLanguage } from "@/lib/i18n";
 
 export default function ShareButtons({ title, path }: { title: string; path: string }) {
   const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
+  const [origin, setOrigin] = useState("");
 
-  // Built at click-time so it always reflects the actual deployed domain, not a hardcoded one.
+  useEffect(() => { setOrigin(window.location.origin); }, []);
+
   function fullUrl() {
-    if (typeof window === "undefined") return path;
-    return `${window.location.origin}${path}`;
+    return origin ? `${origin}${path}` : path;
   }
 
   const links = [
@@ -55,14 +56,14 @@ export default function ShareButtons({ title, path }: { title: string; path: str
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Share on ${l.label}`}
-          className="button-secondary h-8 w-8 p-0 text-sm"
+          className="button-secondary h-11 w-11 p-0 text-sm"
         >
           {l.icon}
         </a>
       ))}
       <button
         onClick={copyLink}
-        className="button-secondary h-8 px-3 text-xs"
+        className="button-secondary h-11 px-3 text-xs"
       >
         {copied ? "Copied!" : "Copy link"}
       </button>

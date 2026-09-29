@@ -6,6 +6,7 @@ const config: Config = {
     extend: {
       colors: {
         ink: "var(--color-text-primary)",
+        muted: "var(--color-text-muted)",
         paper: "var(--color-background)",
         background: "var(--bg)",
         surface: "var(--color-surface)",

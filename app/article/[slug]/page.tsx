@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { renderInline } from "@/lib/markdown";
 import CategoryBadge from "@/components/CategoryBadge";
-import ShareButtons from "@/components/ShareButtons";
 import PrintButton from "@/components/PrintButton";
 import RelatedArticles from "@/components/RelatedArticles";
 import NewsletterSignup from "@/components/NewsletterSignup";
@@ -13,6 +12,9 @@ import { authOptions } from "@/lib/auth";
 import AdSense from "@/components/AdSense";
 import LiveTimestamp from "@/components/LiveTimestamp";
 import ArticleEngagement from "@/components/ArticleEngagement";
+import ArticleReadingTools from "@/components/ArticleReadingTools";
+import ReadingFontSizeControl from "@/components/ReadingFontSizeControl";
+import ReadingProgress from "@/components/ReadingProgress";
 import Link from "next/link";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -77,7 +79,11 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         publisher: { "@type": "Organization", name: "GenzyWays News", url: process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000", logo: { "@type": "ImageObject", url: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"}/brand/genzywaynews-icon.svg` } },
         image: article.imageUrl || `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"}/brand/png/genzywaynews-og-image.png`
       }) }} />
-      <article className="mx-auto w-full max-w-[720px] px-0 py-10">
+      <div className="article-reading-page">
+      <ReadingProgress />
+      <div className="article-reading-layout">
+      <ArticleReadingTools articleId={article.id} title={article.title} path={`/article/${article.slug}`} />
+      <article className="article-paper-card mx-auto py-10">
         <div className="mb-2 flex items-center gap-2"><CategoryBadge category={article.category} />{article.live && <span className="live-dot text-xs font-semibold">LIVE · <LiveTimestamp value={article.updatedAt} /></span>}{article.subscriberOnly && <span className="text-xs uppercase tracking-wider text-gold">Subscriber edition</span>}</div>
         <h1 className="font-serif text-4xl sm:text-5xl leading-tight mb-4">{article.title}</h1>
         <p className="text-lg text-ink/70 mb-4">{article.summary}</p>
@@ -91,7 +97,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             </time>
           </div>
           <div className="flex items-center gap-2">
-            <ShareButtons title={article.title} path={`/article/${article.slug}`} />
+            <ReadingFontSizeControl />
             <PrintButton />
           </div>
         </div>
@@ -110,13 +116,15 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
         {article.authorProfile && <aside className="mt-10 border-t border-line pt-6"><p className="section-kicker mb-2">About the author</p><Link href={`/author/${article.authorProfile.slug}`} className="group flex items-start gap-4"><div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-surface-hover font-serif text-xl text-press">{article.authorProfile.name.charAt(0)}</div><div><h2 className="font-serif text-xl group-hover:text-press">{article.authorProfile.name}</h2><p className="text-sm font-semibold text-press">{article.authorProfile.role}</p><p className="mt-1 text-sm text-ink/65">{article.authorProfile.bio}</p></div></Link></aside>}
 
-        <AdSense slot={process.env.NEXT_PUBLIC_ADSENSE_ARTICLE_SLOT} />
-
-        <RelatedArticles category={article.category} excludeId={article.id} />
       </article>
+      </div>
+
+      <div className="mx-auto w-full max-w-[760px] px-4"><AdSense slot={process.env.NEXT_PUBLIC_ADSENSE_ARTICLE_SLOT} /></div>
+      <div className="mx-auto w-full max-w-[760px] px-4"><RelatedArticles category={article.category} excludeId={article.id} /></div>
 
       <div className="mx-auto w-full max-w-[720px] pb-16 no-print">
         <NewsletterSignup />
+      </div>
       </div>
     </>
   );

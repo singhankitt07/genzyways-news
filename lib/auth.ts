@@ -85,12 +85,14 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).id = token.uid;
         (session.user as any).role = token.role;
         if (token.uid) {
-          const databaseUser = await prisma.user.findUnique({ where: { id: token.uid as string }, select: { name: true, email: true, role: true, image: true } });
+          const databaseUser = await prisma.user.findUnique({ where: { id: token.uid as string }, select: { name: true, email: true, role: true, image: true, theme: true, readingFontSize: true } });
           if (databaseUser) {
             session.user.name = databaseUser.name;
             session.user.email = databaseUser.email;
             (session.user as any).role = databaseUser.role;
             session.user.image = databaseUser.image;
+            (session.user as any).theme = databaseUser.theme;
+            (session.user as any).readingFontSize = databaseUser.readingFontSize;
           }
         }
       }

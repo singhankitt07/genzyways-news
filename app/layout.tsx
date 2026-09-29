@@ -6,6 +6,8 @@ import Ticker from "@/components/Ticker";
 import Footer from "@/components/Footer";
 import { LanguageProvider } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import CookieConsent from "@/components/CookieConsent";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
@@ -53,6 +55,8 @@ export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   let breakingTitles: { title: string; slug: string; live?: boolean; updatedAt?: string }[] = [];
+  let initialTheme: "light" | "sepia" | "dark" | "auto" = "auto";
+  let initialFontSize = 18;
   try {
     const breaking = await prisma.article.findMany({
       where: { published: true, OR: [{ breaking: true }, { live: true }] },
@@ -64,15 +68,23 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   } catch {
     breakingTitles = [];
   }
+  try {
+    const session = await getServerSession(authOptions);
+    const reader = session?.user as { theme?: string; readingFontSize?: number } | undefined;
+    if (reader?.theme && ["light", "sepia", "dark", "auto"].includes(reader.theme)) initialTheme = reader.theme as typeof initialTheme;
+    if (reader?.readingFontSize && Number.isInteger(reader.readingFontSize) && reader.readingFontSize >= 16 && reader.readingFontSize <= 24) initialFontSize = reader.readingFontSize;
+  } catch {
+    initialTheme = "auto";
+  }
 
   return (
     <html lang="en" className={`${sourceSerif.variable} ${inter.variable} ${notoHindi.variable}`}>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `try { const saved = localStorage.getItem('genzywaynews-theme'); const system = window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.dataset.theme = saved === 'dark' || (saved !== 'light' && system) ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }` }} />
+        <script dangerouslySetInnerHTML={{ __html: `try { const saved = localStorage.getItem('genzywaynews-theme'); const server = ${JSON.stringify(initialTheme)}; const choice = saved || server; const system = window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.dataset.theme = ['light','sepia','dark'].includes(choice) ? choice : (system ? 'dark' : 'light'); const storedSize = localStorage.getItem('genzywaynews-reading-font-size'); const size = storedSize === null ? ${initialFontSize} : Number(storedSize); if (Number.isInteger(size) && size >= 16 && size <= 24) document.documentElement.style.setProperty('--reader-font-size', size + 'px'); } catch (error) { document.documentElement.dataset.theme = ${JSON.stringify(initialTheme === "auto" ? "light" : initialTheme)}; }` }} />
       </head>
       <body className="font-sans">
-        <ThemeProvider>
-          <SessionProviderWrapper>
+        <SessionProviderWrapper>
+          <ThemeProvider initialTheme={initialTheme} initialFontSize={initialFontSize}>
           <div className="print-watermark" aria-hidden="true"><img src="/brand/genzywaynews-icon.svg" alt="" /></div>
           <GoogleAnalytics />
           <AdSenseLoader />
@@ -84,8 +96,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Footer />
             <ScrollToTop />
           </LanguageProvider>
-          </SessionProviderWrapper>
-        </ThemeProvider>
+          </ThemeProvider>
+        </SessionProviderWrapper>
       </body>
     </html>
   );

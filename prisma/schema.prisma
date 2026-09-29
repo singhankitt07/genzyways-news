@@ -25,7 +25,8 @@ model User {
   image        String?
   bio          String?
   preferredLanguage String @default("en")
-  theme        String @default("default")
+  theme        String @default("auto")
+  readingFontSize Int @default(18)
   emailAlerts  Boolean @default(true)
   pushAlerts   Boolean @default(true)
   subscription Subscription?

@@ -27,6 +27,7 @@ export async function GET() {
     bio: user.bio || "",
     preferredLanguage: user.preferredLanguage,
     theme: user.theme,
+    readingFontSize: user.readingFontSize,
     emailAlerts: user.emailAlerts,
     pushAlerts: user.pushAlerts
   });
@@ -40,6 +41,10 @@ export async function PUT(request: Request) {
   const age = body.age === "" || body.age == null ? null : Number(body.age);
   if (age !== null && (!Number.isInteger(age) || age < 13 || age > 120)) {
     return NextResponse.json({ error: "Age must be between 13 and 120." }, { status: 400 });
+  }
+  const readingFontSize = body.readingFontSize == null ? user.readingFontSize : Number(body.readingFontSize);
+  if (!Number.isInteger(readingFontSize) || readingFontSize < 16 || readingFontSize > 24) {
+    return NextResponse.json({ error: "Reading text size must be between 16 and 24 pixels." }, { status: 400 });
   }
 
   let nameData: { name: string; nameChangeTimestamps?: Date[] } = { name: user.name };
@@ -68,7 +73,8 @@ export async function PUT(request: Request) {
       image: typeof body.image === "string" ? body.image.trim().slice(0, 500) : null,
       bio: typeof body.bio === "string" ? body.bio.trim().slice(0, 500) : null,
       preferredLanguage: ["en", "hi", "hinglish"].includes(body.preferredLanguage) ? body.preferredLanguage : user.preferredLanguage,
-      theme: ["light", "dark", "default"].includes(body.theme) ? body.theme : user.theme,
+      theme: ["light", "sepia", "dark", "auto"].includes(body.theme) ? body.theme : user.theme,
+      readingFontSize,
       emailAlerts: typeof body.emailAlerts === "boolean" ? body.emailAlerts : user.emailAlerts,
       pushAlerts: typeof body.pushAlerts === "boolean" ? body.pushAlerts : user.pushAlerts
     }
