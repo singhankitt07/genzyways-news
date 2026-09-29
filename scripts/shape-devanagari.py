@@ -40,7 +40,8 @@ for glyph_info, glyph_position in zip(buffer.glyph_infos, buffer.glyph_positions
     if glyph_name is None:
         glyph_name = fonttools_font.getGlyphOrder()[glyph_info.codepoint]
     pen = SVGPathPen(glyph_set)
-    transform = TransformPen(pen, (scale, 0, 0, -scale, cursor + glyph_position.x_offset * scale, baseline - glyph_position.y_offset * scale))
+    transform = TransformPen(pen, (scale, 0, 0, -scale, cursor +
+                             glyph_position.x_offset * scale, baseline - glyph_position.y_offset * scale))
     glyph_set[glyph_name].draw(transform)
     paths.append(pen.getCommands())
     cursor += glyph_position.x_advance * scale

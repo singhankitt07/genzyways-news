@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n";
-import BrandMark from "./BrandMark";
+import Logo from "./Logo";
 
 const SOCIAL_LINKS = [
   { label: "Instagram", href: "https://www.instagram.com/genzywaynews/", icon: <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none" /></svg> },
@@ -16,7 +16,7 @@ export default function Footer() {
     <footer className="border-t border-footer-border mt-0 bg-footer text-footer-text no-print">
       <div className="max-w-6xl mx-auto px-4 py-10 grid gap-8 text-sm sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <BrandMark compact />
+          <Logo />
           <p className="mt-3 text-footer-muted">{t("tagline")}</p>
           <div className="mt-5 flex items-center gap-2" aria-label="GenzyWayNews social media">
             {SOCIAL_LINKS.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={`GenzyWayNews on ${social.label}`} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-footer-border text-footer-text hover:border-footer-text hover:bg-footer-text hover:text-footer">{social.icon}</a>)}

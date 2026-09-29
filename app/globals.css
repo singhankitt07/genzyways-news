@@ -322,6 +322,50 @@ textarea {
   backdrop-filter: blur(14px);
 }
 
+.brand-logo {
+  display: inline-flex;
+  height: 40px;
+  width: auto;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.brand-logo-full,
+.brand-logo-icon {
+  display: inline-flex;
+  height: 100%;
+  width: auto;
+  align-items: center;
+}
+
+.brand-logo-full img {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+
+.brand-logo-icon img {
+  display: block;
+  height: 32px;
+  width: 32px;
+}
+
+.brand-logo-light,
+.brand-logo-icon { display: none !important; }
+[data-theme="light"] .brand-logo-dark { display: none !important; }
+[data-theme="light"] .brand-logo-light { display: block !important; }
+.brand-logo-icon-only .brand-logo-full { display: none !important; }
+.brand-logo-icon-only .brand-logo-icon { display: inline-flex !important; }
+
+@media (max-width: 767px) {
+  .brand-logo { height: 32px; }
+}
+
+@media (max-width: 359px) {
+  .brand-logo:not(.brand-logo-icon-only) .brand-logo-full { display: none !important; }
+  .brand-logo:not(.brand-logo-icon-only) .brand-logo-icon { display: inline-flex !important; }
+}
+
 [data-theme="light"] .theme-header {
   background: color-mix(in srgb, var(--surface) 95%, transparent);
 }

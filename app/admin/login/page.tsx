@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import BrandMark from "@/components/BrandMark";
+import Logo from "@/components/Logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -58,7 +58,7 @@ export default function LoginPage() {
   return (
     <div className="-mx-4 flex min-h-[calc(100vh-8rem)] items-center justify-center bg-gradient-to-br from-press/15 via-paper to-gold/20 px-4 py-12">
       <div className="w-full max-w-md rounded-2xl border border-line bg-surface p-6 shadow-xl sm:p-8">
-      <div className="mb-8 text-center"><BrandMark /></div>
+      <div className="mb-8 text-center"><Logo /></div>
       <div className="mb-6">
         <p className="text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-2">Admin access</p>
         <h1 className="font-serif text-3xl">Admin Login</h1>

@@ -23,10 +23,13 @@ export const metadata: Metadata = {
   description: "Current affairs, daily tech news, and the latest AI world developments — in English, Hindi, or Hinglish.",
   icons: {
     icon: [
-      { url: "/brand/favicon.svg", type: "image/svg+xml" },
-      { url: "/brand/png/favicon-32.png", sizes: "32x32", type: "image/png" }
+      { url: "/brand/genzywaynews-icon.svg", type: "image/svg+xml" },
+      { url: "/brand/png/genzywaynews-icon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/brand/png/genzywaynews-icon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/png/genzywaynews-icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/brand/png/genzywaynews-icon-512.png", sizes: "512x512", type: "image/png" }
     ],
-    apple: [{ url: "/brand/png/favicon-180.png", sizes: "180x180", type: "image/png" }]
+    apple: [{ url: "/brand/png/genzywaynews-icon-180.png", sizes: "180x180", type: "image/png" }]
   },
   other: {
     "google-adsense-account": "ca-pub-7431298506667016"
@@ -36,13 +39,13 @@ export const metadata: Metadata = {
     siteName: "GenzyWayNews",
     title: "GenzyWayNews | Current Affairs, Tech & AI",
     description: "Current affairs, daily tech news, and the latest AI world developments.",
-    images: [{ url: "/brand/png/og-image.png", width: 1200, height: 630, alt: "GenzyWayNews logo" }]
+    images: [{ url: "/brand/png/genzywaynews-og-image.png", width: 1200, height: 630, alt: "GenzyWayNews logo" }]
   },
   twitter: {
     card: "summary_large_image",
     title: "GenzyWayNews | Current Affairs, Tech & AI",
     description: "Current affairs, daily tech news, and the latest AI world developments.",
-    images: ["/brand/png/og-image.png"]
+    images: ["/brand/png/genzywaynews-og-image.png"]
   }
 };
 

@@ -9,6 +9,7 @@
     "seed": "tsx prisma/seed.ts",
     "brand:lockups": "node scripts/generate-circular-lockups.mjs",
     "brand:png": "node scripts/export-brand-pngs.mjs",
+    "brand:supplied": "node scripts/export-supplied-logo-assets.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {
