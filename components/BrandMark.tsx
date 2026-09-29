@@ -19,9 +19,10 @@ export default function BrandMark({ compact = false }: BrandMarkProps) {
         xmlns="http://www.w3.org/2000/svg"
       >
         <rect width="64" height="64" rx="16" fill="var(--color-text-primary)" />
-        <path d="M49 25c-4.5-6-11.5-9.5-19-9.5-13.5 0-23 8.5-23 20.5s9.5 20.5 23 20.5c7.5 0 14.5-3 19-8.5V37H32" fill="none" stroke="var(--color-background)" strokeWidth="8" strokeLinecap="square" strokeLinejoin="round" />
-        <path d="M44 19c4 1.7 7.2 4.1 10 7.3M48 14c4.8 2 8.9 4.8 12 8.7" fill="none" stroke="var(--color-accent)" strokeWidth="3.5" strokeLinecap="round" />
-        <circle cx="49" cy="47" r="2.8" fill="#F5A623" />
+        <path d="M47.5 21.5c-4.25-5-9.75-7.5-16.5-7.5-11.5 0-19.75 7.5-19.75 18.25S19.5 50.5 31 50.5c6.25 0 11.75-2 16-6V34.75H33.5" fill="none" stroke="var(--color-background)" strokeWidth="7" strokeLinecap="square" strokeLinejoin="round" />
+        <path d="M17.75 22.75h26l-22 18.75h24.5" fill="none" stroke="var(--color-accent)" strokeWidth="5.5" strokeLinecap="square" strokeLinejoin="round" />
+        <path d="M46.75 12.5c3 1.25 5.5 2.75 7.75 5M48.25 8.25c4 1.5 7.25 3.75 10 6.75" fill="none" stroke="#F5A623" strokeWidth="3" strokeLinecap="round" />
+        <circle cx="50.25" cy="47" r="2.5" fill="#F5A623" />
       </svg>
       {!compact && (
         <span className="leading-none">
