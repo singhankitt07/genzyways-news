@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const url = `/article/${article.slug}`;
   const images = article.imageUrl
     ? [{ url: article.imageUrl, alt: article.title }]
-    : [{ url: "/brand/png/GenzyWays News-og-image.png", width: 1200, height: 630, alt: "GenzyWays News logo" }];
+    : [{ url: "/brand/png/genzywaynews-og-image.png", width: 1200, height: 630, alt: "GenzyWays News logo" }];
 
   return {
     title: `${article.title} | GenzyWays News`,
@@ -74,8 +74,8 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         dateModified: article.updatedAt.toISOString(),
         mainEntityOfPage: { "@type": "WebPage", "@id": `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"}/article/${article.slug}` },
         author: { "@type": "Person", name: article.author },
-        publisher: { "@type": "Organization", name: "GenzyWays News", url: process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000", logo: { "@type": "ImageObject", url: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"}/brand/GenzyWays News-icon.svg` } },
-        image: article.imageUrl || `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"}/brand/png/GenzyWays News-og-image.png`
+        publisher: { "@type": "Organization", name: "GenzyWays News", url: process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000", logo: { "@type": "ImageObject", url: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"}/brand/genzywaynews-icon.svg` } },
+        image: article.imageUrl || `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"}/brand/png/genzywaynews-og-image.png`
       }) }} />
       <article className="mx-auto w-full max-w-[720px] px-0 py-10">
         <div className="mb-2 flex items-center gap-2"><CategoryBadge category={article.category} />{article.live && <span className="live-dot text-xs font-semibold">LIVE · <LiveTimestamp value={article.updatedAt} /></span>}{article.subscriberOnly && <span className="text-xs uppercase tracking-wider text-gold">Subscriber edition</span>}</div>

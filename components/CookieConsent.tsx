@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const consentKey = "GenzyWays News-analytics-consent";
+const consentKey = "genzywaynews-analytics-consent";
 
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false);

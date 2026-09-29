@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 type Weather = { temperature: number; weatherCode: number; city: string; region?: string; country?: string; aqi?: number | null; pm25?: number | null; updatedAt: number };
-const CACHE_KEY = "GenzyWays News-weather";
+const CACHE_KEY = "genzywaynews-weather";
 const REFRESH_MS = 15 * 60 * 1000;
 
 function weatherLabel(code: number) {

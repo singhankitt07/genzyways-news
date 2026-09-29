@@ -20,13 +20,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       type: "website",
       url: `/category/${category.slug}`,
       siteName: "GenzyWays News",
-      images: [{ url: "/brand/png/GenzyWays News-og-image.png", width: 1200, height: 630, alt: "GenzyWays News logo" }]
+      images: [{ url: "/brand/png/genzywaynews-og-image.png", width: 1200, height: 630, alt: "GenzyWays News logo" }]
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/brand/png/GenzyWays News-og-image.png"]
+      images: ["/brand/png/genzywaynews-og-image.png"]
     }
   };
 }

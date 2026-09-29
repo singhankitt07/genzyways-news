@@ -23,13 +23,13 @@ export const metadata: Metadata = {
   description: "Current affairs, daily tech news, and the latest AI world developments — in English, Hindi, or Hinglish.",
   icons: {
     icon: [
-      { url: "/brand/GenzyWays News-icon.svg", type: "image/svg+xml" },
-      { url: "/brand/png/GenzyWays News-icon-16.png", sizes: "16x16", type: "image/png" },
-      { url: "/brand/png/GenzyWays News-icon-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/brand/png/GenzyWays News-icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/brand/png/GenzyWays News-icon-512.png", sizes: "512x512", type: "image/png" }
+      { url: "/brand/genzywaynews-icon.svg", type: "image/svg+xml" },
+      { url: "/brand/png/genzywaynews-icon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/brand/png/genzywaynews-icon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/png/genzywaynews-icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/brand/png/genzywaynews-icon-512.png", sizes: "512x512", type: "image/png" }
     ],
-    apple: [{ url: "/brand/png/GenzyWays News-icon-180.png", sizes: "180x180", type: "image/png" }]
+    apple: [{ url: "/brand/png/genzywaynews-icon-180.png", sizes: "180x180", type: "image/png" }]
   },
   other: {
     "google-adsense-account": "ca-pub-7431298506667016"
@@ -39,13 +39,13 @@ export const metadata: Metadata = {
     siteName: "GenzyWays News",
     title: "GenzyWays News | Current Affairs, Tech & AI",
     description: "Current affairs, daily tech news, and the latest AI world developments.",
-    images: [{ url: "/brand/png/GenzyWays News-og-image.png", width: 1200, height: 630, alt: "GenzyWays News logo" }]
+    images: [{ url: "/brand/png/genzywaynews-og-image.png", width: 1200, height: 630, alt: "GenzyWays News logo" }]
   },
   twitter: {
     card: "summary_large_image",
     title: "GenzyWays News | Current Affairs, Tech & AI",
     description: "Current affairs, daily tech news, and the latest AI world developments.",
-    images: ["/brand/png/GenzyWays News-og-image.png"]
+    images: ["/brand/png/genzywaynews-og-image.png"]
   }
 };
 
@@ -68,11 +68,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={`${sourceSerif.variable} ${inter.variable} ${notoHindi.variable}`}>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `try { const saved = localStorage.getItem('GenzyWays News-theme'); const system = window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.dataset.theme = saved === 'dark' || (saved !== 'light' && system) ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }` }} />
+        <script dangerouslySetInnerHTML={{ __html: `try { const saved = localStorage.getItem('genzywaynews-theme'); const system = window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.dataset.theme = saved === 'dark' || (saved !== 'light' && system) ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }` }} />
       </head>
       <body className="font-sans">
         <ThemeProvider>
           <SessionProviderWrapper>
+          <div className="print-watermark" aria-hidden="true"><img src="/brand/genzywaynews-icon.svg" alt="" /></div>
           <GoogleAnalytics />
           <AdSenseLoader />
           <CookieConsent />
