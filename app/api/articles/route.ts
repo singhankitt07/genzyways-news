@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   if (!isAdminSession(session)) return NextResponse.json({ error: "Owner access required" }, { status: 403 });
 
   const body = await req.json();
-  const { title, titleHi, summary, summaryHi, content, contentHi, category, imageUrl, sourceName, sourceUrl, author, breaking, live, subscriberOnly, published } = body;
+  const { title, titleHi, summary, summaryHi, content, contentHi, category, imageUrl, sourceName, sourceUrl, author, breaking, live, subscriberOnly, published, publishedHi } = body;
 
   if (!title || !summary || !content || !category) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -53,6 +53,7 @@ export async function POST(req: Request) {
       live: !!live,
       subscriberOnly: !!subscriberOnly,
       published: !!published
+      ,publishedHi: !!publishedHi
     }
   });
 

@@ -21,6 +21,7 @@ type Initial = {
   live?: boolean;
   subscriberOnly?: boolean;
   published?: boolean;
+  publishedHi?: boolean;
 };
 
 export default function ArticleForm({ initial }: { initial?: Initial }) {
@@ -42,6 +43,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
     live: initial?.live || false,
     subscriberOnly: initial?.subscriberOnly || false,
     published: initial?.published || false
+    ,publishedHi: initial?.publishedHi || false
   });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -112,7 +114,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
           className="w-full border border-line bg-surface px-3 py-2 text-lg font-serif"
         />
       </div>
-      <div className="border-t border-line pt-5"><p className="section-kicker mb-3">Hindi newsroom version</p><label className="block text-sm mb-3">Hindi headline<input value={form.titleHi} onChange={(e) => setForm({ ...form, titleHi: e.target.value })} placeholder="हिंदी हेडलाइन" className="mt-1 w-full border border-line bg-surface px-3 py-2 text-lg font-serif" /></label><label className="block text-sm mb-3">Hindi summary<textarea rows={2} value={form.summaryHi} onChange={(e) => setForm({ ...form, summaryHi: e.target.value })} placeholder="हिंदी सारांश" className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label><label className="block text-sm">Hindi article body<textarea rows={10} value={form.contentHi} onChange={(e) => setForm({ ...form, contentHi: e.target.value })} placeholder="हिंदी में पूरा लेख लिखें। पैराग्राफ के बीच खाली लाइन रखें।" className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label></div>
+      {form.publishedHi && <div className="border-t border-line pt-5"><p className="section-kicker mb-3">Hindi newsroom version</p><label className="block text-sm mb-3">Hindi headline<input required value={form.titleHi} onChange={(e) => setForm({ ...form, titleHi: e.target.value })} placeholder="हिंदी हेडलाइन" className="mt-1 w-full border border-line bg-surface px-3 py-2 text-lg font-serif" /></label><label className="block text-sm mb-3">Hindi summary<textarea required rows={2} value={form.summaryHi} onChange={(e) => setForm({ ...form, summaryHi: e.target.value })} placeholder="हिंदी सारांश" className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label><label className="block text-sm">Hindi article body<textarea required rows={10} value={form.contentHi} onChange={(e) => setForm({ ...form, contentHi: e.target.value })} placeholder="हिंदी में पूरा लेख लिखें। पैराग्राफ के बीच खाली लाइन रखें।" className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label></div>}
       <div>
         <label className="block text-sm mb-1">Summary (shown on homepage / listings)</label>
         <textarea
@@ -215,6 +217,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
           <input type="checkbox" checked={form.subscriberOnly} onChange={(e) => setForm({ ...form, subscriberOnly: e.target.checked })} />
           Subscribers only
         </label>
+        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.publishedHi} onChange={(event) => setForm({ ...form, publishedHi: event.target.checked })} />Publish to Hindi Newsroom</label>
       </div>
       {error && <p className="text-press text-sm">{error}</p>}
       <div className="flex flex-col gap-3 pt-2 sm:flex-row">
