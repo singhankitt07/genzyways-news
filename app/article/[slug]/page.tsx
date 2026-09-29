@@ -16,7 +16,7 @@ import ArticleEngagement from "@/components/ArticleEngagement";
 import Link from "next/link";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const article = await prisma.article.findUnique({ where: { slug: params.slug } });
+  const article = await prisma.article.findUnique({ where: { slug: params.slug }, include: { authorProfile: true } });
   if (!article || !article.published) return {};
 
   const url = `/article/${article.slug}`;
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = await prisma.article.findUnique({ where: { slug: params.slug } });
+  const article = await prisma.article.findUnique({ where: { slug: params.slug }, include: { authorProfile: true } });
   if (!article || !article.published) notFound();
   const session = await getServerSession(authOptions);
   const isReader = Boolean(session?.user);
@@ -84,7 +84,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         {(article.sourceName || article.sourceUrl) && <p className="mb-5 text-xs text-ink/60">Source: {article.sourceUrl ? <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-press underline">{article.sourceName || article.sourceUrl}</a> : article.sourceName}</p>}
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-ink/50 border-b border-line pb-6 mb-8">
           <div className="flex items-center gap-3">
-            <span>By <Link href={`/author/${encodeURIComponent(article.author)}`} className="font-semibold text-ink hover:text-press hover:underline">{article.author}</Link></span>
+            <span>By <Link href={`/author/${article.authorProfile?.slug || encodeURIComponent(article.author)}`} className="font-semibold text-ink hover:text-press hover:underline">{article.author}</Link></span>
             <span>&middot;</span>
             <time>
               {article.createdAt.toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}
@@ -107,6 +107,8 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         {!hasAccess && <ArticleAccessPrompt />}
 
         <ArticleEngagement articleId={article.id} />
+
+        {article.authorProfile && <aside className="mt-10 border-t border-line pt-6"><p className="section-kicker mb-2">About the author</p><Link href={`/author/${article.authorProfile.slug}`} className="group flex items-start gap-4"><div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-surface-hover font-serif text-xl text-press">{article.authorProfile.name.charAt(0)}</div><div><h2 className="font-serif text-xl group-hover:text-press">{article.authorProfile.name}</h2><p className="text-sm font-semibold text-press">{article.authorProfile.role}</p><p className="mt-1 text-sm text-ink/65">{article.authorProfile.bio}</p></div></Link></aside>}
 
         <AdSense slot={process.env.NEXT_PUBLIC_ADSENSE_ARTICLE_SLOT} />
 

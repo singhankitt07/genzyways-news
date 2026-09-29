@@ -16,6 +16,14 @@ async function main() {
   });
   console.log(`Admin user ready: ${email}`);
 
+  const authors = [
+    { slug: "staff-reporter", name: "Staff Reporter", role: "Newsroom reporter", bio: "The GenzyWays News reporting desk covering current affairs, technology, AI, and business.", photo: null, socialLinks: null },
+    { slug: "guest-columnist", name: "Guest Columnist", role: "Opinion contributor", bio: "Independent contributors writing clearly argued perspectives for the GenzyWays News opinion desk.", photo: null, socialLinks: null }
+  ];
+  for (const author of authors) await prisma.author.upsert({ where: { slug: author.slug }, update: author, create: author });
+  const staffAuthor = await prisma.author.findUnique({ where: { slug: "staff-reporter" } });
+  const guestAuthor = await prisma.author.findUnique({ where: { slug: "guest-columnist" } });
+
   const sample = [
     {
       title: "Parliament Session Begins With Focus on Economic Reform Bills",
@@ -122,10 +130,12 @@ async function main() {
   for (const article of sample) {
     await prisma.article.upsert({
       where: { slug: article.slug },
-      update: {},
-      create: article
+      update: { authorId: article.author === "Guest Columnist" ? guestAuthor?.id : staffAuthor?.id },
+      create: { ...article, authorId: article.author === "Guest Columnist" ? guestAuthor?.id : staffAuthor?.id }
     });
   }
+  await prisma.article.updateMany({ where: { author: "Staff Reporter", authorId: null }, data: { authorId: staffAuthor?.id } });
+  await prisma.article.updateMany({ where: { author: "Guest Columnist", authorId: null }, data: { authorId: guestAuthor?.id } });
   console.log("Sample articles seeded.");
 }
 

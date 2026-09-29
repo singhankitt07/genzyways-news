@@ -53,6 +53,7 @@ model Article {
   sourceUrl      String?
   category       String
   author         String   @default("Staff Reporter")
+  authorId       String?
   breaking       Boolean  @default(false)
   live           Boolean  @default(false)
   subscriberOnly Boolean  @default(false)
@@ -64,6 +65,20 @@ model Article {
   reactions      ArticleReaction[]
   bookmarks      Bookmark[]
   readingHistory ReadingHistory[]
+  authorProfile  Author? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+}
+
+model Author {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  role        String
+  bio         String
+  photo       String?
+  socialLinks String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  articles    Article[]
 }
 
 enum MediaKind {
