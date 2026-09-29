@@ -1,8 +1,148 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GenzyWayNews circular logo preview</title><style>
-:root{font-family:Inter,system-ui,sans-serif;color:#111;background:#f4f1ea}*{box-sizing:border-box}body{margin:0;padding:32px}h1{font-size:clamp(2rem,5vw,4rem);letter-spacing:-.04em;margin:0 0 8px}p{color:#59616d}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;max-width:1200px}.card{padding:20px;border:1px solid #d9d3c8;border-radius:16px;background:#fff}.dark{background:#0f1115;color:#f2f4f7;border-color:#2a2f3a}.dark p{color:#a8b0bd}.stage{display:flex;align-items:center;justify-content:center;min-height:250px;border-radius:12px;background:#fff}.dark .stage{background:#0f1115}.stage img{max-width:100%;max-height:220px}.samples{display:flex;gap:20px;align-items:end;padding:20px 0}.samples img{object-fit:contain}.px16{width:16px;height:16px}.px24{width:24px;height:24px}.px32{width:32px;height:32px}.lockups{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1200px}.lockups img{width:100%;border-radius:12px;background:#0f1115;padding:20px}.mono{filter:grayscale(1) contrast(1.5)}@media(max-width:650px){body{padding:18px}.lockups{grid-template-columns:1fr}}
-</style></head><body><h1>GenzyWayNews</h1><p>Three circular badge directions for a modern Indian digital-news identity. The current site logo is not changed by this page.</p><section class="grid">
-<script>
-const options=[['icon-ja-nukta.svg','ज़ · Genzy sound','Nukta stays visible as the defining signal detail.'],['icon-ja.svg','ज · simple ja','A cleaner Devanagari alternative with less visual density.'],['icon-g.svg','G · English option','A universal geometric option for international readability.']];
-for(const [file,name,note] of options)document.write(`<article class="card"><h2>${name}</h2><p>${note}</p><div class="stage"><img src="${file}" alt="${name}"></div><div class="samples"><img class="px16" src="${file}" alt="16px"><img class="px24" src="${file}" alt="24px"><img class="px32" src="${file}" alt="32px"><img class="px32 mono" src="${file}" alt="one color"></div></article><article class="card dark"><h2>${name} · dark</h2><p>Near-black badge variant for dark surfaces.</p><div class="stage"><img src="circle-badge-dark.svg" alt="${name} dark"></div></article>`);
-</script></section><h2>Lockups</h2><div class="lockups"><img src="lockup-horizontal-light.svg" alt="Light horizontal lockup"><img src="lockup-horizontal-dark.svg" alt="Dark horizontal lockup"><img src="lockup-stacked-light.svg" alt="Light stacked lockup"><img src="lockup-stacked-dark.svg" alt="Dark stacked lockup"></div></body></html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>GenzyWayNews circular logo preview</title>
+    <style>
+        :root {
+            font-family: Inter, system-ui, sans-serif;
+            color: #111;
+            background: #f4f1ea
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            padding: 32px
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            letter-spacing: -.04em;
+            margin: 0 0 8px
+        }
+
+        p {
+            color: #59616d
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px
+        }
+
+        .card {
+            padding: 20px;
+            border: 1px solid #d9d3c8;
+            border-radius: 16px;
+            background: #fff
+        }
+
+        .dark {
+            background: #0f1115;
+            color: #f2f4f7;
+            border-color: #2a2f3a
+        }
+
+        .dark p {
+            color: #a8b0bd
+        }
+
+        .stage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+            border-radius: 12px;
+            background: #fff
+        }
+
+        .dark .stage {
+            background: #0f1115
+        }
+
+        .stage img {
+            max-width: 100%;
+            max-height: 220px
+        }
+
+        .samples {
+            display: flex;
+            gap: 20px;
+            align-items: end;
+            padding: 20px 0
+        }
+
+        .samples img {
+            object-fit: contain
+        }
+
+        .px16 {
+            width: 16px;
+            height: 16px
+        }
+
+        .px24 {
+            width: 24px;
+            height: 24px
+        }
+
+        .px32 {
+            width: 32px;
+            height: 32px
+        }
+
+        .lockups {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1200px
+        }
+
+        .lockups img {
+            width: 100%;
+            border-radius: 12px;
+            background: #0f1115;
+            padding: 20px
+        }
+
+        .mono {
+            filter: grayscale(1) contrast(1.5)
+        }
+
+        @media(max-width:650px) {
+            body {
+                padding: 18px
+            }
+
+            .lockups {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>GenzyWayNews</h1>
+    <p>Three circular badge directions for a modern Indian digital-news identity. The current site logo is not changed
+        by this page.</p>
+    <section class="grid">
+        <script>
+            const options = [['icon-ja-nukta.svg', 'ज़ · Genzy sound', 'Nukta stays visible as the defining signal detail.'], ['icon-ja.svg', 'ज · simple ja', 'A cleaner Devanagari alternative with less visual density.'], ['icon-g.svg', 'G · English option', 'A universal geometric option for international readability.']];
+            for (const [file, name, note] of options) document.write(`<article class="card"><h2>${name}</h2><p>${note}</p><div class="stage"><img src="${file}" alt="${name}"></div><div class="samples"><img class="px16" src="${file}" alt="16px"><img class="px24" src="${file}" alt="24px"><img class="px32" src="${file}" alt="32px"><img class="px32 mono" src="${file}" alt="one color"></div></article><article class="card dark"><h2>${name} · dark</h2><p>Near-black badge variant for dark surfaces.</p><div class="stage"><img src="circle-badge-dark.svg" alt="${name} dark"></div></article>`);
+        </script>
+    </section>
+    <h2>Lockups</h2>
+    <div class="lockups"><img src="lockup-horizontal-light.svg" alt="Light horizontal lockup"><img
+            src="lockup-horizontal-dark.svg" alt="Dark horizontal lockup"><img src="lockup-stacked-light.svg"
+            alt="Light stacked lockup"><img src="lockup-stacked-dark.svg" alt="Dark stacked lockup"></div>
+</body>
+
+</html>
