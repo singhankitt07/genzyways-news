@@ -64,6 +64,18 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        headline: article.title,
+        description: article.summary,
+        datePublished: article.createdAt.toISOString(),
+        dateModified: article.updatedAt.toISOString(),
+        mainEntityOfPage: { "@type": "WebPage", "@id": `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"}/article/${article.slug}` },
+        author: { "@type": "Person", name: article.author },
+        publisher: { "@type": "Organization", name: "GenzyWayNews", url: process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000", logo: { "@type": "ImageObject", url: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"}/brand/genzywaynews-icon.svg` } },
+        image: article.imageUrl || `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"}/brand/png/genzywaynews-og-image.png`
+      }) }} />
       <article className="mx-auto w-full max-w-[720px] px-0 py-10">
         <div className="mb-2 flex items-center gap-2"><CategoryBadge category={article.category} />{article.live && <span className="live-dot text-xs font-semibold">LIVE · <LiveTimestamp value={article.updatedAt} /></span>}{article.subscriberOnly && <span className="text-xs uppercase tracking-wider text-gold">Subscriber edition</span>}</div>
         <h1 className="font-serif text-4xl sm:text-5xl leading-tight mb-4">{article.title}</h1>

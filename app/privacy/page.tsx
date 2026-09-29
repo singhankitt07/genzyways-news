@@ -23,10 +23,10 @@ export default function PrivacyPage() {
         <section>
           <h2 className="font-serif text-xl mb-2 text-ink">Cookies &amp; Local Storage</h2>
           <p>
-            We use your browser's local storage to remember your chosen display language.
-            This stays on your device and is not transmitted to our servers. If we later
-            add advertising (e.g. Google AdSense), that provider may set its own cookies —
-            this policy will be updated at that time.
+            We use your browser's local storage to remember your chosen display language
+            and analytics consent. This stays on your device and is not transmitted to our
+            servers. When enabled after consent, Google AdSense may set cookies or use
+            similar technologies to serve and measure advertising.
           </p>
         </section>
         <section>
@@ -57,9 +57,10 @@ export default function PrivacyPage() {
         <section>
           <h2 className="font-serif text-xl mb-2 text-ink">Advertising</h2>
           <p>
-            If Google AdSense is enabled, Google and its partners may use cookies or similar
-            technologies to serve and measure advertisements. Advertising is enabled only after
-            the site's consent choice and is subject to Google's policies.
+            Google AdSense and its partners may use cookies or similar technologies to serve
+            and measure advertisements. Advertising scripts load only after the site's consent
+            choice and are subject to Google's policies. You can change your browser cookie
+            settings at any time.
           </p>
         </section>
         <section>
