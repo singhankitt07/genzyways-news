@@ -92,7 +92,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
   }
 
   return (
-    <form onSubmit={(e) => handleSubmit(e)} className="space-y-5 max-w-2xl">
+    <form onSubmit={(e) => handleSubmit(e)} className="admin-editor-form space-y-5">
       <div>
         <label className="block text-sm mb-1">Headline</label>
         <input
@@ -114,7 +114,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
       </div>
       <div>
         <label className="block text-sm mb-1">Article body (blank line = new paragraph)</label>
-        <div className="flex gap-2 mb-1.5">
+        <div className="flex flex-wrap gap-2 mb-1.5">
           <button type="button" onClick={() => wrapSelection("**")} className="border border-line px-2.5 py-1 text-sm font-bold hover:bg-ink/5">
             B
           </button>

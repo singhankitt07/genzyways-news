@@ -3,7 +3,6 @@ import { authOptions, isAdminSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import AdminNav from "@/components/AdminNav";
 import ArticleRow from "@/components/ArticleRow";
 import AdminArticleTable from "@/components/AdminArticleTable";
 
@@ -31,8 +30,7 @@ export default async function AdminDashboard() {
   const breaking = articles.filter((article) => article.breaking).length;
   const categories = new Set(articles.map((article) => article.category)).size;
   return (
-    <div className="py-8 lg:pl-56">
-      <AdminNav />
+    <div className="admin-page py-8">
       <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[{ label: "Total articles", value: articles.length }, { label: "Published", value: published }, { label: "Breaking stories", value: breaking }, { label: "Categories", value: categories }].map((stat) => <div key={stat.label} className="rounded-xl border border-line bg-surface p-5 shadow-sm"><p className="text-sm text-ink/60">{stat.label}</p><p className="mt-2 font-serif text-4xl">{stat.value}</p></div>)}
       </div>

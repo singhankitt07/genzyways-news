@@ -8,7 +8,7 @@ import { useState } from "react";
 export default function AdminNav({ title = "Dashboard" }: { title?: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="mb-8 flex min-h-[4rem] items-center justify-between gap-4 border-b border-line pb-4">
+    <header className="admin-header flex items-center justify-between gap-4 border-b border-line">
       <button type="button" onClick={() => setOpen(true)} aria-label="Open admin navigation" aria-expanded={open} className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-line text-ink lg:hidden">☰</button>
       <div className="flex items-center gap-3"><Logo iconOnly /><div><p className="text-xs uppercase tracking-widest text-ink/50">Newsroom</p><h1 className="font-serif text-2xl">{title}</h1></div></div>
       <div className="flex items-center gap-3">
@@ -17,7 +17,6 @@ export default function AdminNav({ title = "Dashboard" }: { title?: string }) {
         <details className="relative hidden sm:block"><summary className="cursor-pointer list-none rounded-lg border border-line px-3 py-2 text-sm">Profile</summary><div className="absolute right-0 top-12 z-20 w-36 rounded-lg border border-line bg-surface p-2 shadow-lg"><Link href="/" className="block rounded px-2 py-2 text-sm hover:bg-ink/10">View site</Link><button onClick={() => signOut({ callbackUrl: "/" })} className="block w-full rounded px-2 py-2 text-left text-sm hover:bg-ink/10">Sign out</button></div></details>
       </div>
       {open && <div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={() => setOpen(false)}><aside className="mobile-safe-bottom h-full w-72 bg-paper p-5 shadow-xl" onClick={(event) => event.stopPropagation()}><div className="mb-6 flex items-center justify-between"><Logo iconOnly /><button type="button" onClick={() => setOpen(false)} aria-label="Close admin navigation" className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-line">&times;</button></div><nav className="space-y-1"><Link onClick={() => setOpen(false)} className="block rounded-lg bg-ink/10 px-3 py-3 font-medium" href="/admin">Dashboard</Link><Link onClick={() => setOpen(false)} className="block rounded-lg px-3 py-3 font-medium hover:bg-ink/10" href="/admin/articles/new">New Article</Link></nav></aside></div>}
-      <div className="hidden lg:flex fixed left-0 top-0 h-screen w-56 flex-col border-r border-line bg-paper p-5"><Logo iconOnly /><nav className="mt-10 space-y-1"><Link className="block rounded-lg bg-ink/10 px-3 py-3 font-medium" href="/admin">Dashboard</Link><Link className="block rounded-lg px-3 py-3 font-medium hover:bg-ink/10" href="/admin/articles/new">New Article</Link></nav></div>
-    </div>
+    </header>
   );
 }
