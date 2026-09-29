@@ -324,7 +324,7 @@ textarea {
 
 .brand-logo {
   display: inline-flex;
-  height: 40px;
+  height: 48px;
   width: auto;
   align-items: center;
   flex-shrink: 0;
@@ -356,9 +356,11 @@ textarea {
 [data-theme="light"] .brand-logo-light { display: block !important; }
 .brand-logo-icon-only .brand-logo-full { display: none !important; }
 .brand-logo-icon-only .brand-logo-icon { display: inline-flex !important; }
+.brand-logo-icon-only { height: 40px; }
 
 @media (max-width: 767px) {
-  .brand-logo { height: 32px; }
+  .brand-logo { height: 36px; }
+  .brand-logo-icon-only { height: 36px; }
 }
 
 @media (max-width: 359px) {
