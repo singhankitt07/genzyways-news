@@ -45,12 +45,18 @@ export default function Masthead() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [menuOpen]);
 
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = menuOpen ? "hidden" : previousOverflow;
+    return () => { document.body.style.overflow = previousOverflow; };
+  }, [menuOpen]);
+
   const closeMenu = () => setMenuOpen(false);
   return (
     <header className="theme-header masthead sticky top-0 z-30 no-print">
       <div className="masthead-top mx-auto grid max-w-7xl items-center gap-3 px-4 py-3 lg:grid-cols-[1fr_auto_1fr]">
         <div className="hidden min-w-0 items-center gap-3 text-xs text-ink/65 lg:flex"><span className="font-semibold uppercase tracking-[0.14em] text-press">Today</span><span className="truncate">{today}</span><span className="hidden xl:inline">· <WeatherWidget /></span></div>
-        <div className="flex items-center justify-between lg:justify-center"><button type="button" onClick={() => setMenuOpen(true)} aria-label="Open navigation menu" aria-expanded={menuOpen} className="menu-toggle tap-target inline-flex items-center justify-center border border-line lg:hidden"><MenuIcon /></button><Logo /></div>
+        <div className="flex items-center justify-between lg:justify-center"><button type="button" onClick={() => setMenuOpen(true)} aria-label="Open navigation menu" aria-expanded={menuOpen} className="menu-toggle tap-target inline-flex items-center justify-center border border-line md:hidden"><MenuIcon /></button><Logo /></div>
         <div className="flex items-center justify-end gap-3"><div className="hidden lg:block"><AccountMenu /></div><Link href="/subscribe" className="subscribe-button">Subscribe</Link><div className="hidden lg:block"><ThemeToggle /></div><div className="hidden xl:block"><LanguageSwitcher /></div></div>
       </div>
       <div className="masthead-date border-t border-line lg:hidden"><div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-1.5 text-[11px] text-ink/65"><span className="font-semibold uppercase tracking-[0.14em] text-press">Today</span><span className="truncate">{today}</span><span className="hidden sm:inline">· <WeatherWidget /></span></div></div>
