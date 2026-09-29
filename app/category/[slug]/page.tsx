@@ -8,8 +8,8 @@ import type { Metadata } from "next";
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const category = categoryFromSlug(params.slug);
   if (!category) return {};
-  const title = `${category.label.en} News | GenzyWayNews`;
-  const description = `Latest ${category.label.en} stories, updated daily on GenzyWayNews.`;
+  const title = `${category.label.en} News | GenzyWays News`;
+  const description = `Latest ${category.label.en} stories, updated daily on GenzyWays News.`;
   return {
     title,
     description,
@@ -19,14 +19,14 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       description,
       type: "website",
       url: `/category/${category.slug}`,
-      siteName: "GenzyWayNews",
-      images: [{ url: "/brand/png/genzywaynews-og-image.png", width: 1200, height: 630, alt: "GenzyWayNews logo" }]
+      siteName: "GenzyWays News",
+      images: [{ url: "/brand/png/GenzyWays News-og-image.png", width: 1200, height: 630, alt: "GenzyWays News logo" }]
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/brand/png/genzywaynews-og-image.png"]
+      images: ["/brand/png/GenzyWays News-og-image.png"]
     }
   };
 }

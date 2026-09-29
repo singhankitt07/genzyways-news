@@ -19,7 +19,7 @@ export default function AdSense({ slot, format = "auto" }: AdSenseProps) {
   const [consent, setConsent] = useState(false);
 
   useEffect(() => {
-    setConsent(window.localStorage.getItem("genzywaynews-analytics-consent") === "accepted");
+    setConsent(window.localStorage.getItem("GenzyWays News-analytics-consent") === "accepted");
     const onConsent = (event: Event) => setConsent((event as CustomEvent<string>).detail === "accepted");
     window.addEventListener("analytics-consent", onConsent);
     return () => window.removeEventListener("analytics-consent", onConsent);

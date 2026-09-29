@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Editorial Policy | GenzyWayNews",
-  description: "How GenzyWayNews researches, writes, updates, labels, and corrects newsroom content."
+  title: "Editorial Policy | GenzyWays News",
+  description: "How GenzyWays News researches, writes, updates, labels, and corrects newsroom content."
 };
 
 export default function EditorialPolicyPage() {
@@ -10,7 +10,7 @@ export default function EditorialPolicyPage() {
     <article className="mx-auto max-w-3xl py-12 prose-content">
       <p className="section-kicker mb-3">Newsroom standards</p>
       <h1 className="font-serif text-4xl sm:text-5xl">Editorial Policy</h1>
-      <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink/70">GenzyWayNews publishes reporting and clearly labeled opinion about current affairs, technology, artificial intelligence, business, culture, and sport.</p>
+      <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink/70">GenzyWays News publishes reporting and clearly labeled opinion about current affairs, technology, artificial intelligence, business, culture, and sport.</p>
       <div className="mt-10 space-y-8 text-ink/80 leading-relaxed">
         <section><h2 className="font-serif text-2xl text-ink">Reporting and sources</h2><p className="mt-2">We research claims using reliable primary sources, public records, official statements, and reputable reporting. Stories should identify important sources and distinguish verified facts from analysis or uncertainty.</p></section>
         <section><h2 className="font-serif text-2xl text-ink">Authorship and updates</h2><p className="mt-2">Every published article carries a byline and publication date. Material updates are reflected in the article timestamp or an update note. Live and breaking labels are used only for stories that are actively developing or meet the newsroom’s publication criteria.</p></section>

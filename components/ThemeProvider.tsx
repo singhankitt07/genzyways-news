@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 export type ThemeChoice = "light" | "dark" | "default";
 
-const STORAGE_KEY = "genzywaynews-theme";
+const STORAGE_KEY = "GenzyWays News-theme";
 const ThemeContext = createContext<{ theme: ThemeChoice; setTheme: (theme: ThemeChoice) => void }>({
   theme: "default",
   setTheme: () => undefined

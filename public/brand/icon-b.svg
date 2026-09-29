@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc" style="--brand-bg:#0F1115;--brand-ink:#fff;--brand-accent:#F26B5B;--brand-amber:#F5A623">
-  <title id="title">GenzyWayNews broadcast G icon</title><desc id="desc">A geometric G with a broadcast gap.</desc>
+  <title id="title">GenzyWays News broadcast G icon</title><desc id="desc">A geometric G with a broadcast gap.</desc>
   <rect width="256" height="256" rx="56" fill="var(--brand-bg)"/>
   <path d="M198 88c-18-24-47-38-78-38-55 0-94 35-94 85s39 85 94 85c31 0 59-12 78-35v-44h-72" fill="none" stroke="var(--brand-ink)" stroke-width="30" stroke-linecap="square" stroke-linejoin="round"/>
   <path d="M183 61c17 7 30 17 41 30M194 42c20 8 37 20 51 36" fill="none" stroke="var(--brand-accent)" stroke-width="12" stroke-linecap="round"/>

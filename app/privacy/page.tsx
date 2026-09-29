@@ -8,7 +8,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="font-serif text-xl mb-2 text-ink">Information We Collect</h2>
           <p>
-            GenzyWayNews collects minimal information: your language preference (stored
+            GenzyWays News collects minimal information: your language preference (stored
             locally in your browser), and any information you voluntarily submit through
             our Contact Us form (name, email, message).
           </p>
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
           <p>
             Profile details are optional and used to personalize your account. If you allow
             browser location access, the weather widget requests current conditions from
-            Open-Meteo. GenzyWayNews does not store your precise coordinates.
+            Open-Meteo. GenzyWays News does not store your precise coordinates.
           </p>
         </section>
         <section>

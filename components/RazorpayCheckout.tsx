@@ -37,7 +37,7 @@ export default function RazorpayCheckout({ email }: { email?: string | null }) {
         amount: order.amount,
         currency: order.currency,
         name: order.name,
-        description: "GenzyWayNews full article access",
+        description: "GenzyWays News full article access",
         order_id: order.orderId,
         prefill: { email: order.email || email || undefined },
         handler: async (result) => {

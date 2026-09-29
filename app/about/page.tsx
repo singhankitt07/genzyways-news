@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About GenzyWayNews",
-  description: "Learn about GenzyWayNews, our editorial focus, and how to contact the newsroom."
+  title: "About GenzyWays News",
+  description: "Learn about GenzyWays News, our editorial focus, and how to contact the newsroom."
 };
 
 export default function AboutPage() {
   return (
     <article className="py-12 max-w-2xl mx-auto prose-content">
       <p className="text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-3">The newsroom</p>
-      <h1 className="font-serif text-4xl sm:text-5xl mb-6">About GenzyWayNews</h1>
+      <h1 className="font-serif text-4xl sm:text-5xl mb-6">About GenzyWays News</h1>
       <div className="space-y-6 text-ink/80 leading-relaxed">
         <p>
-          GenzyWayNews is an independent digital news publication focused on current affairs,
+          GenzyWays News is an independent digital news publication focused on current affairs,
           technology, artificial intelligence, business, and opinion.
         </p>
         <p>

@@ -8,7 +8,7 @@ export default function BrandMark({ compact = false }: BrandMarkProps) {
   return (
     <Link
       href="/"
-      aria-label="GenzyWayNews home"
+      aria-label="GenzyWays News home"
       className={`inline-flex items-center gap-2.5 ${compact ? "" : "group"}`}
     >
       <svg
@@ -27,7 +27,7 @@ export default function BrandMark({ compact = false }: BrandMarkProps) {
       {!compact && (
         <span className="leading-none">
           <span className="block font-serif text-2xl tracking-tight text-ink group-hover:text-press transition-colors">
-            GenzyWayNews
+            GenzyWays News
           </span>
           <span className="mt-1 block text-[9px] font-semibold uppercase tracking-[0.2em] text-gold">
             Signal. Context. Now.

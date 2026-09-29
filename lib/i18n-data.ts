@@ -3,7 +3,7 @@ export type Lang = "en" | "hi" | "hinglish";
 type Dict = Record<string, Record<Lang, string>>;
 
 export const dictionary: Dict = {
-  siteName: { en: "GenzyWayNews", hi: "जेनज़ीवे न्यूज़", hinglish: "GenzyWayNews" },
+  siteName: { en: "GenzyWays News", hi: "जेनज़ीवे न्यूज़", hinglish: "GenzyWays News" },
   tagline: {
     en: "Current affairs, tech and AI — every day.",
     hi: "हर दिन करेंट अफेयर्स, टेक और एआई।",

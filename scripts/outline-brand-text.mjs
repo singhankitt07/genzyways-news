@@ -14,7 +14,7 @@ const output = args.get("output");
 const color = args.get("color") || "#0F1115";
 const size = Number(args.get("size") || 88);
 if (!fontPath || !text || !output) {
-    console.error("Usage: node scripts/outline-brand-text.mjs --font path/to/font.ttf --text GenzyWayNews --output public/brand/wordmark-outlined.svg [--size 88] [--color #0F1115]");
+    console.error("Usage: node scripts/outline-brand-text.mjs --font path/to/font.ttf --text GenzyWays News --output public/brand/wordmark-outlined.svg [--size 88] [--color #0F1115]");
     process.exit(1);
 }
 

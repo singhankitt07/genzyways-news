@@ -1,6 +1,6 @@
-# GenzyWayNews — News Portal
+# GenzyWays News — News Portal
 
-A working Next.js news site for genzywaynews.com: public site (breaking ticker, categories, article pages)
+A working Next.js news site for GenzyWays News.com: public site (breaking ticker, categories, article pages)
 + a password-protected admin panel to write, edit, publish, and delete articles.
 
 ## What's actually in here
@@ -86,8 +86,8 @@ servers, and it comfortably handles traffic spikes on the free/Pro tier.
 - **Affiliate/sponsored posts**: just author them as normal articles.
 
 ## What's new in this update
-- **Rebranded** to GenzyWayNews (update `NEXTAUTH_URL` in your `.env`/Vercel settings to
-  `https://genzywaynews.com` once your domain is connected).
+- **Rebranded** to GenzyWays News (update `NEXTAUTH_URL` in your `.env`/Vercel settings to
+  `https://GenzyWays News.com` once your domain is connected).
 - **Language switcher** (top right of every page): English / हिंदी / Hinglish. It
   translates all site chrome — nav, category names, breaking-news label, buttons, empty
   states — instantly, no reload, and remembers the visitor's choice.
@@ -125,14 +125,14 @@ International, Technology). Either:
   ones, matched by slug).
 - **Social sharing** — every article page has WhatsApp, X, Facebook, LinkedIn, and Copy
   Link buttons. These build the share URL from whatever domain the site is actually
-  running on, so no config needed — they'll automatically use genzywaynews.com once
+  running on, so no config needed — they'll automatically use GenzyWays News.com once
   that's your live domain.
 - **Save as PDF / print** — a "Save as PDF" button on every article uses the browser's
   built-in print dialog with a print-specific stylesheet (header, footer, ticker, and
   buttons are hidden), so readers can save a clean, article-only PDF to read offline.
   This needs no extra library or paid service.
 - **Contact Us page** (`/contact`) — a form that opens the visitor's email client with
-  their message pre-filled, addressed to `hello@genzywaynews.com`. **Change that email
+  their message pre-filled, addressed to `hello@GenzyWays News.com`. **Change that email
   address** in `app/contact/page.tsx` (top of the file, `CONTACT_EMAIL`) to your real
   inbox before you launch. If you'd rather the form submit silently in the background
   instead of opening an email client, tell me and I'll wire it to a database + a simple

@@ -15,7 +15,7 @@ The requested colors are flat and high-contrast: coral `#F26B5B`, near-black `#1
 Latin wordmarks can be outlined with the existing OpenType script:
 
 ```bash
-node scripts/outline-brand-text.mjs --font ./fonts/Poppins-ExtraBold.ttf --text GenzyWay --output public/brand/wordmark-circular-outlined.svg --size 64
+node scripts/outline-brand-text.mjs --font ./fonts/Poppins-ExtraBold.ttf --text GenzyWays --output public/brand/wordmark-circular-outlined.svg --size 64
 ```
 
 For Devanagari, use HarfBuzz shaping rather than raw OpenType placement:

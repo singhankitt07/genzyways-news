@@ -8,7 +8,7 @@ import ArticleEngagement from "@/components/ArticleEngagement";
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const article = await prisma.article.findUnique({ where: { slug: params.slug }, select: { titleHi: true, summaryHi: true } });
   if (!article?.titleHi || !article.summaryHi) return {};
-  return { title: `${article.titleHi} | GenzyWayNews`, description: article.summaryHi, alternates: { canonical: `/hindi/article/${params.slug}` } };
+  return { title: `${article.titleHi} | GenzyWays News`, description: article.summaryHi, alternates: { canonical: `/hindi/article/${params.slug}` } };
 }
 
 export default async function HindiArticlePage({ params }: { params: { slug: string } }) {

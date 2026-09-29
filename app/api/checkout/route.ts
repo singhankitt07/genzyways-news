@@ -21,5 +21,5 @@ export async function POST(request: Request) {
   if (!response.ok) return NextResponse.json({ error: checkout.error?.description || "Unable to start Razorpay checkout." }, { status: 502 });
   await prisma.subscription.upsert({ where: { userId }, update: { plan: "FULL_ACCESS", status: "PENDING", razorpayOrderId: checkout.id }, create: { userId, plan: "FULL_ACCESS", status: "PENDING", razorpayOrderId: checkout.id } });
   const email = session?.user?.email ?? undefined;
-  return NextResponse.json({ orderId: checkout.id, amount: checkout.amount, currency: checkout.currency, keyId, name: "GenzyWayNews", email });
+  return NextResponse.json({ orderId: checkout.id, amount: checkout.amount, currency: checkout.currency, keyId, name: "GenzyWays News", email });
 }

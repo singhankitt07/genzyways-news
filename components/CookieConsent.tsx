@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const consentKey = "genzywaynews-analytics-consent";
+const consentKey = "GenzyWays News-analytics-consent";
 
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false);
@@ -22,7 +22,7 @@ export default function CookieConsent() {
 
   return (
     <aside className="fixed bottom-4 left-4 right-4 z-40 mx-auto max-w-2xl border border-line bg-paper p-4 shadow-lg no-print" aria-label="Cookie preferences">
-      <p className="text-sm text-ink/80 leading-relaxed">We use optional analytics cookies to understand visits and improve GenzyWayNews. We do not collect precise location through this feature.</p>
+      <p className="text-sm text-ink/80 leading-relaxed">We use optional analytics cookies to understand visits and improve GenzyWays News. We do not collect precise location through this feature.</p>
       <div className="mt-3 flex gap-3">
         <button onClick={() => choose("accepted")} className="button-primary text-sm">Allow analytics</button>
         <button onClick={() => choose("rejected")} className="border border-line px-4 py-2 text-sm text-ink">Reject</button>

@@ -1,4 +1,4 @@
-# GenzyWayNews brand exploration
+# GenzyWays News brand exploration
 
 These assets are isolated from the current site logo. Nothing here replaces `components/BrandMark.tsx`.
 
@@ -15,7 +15,7 @@ Best lockup candidates are A and E. Each has horizontal, stacked, bilingual, and
 ```bash
 npm install
 npm run brand:png
-node scripts/outline-brand-text.mjs --font ./fonts/PlayfairDisplay-Bold.ttf --text GenzyWayNews --output public/brand/wordmark-serif-outlined.svg
+node scripts/outline-brand-text.mjs --font ./fonts/PlayfairDisplay-Bold.ttf --text GenzyWays News --output public/brand/wordmark-serif-outlined.svg
 node scripts/outline-brand-text.mjs --font ./fonts/NotoSerifDevanagari-Bold.ttf --text "जेन-ज़ी वे न्यूज़" --output public/brand/wordmark-hindi-outlined.svg --size 72
 ```
 

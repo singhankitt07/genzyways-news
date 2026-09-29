@@ -5,7 +5,7 @@ import ArticleCard from "@/components/ArticleCard";
 
 const categories = ["Current Affairs", "Tech News", "AI World", "Business", "Opinion", "Cricket", "India News", "Entertainment", "World News", "Lifestyle"];
 
-export const metadata: Metadata = { title: "Search News | GenzyWayNews", description: "Search current affairs, technology, AI, business, opinion, and culture on GenzyWayNews." };
+export const metadata: Metadata = { title: "Search News | GenzyWays News", description: "Search current affairs, technology, AI, business, opinion, and culture on GenzyWays News." };
 
 export default async function SearchPage({ searchParams }: { searchParams: { q?: string; category?: string; from?: string; to?: string } }) {
   const query = searchParams.q?.trim() || "";

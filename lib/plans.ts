@@ -34,7 +34,7 @@ export function getPlans(): Plan[] {
         id: "supporter-monthly",
         name: "Supporter Monthly",
         audience: "For readers who want to support independent newsroom work.",
-        description: "A monthly contribution toward keeping GenzyWayNews useful and accessible.",
+        description: "A monthly contribution toward keeping GenzyWays News useful and accessible.",
         included: ["Daily newsletter", "Hindi and Hinglish reading options"],
         price: process.env.SUPPORTER_MONTHLY_PRICE || "Set price",
         interval: "month",
