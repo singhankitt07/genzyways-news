@@ -7,7 +7,7 @@ const root = path.resolve("public/brand");
 const output = path.join(root, "png");
 fs.mkdirSync(output, { recursive: true });
 
-const icons = ["icon-a", "icon-b", "icon-c", "icon-d", "icon-e", "icon-genzy", "favicon"];
+const icons = ["icon-a", "icon-b", "icon-c", "icon-d", "icon-e", "icon-genzy", "icon-ja-nukta", "icon-ja", "icon-g", "circular-favicon"];
 const sizes = [16, 32, 180, 192, 512];
 for (const name of icons) {
   for (const size of sizes) await sharp(path.join(root, `${name}.svg`)).resize(size, size).png().toFile(path.join(output, `${name}-${size}.png`));
