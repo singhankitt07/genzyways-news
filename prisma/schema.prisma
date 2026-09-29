@@ -22,6 +22,7 @@ model User {
   pinCode      String?
   preferences  String?
   subscription Subscription?
+  passwordResetTokens PasswordResetToken[]
 }
 
 model Article {
@@ -60,4 +61,16 @@ model Subscriber {
   id        String   @id @default(cuid())
   email     String   @unique
   createdAt DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }

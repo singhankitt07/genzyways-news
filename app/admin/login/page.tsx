@@ -48,7 +48,7 @@ export default function LoginPage() {
         setError(data.error || "Unable to reset your password.");
         return;
       }
-      setResetMessage(data.message || "A new password has been sent to your email address.");
+      setResetMessage(data.message || "If an account matches, a password reset link has been sent.");
     } catch {
       setLoading(false);
       setError("Unable to send a password reset email right now.");

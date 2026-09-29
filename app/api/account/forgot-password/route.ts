@@ -1,37 +1,31 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
-
-function makeRandomPassword() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
-  return Array.from({ length: 12 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-}
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+    const identifier = typeof body.email === "string" ? body.email.trim() : "";
 
-    if (!email || !email.includes("@")) {
-      return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
+    if (!identifier) {
+      return NextResponse.json({ error: "Enter your email address or username." }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      return NextResponse.json({ error: "No account found with that email address." }, { status: 404 });
-    }
+    const normalized = identifier.toLowerCase();
+    const user = await prisma.user.findFirst({ where: { OR: [{ email: normalized }, { name: identifier }] } });
+    const genericResponse = NextResponse.json({ ok: true, message: "If an account matches, a password reset link has been sent." });
+    if (!user) return genericResponse;
 
-    const newPassword = makeRandomPassword();
-    const hash = await bcrypt.hash(newPassword, 12);
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { password: hash }
-    });
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
+    await prisma.passwordResetToken.deleteMany({ where: { userId: user.id } });
+    await prisma.passwordResetToken.create({ data: { userId: user.id, tokenHash, expiresAt: new Date(Date.now() + 30 * 60 * 1000) } });
 
-    await sendPasswordResetEmail(user.email, newPassword);
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+    await sendPasswordResetEmail(user.email, `${baseUrl}/account/reset-password?token=${rawToken}`);
 
-    return NextResponse.json({ ok: true, message: "A new password has been sent to your email address." });
+    return genericResponse;
   } catch (error) {
     console.error("Forgot password error:", error);
     return NextResponse.json({ error: "Unable to process your password reset request right now." }, { status: 500 });

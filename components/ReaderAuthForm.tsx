@@ -67,7 +67,7 @@ export default function ReaderAuthForm({ mode }: { mode: "login" | "register" })
         setError(data.error || "Unable to reset your password.");
         return;
       }
-      setResetMessage(data.message || "A new password has been sent to your email address.");
+      setResetMessage(data.message || "If an account matches, a password reset link has been sent.");
     } catch {
       setLoading(false);
       setError("Unable to send password reset instructions right now.");
