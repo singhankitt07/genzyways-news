@@ -44,6 +44,10 @@
   --color-footer-text: #ffffff;
   --color-footer-muted: rgba(255, 255, 255, 0.68);
   --color-footer-border: rgba(255, 255, 255, 0.14);
+  --mobile-panel: #ffffff;
+  --mobile-panel-muted: #5d6675;
+  --mobile-panel-hover: rgba(16, 24, 39, 0.06);
+  --mobile-panel-shadow: 0 12px 32px rgba(16, 24, 39, 0.16);
   color-scheme: light;
 }
 
@@ -106,6 +110,10 @@
   --color-footer-text: #f2f4f7;
   --color-footer-muted: #a8b0bd;
   --color-footer-border: #2a2f3a;
+  --mobile-panel: #1a1d23;
+  --mobile-panel-muted: #9aa0a6;
+  --mobile-panel-hover: rgba(255, 255, 255, 0.06);
+  --mobile-panel-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
   color-scheme: dark;
 }
 
@@ -164,7 +172,7 @@ html {
   max-width: 900px;
 }
 
-.admin-editor-form > div,
+.admin-editor-form>div,
 .admin-editor-form input,
 .admin-editor-form select,
 .admin-editor-form textarea {
@@ -180,18 +188,18 @@ html {
     max-width: 1240px;
   }
 
-  .admin-editor-form > div:nth-child(-n + 3) {
+  .admin-editor-form>div:nth-child(-n + 3) {
     grid-column: 1;
   }
 
-  .admin-editor-form > div:nth-child(4),
-  .admin-editor-form > div:nth-child(5),
-  .admin-editor-form > div:nth-child(6) {
+  .admin-editor-form>div:nth-child(4),
+  .admin-editor-form>div:nth-child(5),
+  .admin-editor-form>div:nth-child(6) {
     grid-column: 2;
   }
 
-  .admin-editor-form > div:nth-child(7),
-  .admin-editor-form > div:nth-child(8) {
+  .admin-editor-form>div:nth-child(7),
+  .admin-editor-form>div:nth-child(8) {
     grid-column: 1;
   }
 }
@@ -217,6 +225,49 @@ body:has(.admin-shell) main {
   padding-left: 0;
   padding-right: 0;
 }
+
+.masthead {
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+}
+
+.masthead-top { min-height: 76px; }
+.masthead-nav { min-height: 44px; }
+
+.menu-toggle,
+.search-link,
+.search-form,
+.subscribe-button,
+.category-link { border-radius: 3px; }
+
+.menu-toggle { color: var(--text-primary); background: transparent; }
+.menu-toggle:hover,
+.search-link:hover,
+.search-form:focus-within { border-color: var(--accent); background: var(--surface-hover); }
+
+.subscribe-button { display: inline-flex; min-height: 36px; align-items: center; justify-content: center; padding: 0 14px; background: var(--accent); color: var(--on-accent); font-size: 12px; font-weight: 700; }
+.subscribe-button:hover { background: var(--accent-hover); }
+
+.category-link { display: inline-flex; min-height: 42px; align-items: center; border-bottom: 2px solid transparent; padding: 0 2px; white-space: nowrap; }
+.category-link:hover,
+.category-link:focus-visible { border-bottom-color: var(--accent); color: var(--accent-text-on-dark); }
+
+.mobile-drawer-backdrop { background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(3px); }
+.mobile-drawer { background: var(--mobile-panel); box-shadow: var(--mobile-panel-shadow); color: var(--text-primary); }
+.drawer-link { display: block; border-radius: 3px; padding: 12px; color: var(--text-primary); font-weight: 600; }
+.drawer-link:hover,
+.drawer-link:focus-visible { background: var(--mobile-panel-hover); }
+
+.section-kicker { color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+.editorial-rule { border-top: 1px solid var(--border); }
+.home-story-image { aspect-ratio: 16 / 9; width: 100%; object-fit: cover; background: linear-gradient(135deg, var(--surface-hover), var(--border)); }
+.home-story-image-wrap { overflow: hidden; background: var(--surface-hover); }
+.home-story-image-wrap img { transition: transform 300ms ease; }
+.home-story-image-wrap:hover img { transform: scale(1.02); }
+.home-news-item + .home-news-item { border-top: 1px solid var(--border); }
+.home-time { color: var(--text-muted); font-size: 11px; text-decoration: underline; text-underline-offset: 3px; }
+.benefit-icon { display: inline-flex; height: 44px; width: 44px; align-items: center; justify-content: center; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--accent); }
 
 button,
 select,
@@ -583,6 +634,10 @@ textarea {
     bottom: calc(var(--space-5) + var(--safe-bottom));
     right: max(var(--space-5), env(safe-area-inset-right, 0px));
   }
+
+  .masthead-top { min-height: 60px; padding-top: 8px; padding-bottom: 8px; }
+  .masthead-top .brand-logo { height: 36px !important; }
+  .masthead-nav { min-height: 44px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
