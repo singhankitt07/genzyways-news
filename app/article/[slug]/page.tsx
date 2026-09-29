@@ -12,6 +12,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import AdSense from "@/components/AdSense";
 import LiveTimestamp from "@/components/LiveTimestamp";
+import ArticleEngagement from "@/components/ArticleEngagement";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const article = await prisma.article.findUnique({ where: { slug: params.slug } });
@@ -90,6 +91,8 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           ))}
         </div>
         {!hasAccess && <ArticleAccessPrompt />}
+
+        <ArticleEngagement articleId={article.id} />
 
         <AdSense slot={process.env.NEXT_PUBLIC_ADSENSE_ARTICLE_SLOT} />
 

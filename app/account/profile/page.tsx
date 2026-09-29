@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import ProfileForm from "@/components/ProfileForm";
 import Link from "next/link";
 import { isAdminSession } from "@/lib/auth";
+import ProfileEngagement from "@/components/ProfileEngagement";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -23,6 +24,7 @@ export default async function ProfilePage() {
         </div>
       )}
       <ProfileForm />
+      <ProfileEngagement />
     </div>
   );
 }

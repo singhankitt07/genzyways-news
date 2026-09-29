@@ -22,7 +22,13 @@ export async function GET() {
     city: user.city || "",
     address: user.address || "",
     pinCode: user.pinCode || "",
-    preferences: user.preferences || ""
+    preferences: user.preferences || "",
+    image: user.image || "",
+    bio: user.bio || "",
+    preferredLanguage: user.preferredLanguage,
+    theme: user.theme,
+    emailAlerts: user.emailAlerts,
+    pushAlerts: user.pushAlerts
   });
 }
 
@@ -47,7 +53,13 @@ export async function PUT(request: Request) {
       city: typeof body.city === "string" ? body.city.trim().slice(0, 80) : null,
       address: typeof body.address === "string" ? body.address.trim().slice(0, 240) : null,
       pinCode: typeof body.pinCode === "string" ? body.pinCode.trim().slice(0, 20) : null,
-      preferences: typeof body.preferences === "string" ? body.preferences.trim().slice(0, 500) : null
+      preferences: typeof body.preferences === "string" ? body.preferences.trim().slice(0, 500) : null,
+      image: typeof body.image === "string" ? body.image.trim().slice(0, 500) : null,
+      bio: typeof body.bio === "string" ? body.bio.trim().slice(0, 500) : null,
+      preferredLanguage: ["en", "hi", "hinglish"].includes(body.preferredLanguage) ? body.preferredLanguage : user.preferredLanguage,
+      theme: ["light", "dark", "default"].includes(body.theme) ? body.theme : user.theme,
+      emailAlerts: typeof body.emailAlerts === "boolean" ? body.emailAlerts : user.emailAlerts,
+      pushAlerts: typeof body.pushAlerts === "boolean" ? body.pushAlerts : user.pushAlerts
     }
   });
 

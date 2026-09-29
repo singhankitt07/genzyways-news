@@ -16,17 +16,18 @@ export async function POST(req: Request) {
   const file = form.get("file") as File | null;
   if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
 
-  const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
-  const maxSize = 10 * 1024 * 1024;
+  const kind = form.get("kind") === "video" ? "video" : "image";
+  const allowedTypes = kind === "video" ? new Set(["video/mp4", "video/webm", "video/quicktime"]) : new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+  const maxSize = kind === "video" ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
   if (!allowedTypes.has(file.type)) {
-    return NextResponse.json({ error: "Please choose a JPG, PNG, WEBP, or GIF image." }, { status: 400 });
+    return NextResponse.json({ error: kind === "video" ? "Please choose an MP4, WEBM, or MOV video." : "Please choose a JPG, PNG, WEBP, or GIF image." }, { status: 400 });
   }
   if (file.size > maxSize) {
     return NextResponse.json({ error: "Images must be 10 MB or smaller." }, { status: 400 });
   }
 
   if (process.env.BLOB_READ_WRITE_TOKEN) {
-    const blob = await put(`articles/${Date.now()}-${file.name}`, file, {
+    const blob = await put(`${kind === "video" ? "videos" : "articles"}/${Date.now()}-${file.name}`, file, {
       access: "public"
     });
 
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
 
   // Keep local and self-hosted development usable without a cloud storage token.
   const extension = path.extname(file.name).toLowerCase() || ".jpg";
-  const fileName = `article-${Date.now()}-${crypto.randomUUID()}${extension}`;
+  const fileName = `${kind}-${Date.now()}-${crypto.randomUUID()}${extension}`;
   const uploadDirectory = path.join(process.cwd(), "public", "uploads");
   await mkdir(uploadDirectory, { recursive: true });
   await writeFile(path.join(uploadDirectory, fileName), Buffer.from(await file.arrayBuffer()));

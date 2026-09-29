@@ -5,6 +5,7 @@ import EmptyState from "@/components/EmptyState";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import AdSense from "@/components/AdSense";
 import Trending from "@/components/Trending";
+import ForYou from "@/components/ForYou";
 
 function StoryMeta({ category, live }: { category: string; live?: boolean }) {
   return <div className="mb-2 flex items-center gap-2"><span className="section-kicker">{category}</span>{live && <span className="live-dot text-[10px] font-bold">LIVE</span>}</div>;
@@ -27,6 +28,7 @@ export default async function HomePage({ searchParams }: { searchParams: { q?: s
 
   return (
     <div className="home-page py-8 sm:py-10">
+      <ForYou />
       <div className="mb-12 grid gap-8 border-b border-line pb-10 lg:grid-cols-[minmax(0,1.65fr)_minmax(240px,1fr)_minmax(240px,1.05fr)]">
         <article className="min-w-0">
           <Link href={`/article/${lead.slug}`} className="group block"><StoryImage imageUrl={lead.imageUrl} title={lead.title} /><div className="mt-4"><StoryMeta category={lead.category} live={lead.live} /><h1 className="font-serif text-3xl leading-tight transition-colors group-hover:text-press sm:text-4xl lg:text-[2.75rem]">{lead.title}</h1><p className="mt-3 max-w-2xl text-base leading-relaxed text-ink/70">{lead.summary}</p></div></Link>

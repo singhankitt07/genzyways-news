@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-type Profile = { name: string; email: string; age: number | null; dateOfBirth: string; country: string; state: string; city: string; address: string; pinCode: string; preferences: string };
-const blank: Profile = { name: "", email: "", age: null, dateOfBirth: "", country: "", state: "", city: "", address: "", pinCode: "", preferences: "" };
+type Profile = { name: string; email: string; age: number | null; dateOfBirth: string; country: string; state: string; city: string; address: string; pinCode: string; preferences: string; image: string; bio: string; preferredLanguage: string; theme: string; emailAlerts: boolean; pushAlerts: boolean };
+const blank: Profile = { name: "", email: "", age: null, dateOfBirth: "", country: "", state: "", city: "", address: "", pinCode: "", preferences: "", image: "", bio: "", preferredLanguage: "en", theme: "default", emailAlerts: true, pushAlerts: true };
 
 export default function ProfileForm() {
   const [profile, setProfile] = useState(blank);
@@ -30,6 +30,10 @@ export default function ProfileForm() {
       </div>
       <label className="block text-sm">Address<textarea value={profile.address} onChange={(e) => update("address", e.target.value)} rows={3} className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label>
       <label className="block text-sm">News preferences <span className="text-ink/50">(for example: AI World, Business)</span><textarea value={profile.preferences} onChange={(e) => update("preferences", e.target.value)} rows={3} className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label>
+      <label className="block text-sm">Profile photo URL<input value={profile.image} onChange={(e) => update("image", e.target.value)} className="mt-1 w-full border border-line bg-surface px-3 py-2" placeholder="https://..." /></label>
+      <label className="block text-sm">Bio<textarea value={profile.bio} onChange={(e) => update("bio", e.target.value)} rows={3} className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label>
+      <div className="grid gap-4 sm:grid-cols-2"><label className="text-sm">Preferred language<select value={profile.preferredLanguage} onChange={(e) => update("preferredLanguage", e.target.value)} className="mt-1 w-full border border-line bg-surface px-3 py-2"><option value="en">English</option><option value="hi">हिंदी</option><option value="hinglish">Hinglish</option></select></label><label className="text-sm">Theme<select value={profile.theme} onChange={(e) => update("theme", e.target.value)} className="mt-1 w-full border border-line bg-surface px-3 py-2"><option value="default">Default</option><option value="light">Light</option><option value="dark">Dark</option></select></label></div>
+      <div className="flex flex-wrap gap-5 text-sm"><label className="flex items-center gap-2"><input type="checkbox" checked={profile.emailAlerts} onChange={(e) => setProfile({ ...profile, emailAlerts: e.target.checked })} />Email alerts</label><label className="flex items-center gap-2"><input type="checkbox" checked={profile.pushAlerts} onChange={(e) => setProfile({ ...profile, pushAlerts: e.target.checked })} />News alerts</label></div>
       <button className="button-primary text-sm" type="submit">Save profile</button>
       {message && <p className="text-sm text-ink/70">{message}</p>}
     </form>

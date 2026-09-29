@@ -21,8 +21,21 @@ model User {
   address      String?
   pinCode      String?
   preferences  String?
+  image        String?
+  bio          String?
+  preferredLanguage String @default("en")
+  theme        String @default("default")
+  emailAlerts  Boolean @default(true)
+  pushAlerts   Boolean @default(true)
   subscription Subscription?
   passwordResetTokens PasswordResetToken[]
+  comments Comment[]
+  commentVotes CommentVote[]
+  reactions ArticleReaction[]
+  bookmarks Bookmark[]
+  readingHistory ReadingHistory[]
+  categoryFollows CategoryFollow[]
+  commentReports CommentReport[]
 }
 
 model Article {
@@ -40,6 +53,119 @@ model Article {
   published      Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  comments       Comment[]
+  reactions      ArticleReaction[]
+  bookmarks      Bookmark[]
+  readingHistory ReadingHistory[]
+}
+
+enum MediaKind {
+  SHORT
+  VIDEO
+}
+
+model MediaVideo {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  url          String
+  thumbnailUrl String?
+  kind         MediaKind
+  published    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  body      String
+  editedAt  DateTime?
+  deletedAt DateTime?
+  articleId String
+  userId    String
+  parentId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+  votes     CommentVote[]
+  reports   CommentReport[]
+
+  @@index([articleId, createdAt])
+  @@index([parentId])
+}
+
+model CommentVote {
+  id        String   @id @default(cuid())
+  commentId String
+  userId    String
+  createdAt DateTime @default(now())
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+}
+
+model ArticleReaction {
+  id        String   @id @default(cuid())
+  articleId String
+  userId    String
+  type      String
+  createdAt DateTime @default(now())
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, userId, type])
+  @@index([articleId, type])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  articleId String
+  userId    String
+  createdAt DateTime @default(now())
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, userId])
+}
+
+model ReadingHistory {
+  id          String   @id @default(cuid())
+  articleId   String
+  userId      String
+  progress    Int      @default(0)
+  lastReadAt  DateTime @default(now())
+  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, userId])
+  @@index([userId, lastReadAt])
+}
+
+model CategoryFollow {
+  id       String   @id @default(cuid())
+  userId   String
+  category String
+  createdAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category])
+}
+
+model CommentReport {
+  id        String   @id @default(cuid())
+  commentId String
+  userId    String
+  reason    String
+  status    String   @default("OPEN")
+  createdAt DateTime @default(now())
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
 }
 
 model Subscription {
