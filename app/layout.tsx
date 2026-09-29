@@ -21,7 +21,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
   title: "GenzyWayNews | Current Affairs, Tech & AI",
   description: "Current affairs, daily tech news, and the latest AI world developments — in English, Hindi, or Hinglish.",
-  icons: { icon: "/og-image.svg" },
+  icons: {
+    icon: [
+      { url: "/brand/favicon.svg", type: "image/svg+xml" },
+      { url: "/brand/png/favicon-32.png", sizes: "32x32", type: "image/png" }
+    ],
+    apple: [{ url: "/brand/png/favicon-180.png", sizes: "180x180", type: "image/png" }]
+  },
   other: {
     "google-adsense-account": "ca-pub-7431298506667016"
   },
@@ -30,13 +36,13 @@ export const metadata: Metadata = {
     siteName: "GenzyWayNews",
     title: "GenzyWayNews | Current Affairs, Tech & AI",
     description: "Current affairs, daily tech news, and the latest AI world developments.",
-    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "GenzyWayNews logo" }]
+    images: [{ url: "/brand/png/og-image.png", width: 1200, height: 630, alt: "GenzyWayNews logo" }]
   },
   twitter: {
     card: "summary_large_image",
     title: "GenzyWayNews | Current Affairs, Tech & AI",
     description: "Current affairs, daily tech news, and the latest AI world developments.",
-    images: ["/og-image.svg"]
+    images: ["/brand/png/og-image.png"]
   }
 };
 

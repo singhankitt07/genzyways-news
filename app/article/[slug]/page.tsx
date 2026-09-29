@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const url = `/article/${article.slug}`;
   const images = article.imageUrl
     ? [{ url: article.imageUrl, alt: article.title }]
-    : [{ url: "/og-image.svg", width: 1200, height: 630, alt: "GenzyWayNews logo" }];
+    : [{ url: "/brand/png/og-image.png", width: 1200, height: 630, alt: "GenzyWayNews logo" }];
 
   return {
     title: `${article.title} | GenzyWayNews`,
