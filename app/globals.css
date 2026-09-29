@@ -665,7 +665,10 @@ textarea {
     right: max(var(--space-5), env(safe-area-inset-right, 0px));
   }
 
-  .masthead-top { min-height: 60px; padding-top: 8px; padding-bottom: 8px; }
+  .masthead-top { position: relative; display: flex; min-height: 60px; align-items: center; padding-top: 8px; padding-bottom: 8px; }
+  .masthead-top > div:nth-child(2) { flex: 1; justify-content: center; }
+  .masthead-top > div:nth-child(2) .menu-toggle { position: absolute; left: 16px; }
+  .masthead-top > div:nth-child(3) { position: absolute; right: 16px; }
   .masthead-top .brand-logo { height: 36px !important; }
   .masthead-nav { min-height: 44px; }
 }
