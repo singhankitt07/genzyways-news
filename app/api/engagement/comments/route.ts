@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   if (!articleId) return NextResponse.json({ error: "Article is required." }, { status: 400 });
   const user = await currentReader();
   const comments = await prisma.comment.findMany({ where: { articleId }, orderBy: { createdAt: "asc" }, include: { user: { select: { id: true, name: true, image: true } }, votes: true } });
-  return NextResponse.json({ comments: comments.map((comment) => ({ id: comment.id, body: comment.deletedAt ? "Comment removed." : comment.body, editedAt: comment.editedAt, createdAt: comment.createdAt, parentId: comment.parentId, user: comment.user, votes: comment.votes.length, voted: Boolean(user && comment.votes.some((vote) => vote.userId === user.id)), own: Boolean(user && comment.userId === user.id), removed: Boolean(comment.deletedAt) })) });
+  return NextResponse.json({ comments: comments.map((comment) => ({ id: comment.id, body: comment.deletedAt ? "Comment removed." : comment.moderationStatus === "HIDDEN" ? "Comment hidden by moderation." : comment.body, editedAt: comment.editedAt, createdAt: comment.createdAt, parentId: comment.parentId, user: comment.user, votes: comment.votes.length, voted: Boolean(user && comment.votes.some((vote) => vote.userId === user.id)), own: Boolean(user && comment.userId === user.id), removed: Boolean(comment.deletedAt || comment.moderationStatus === "HIDDEN") })) });
 }
 
 export async function POST(request: Request) {

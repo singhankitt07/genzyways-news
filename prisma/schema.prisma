@@ -81,6 +81,7 @@ model Comment {
   body      String
   editedAt  DateTime?
   deletedAt DateTime?
+  moderationStatus String   @default("VISIBLE")
   articleId String
   userId    String
   parentId  String?

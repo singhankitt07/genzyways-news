@@ -9,6 +9,7 @@ export default function AdminSidebar() {
         <Link className="block rounded-lg bg-ink/10 px-3 py-3 font-medium" href="/admin">Dashboard</Link>
         <Link className="block rounded-lg px-3 py-3 font-medium hover:bg-ink/10" href="/admin/articles/new">New Article</Link>
         <Link className="block rounded-lg px-3 py-3 font-medium hover:bg-ink/10" href="/admin/media/new">Upload Media</Link>
+        <Link className="block rounded-lg px-3 py-3 font-medium hover:bg-ink/10" href="/admin/comment-reports">Comment Reports</Link>
       </nav>
     </aside>
   );
