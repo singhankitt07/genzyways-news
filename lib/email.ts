@@ -15,7 +15,10 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
       headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from: from || "GenzyWayNews <onboarding@resend.dev>", to: [email], subject, text, html })
     });
-    if (!response.ok) throw new Error(`Resend rejected the email: ${response.status}`);
+    if (!response.ok) {
+      const detail = await response.text().catch(() => "");
+      throw new Error(`Resend rejected the email: ${response.status} ${detail.slice(0, 240)}`);
+    }
     return { sent: true, provider: "resend" };
   }
 

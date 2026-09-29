@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n";
+import { useSession } from "next-auth/react";
 import Logo from "./Logo";
 
 const SOCIAL_LINKS = [
@@ -12,6 +13,8 @@ const SOCIAL_LINKS = [
 
 export default function Footer() {
   const { t } = useLanguage();
+  const { data: session } = useSession();
+  const readerName = session?.user?.name || session?.user?.email?.split("@")[0] || "Reader";
   return (
     <footer className="border-t border-footer-border mt-0 bg-footer text-footer-text no-print">
       <div className="max-w-6xl mx-auto px-4 py-10 grid gap-8 text-sm sm:grid-cols-2 lg:grid-cols-4">
@@ -37,7 +40,7 @@ export default function Footer() {
           <p className="text-xs uppercase tracking-wide text-footer-muted mb-3">More</p>
           <ul className="space-y-1.5">
             <li><Link href="/about" className="hover:text-footer-text">About</Link></li>
-            <li><Link href="/account/login" className="inline-flex items-center gap-1.5 hover:text-footer-text"><svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="3.5" /><path d="M5 20c.8-3.4 3.1-5 7-5s6.2 1.6 7 5" /></svg>Login</Link></li>
+            <li>{session?.user ? <Link href="/account/profile" className="font-semibold hover:text-footer-text">Hello, {readerName}</Link> : <Link href="/account/login" className="inline-flex items-center gap-1.5 hover:text-footer-text"><svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="3.5" /><path d="M5 20c.8-3.4 3.1-5 7-5s6.2 1.6 7 5" /></svg>Login</Link>}</li>
             <li><Link href="/account/profile" className="hover:text-footer-text">My profile</Link></li>
             <li><Link href="/subscribe" className="hover:text-footer-text">Subscribe</Link></li>
             <li><Link href="/shorts" className="hover:text-footer-text">Shorts</Link></li>

@@ -1,6 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import AppleProvider from "next-auth/providers/apple";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
@@ -47,11 +48,14 @@ export const authOptions: NextAuthOptions = {
     }),
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
       ? [GoogleProvider({ clientId: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET })]
+      : []),
+    ...(process.env.APPLE_CLIENT_ID && process.env.APPLE_CLIENT_SECRET
+      ? [AppleProvider({ clientId: process.env.APPLE_CLIENT_ID, clientSecret: process.env.APPLE_CLIENT_SECRET })]
       : [])
   ],
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider === "google" && user.email) {
+      if ((account?.provider === "google" || account?.provider === "apple") && user.email) {
         const existing = await prisma.user.findUnique({ where: { email: user.email.toLowerCase() } });
         if (!existing) {
           await prisma.user.create({
@@ -62,6 +66,8 @@ export const authOptions: NextAuthOptions = {
               role: "READER"
             }
           });
+        } else if (user.name && existing.name !== user.name && existing.nameChangeTimestamps.length === 0) {
+          await prisma.user.update({ where: { id: existing.id }, data: { name: user.name } });
         }
       }
       return true;
@@ -78,6 +84,15 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         (session.user as any).id = token.uid;
         (session.user as any).role = token.role;
+        if (token.uid) {
+          const databaseUser = await prisma.user.findUnique({ where: { id: token.uid as string }, select: { name: true, email: true, role: true, image: true } });
+          if (databaseUser) {
+            session.user.name = databaseUser.name;
+            session.user.email = databaseUser.email;
+            (session.user as any).role = databaseUser.role;
+            session.user.image = databaseUser.image;
+          }
+        }
       }
       return session;
     }

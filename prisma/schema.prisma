@@ -12,6 +12,7 @@ model User {
   email        String        @unique
   password     String
   name         String        @default("Editor")
+  nameChangeTimestamps DateTime[] @default([])
   role         String        @default("READER")
   age          Int?
   dateOfBirth  DateTime?

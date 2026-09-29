@@ -42,10 +42,21 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Age must be between 13 and 120." }, { status: 400 });
   }
 
+  let nameData: { name: string; nameChangeTimestamps?: Date[] } = { name: user.name };
+  const requestedName = typeof body.name === "string" ? body.name.trim().slice(0, 80) : "";
+  if (requestedName && requestedName !== user.name) {
+    const now = Date.now();
+    const recent = user.nameChangeTimestamps.filter((timestamp) => now - timestamp.getTime() < 30 * 24 * 60 * 60 * 1000);
+    const last = recent[recent.length - 1];
+    if (last && now - last.getTime() < 14 * 24 * 60 * 60 * 1000) return NextResponse.json({ error: "Name changes are limited to once every 14 days." }, { status: 429 });
+    if (recent.length >= 2) return NextResponse.json({ error: "You can change your name only twice in a 30-day period." }, { status: 429 });
+    nameData = { name: requestedName, nameChangeTimestamps: [...recent, new Date(now)] };
+  }
+
   const updated = await prisma.user.update({
     where: { id: user.id },
     data: {
-      name: typeof body.name === "string" && body.name.trim() ? body.name.trim().slice(0, 80) : user.name,
+      ...nameData,
       age,
       dateOfBirth: body.dateOfBirth ? new Date(body.dateOfBirth) : null,
       country: typeof body.country === "string" ? body.country.trim().slice(0, 80) : null,
