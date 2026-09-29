@@ -13,6 +13,7 @@ import { authOptions } from "@/lib/auth";
 import AdSense from "@/components/AdSense";
 import LiveTimestamp from "@/components/LiveTimestamp";
 import ArticleEngagement from "@/components/ArticleEngagement";
+import Link from "next/link";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const article = await prisma.article.findUnique({ where: { slug: params.slug } });
@@ -83,7 +84,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         {(article.sourceName || article.sourceUrl) && <p className="mb-5 text-xs text-ink/60">Source: {article.sourceUrl ? <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-press underline">{article.sourceName || article.sourceUrl}</a> : article.sourceName}</p>}
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-ink/50 border-b border-line pb-6 mb-8">
           <div className="flex items-center gap-3">
-            <span>By {article.author}</span>
+            <span>By <Link href={`/author/${encodeURIComponent(article.author)}`} className="font-semibold text-ink hover:text-press hover:underline">{article.author}</Link></span>
             <span>&middot;</span>
             <time>
               {article.createdAt.toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}

@@ -48,6 +48,7 @@ export default function Footer() {
             <li><Link href="/contact" className="hover:text-footer-text">{t("contactUs")}</Link></li>
             <li><Link href="/privacy" className="hover:text-footer-text">{t("privacyPolicy")}</Link></li>
             <li><Link href="/editorial-policy" className="hover:text-footer-text">Editorial Policy</Link></li>
+            <li><Link href="/search" className="hover:text-footer-text">Search the newsroom</Link></li>
             <li><Link href="/terms" className="hover:text-footer-text">Terms of Use</Link></li>
             <li><a href="/admin/login" className="hover:text-footer-text">{t("staffLogin")}</a></li>
           </ul>
