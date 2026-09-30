@@ -18,7 +18,7 @@ import ReadingProgress from "@/components/ReadingProgress";
 import Link from "next/link";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const article = await prisma.article.findUnique({ where: { slug: params.slug }, include: { authorProfile: true } });
+  const article = await prisma.article.findUnique({ where: { slug: params.slug }, include: { authorProfile: true, media: { orderBy: [{ paragraphIndex: "asc" }, { sortOrder: "asc" }] } } });
   if (!article || !article.published) return {};
 
   const url = `/article/${article.slug}`;
@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = await prisma.article.findUnique({ where: { slug: params.slug }, include: { authorProfile: true } });
+  const article = await prisma.article.findUnique({ where: { slug: params.slug }, include: { authorProfile: true, media: { orderBy: [{ paragraphIndex: "asc" }, { sortOrder: "asc" }] } } });
   if (!article || !article.published) notFound();
   const session = await getServerSession(authOptions);
   const isReader = Boolean(session?.user);
@@ -106,9 +106,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           <img src={article.imageUrl} alt="" className="w-full aspect-[16/9] object-cover mb-8" />
         )}
         <div className="prose-content space-y-5 font-sans text-[17px] leading-[1.7] sm:text-lg">
-          {visibleParagraphs.map((para, i) => (
-            <p key={i}>{renderInline(para)}</p>
-          ))}
+          {visibleParagraphs.map((para, i) => <div key={i}><p>{renderInline(para)}</p>{article.media.filter((item) => item.paragraphIndex === i + 1).map((item) => <figure key={item.id} className="my-8">{item.type === "VIDEO" ? <video src={item.url} controls preload="metadata" className="w-full" /> : <img src={item.url} alt={item.caption || "Article photo"} className="w-full" />}{item.caption && <figcaption className="mt-2 text-sm text-ink/60">{item.caption}</figcaption>}</figure>)}</div>)}
         </div>
         {!hasAccess && <ArticleAccessPrompt />}
 

@@ -9,7 +9,7 @@ export default async function EditArticlePage({ params }: { params: { id: string
   const session = await getServerSession(authOptions);
   if (!isAdminSession(session)) redirect(session ? "/" : "/admin/login");
 
-  const article = await prisma.article.findUnique({ where: { id: params.id } });
+  const article = await prisma.article.findUnique({ where: { id: params.id }, include: { media: { orderBy: [{ paragraphIndex: "asc" }, { sortOrder: "asc" }] } } });
   if (!article) notFound();
 
   return (

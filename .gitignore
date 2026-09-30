@@ -1,5 +1,7 @@
 node_modules
 .next
+public/uploads
+*.tsbuildinfo
 .env
 *.db
 .DS_Store

@@ -39,7 +39,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: `Files must be ${limit} or smaller.` }, { status: 400 });
   }
 
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  const useBlobStorage = process.env.NODE_ENV === "production" && Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  if (useBlobStorage) {
     const folder = kind === "video" ? "videos" : kind === "ebook" ? "ebooks" : "articles";
     const blob = await put(`${folder}/${Date.now()}-${file.name}`, file, {
       access: "public"
@@ -48,7 +49,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: blob.url });
   }
 
-  if (process.env.VERCEL) {
+  if (process.env.VERCEL && process.env.NODE_ENV === "production") {
     return NextResponse.json(
       { error: "Image upload needs a Vercel Blob store. Add BLOB_READ_WRITE_TOKEN in your deployment settings." },
       { status: 501 }

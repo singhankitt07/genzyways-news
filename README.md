@@ -8,6 +8,7 @@ A working Next.js news site for GenzyWays News.com: public site (breaking ticker
 - `/admin/login`: staff login
 - `/admin`: dashboard — list, publish/unpublish, edit, delete articles
 - `/admin/articles/new` and `/admin/articles/[id]`: article editor
+- `/admin`: RSS draft import and optional AI-assisted editing for imported stories
 - Database: Prisma (SQLite for local dev, swap to Postgres for production — see below)
 - Auth: NextAuth credentials login, bcrypt-hashed password, JWT session
 
@@ -26,6 +27,18 @@ npm run dev
 ```
 
 Open http://localhost:3000 for the site, http://localhost:3000/admin/login to sign in.
+
+### News automation
+
+From `/admin`, paste a public RSS or Atom feed URL to import up to 10 stories as
+unpublished drafts. Duplicate source URLs are skipped. Imported stories must be reviewed
+and edited before publication.
+
+The article editor also includes **Enhance with AI** for existing drafts. Configure an
+OpenAI-compatible provider in the server environment with `AI_API_KEY`, `AI_BASE_URL`, and
+`AI_MODEL`. The key is used only on the server and is never sent to the browser. AI output
+is always saved as an unpublished draft; editors remain responsible for fact-checking,
+source attribution, copyright, and publication.
 
 ## 2. Deploy it live (free tier works to start)
 

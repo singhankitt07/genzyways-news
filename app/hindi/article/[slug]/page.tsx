@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function HindiArticlePage({ params }: { params: { slug: string } }) {
-  const article = await prisma.article.findUnique({ where: { slug: params.slug } });
+  const article = await prisma.article.findUnique({ where: { slug: params.slug }, include: { media: { orderBy: [{ paragraphIndex: "asc" }, { sortOrder: "asc" }] } } });
   if (!article?.titleHi || !article.summaryHi || !article.contentHi || !article.publishedHi) notFound();
   return (
     <div className="article-reading-page">
@@ -34,7 +34,7 @@ export default async function HindiArticlePage({ params }: { params: { slug: str
           {article.imageUrl && <img src={article.imageUrl} alt="" className="mt-8 aspect-[16/9] w-full object-cover" />}
           {article.sourceName && <p className="mt-5 text-xs text-muted">स्रोत: {article.sourceUrl ? <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-press underline">{article.sourceName}</a> : article.sourceName}</p>}
           <div className="prose-content mt-8 space-y-5 font-sans leading-[1.9]">
-            {article.contentHi.split("\n\n").map((paragraph, index) => <p key={index}>{renderInline(paragraph)}</p>)}
+            {article.contentHi.split("\n\n").map((paragraph, index) => <div key={index}><p>{renderInline(paragraph)}</p>{article.media.filter((item) => item.paragraphIndex === index + 1).map((item) => <figure key={item.id} className="my-8">{item.type === "VIDEO" ? <video src={item.url} controls preload="metadata" className="w-full" /> : <img src={item.url} alt={item.caption || "समाचार फोटो"} className="w-full" />}{item.caption && <figcaption className="mt-2 text-sm text-muted">{item.caption}</figcaption>}</figure>)}</div>)}
           </div>
           <ArticleEngagement articleId={article.id} />
         </main>

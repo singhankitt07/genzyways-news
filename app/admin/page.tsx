@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import ArticleRow from "@/components/ArticleRow";
 import AdminArticleTable from "@/components/AdminArticleTable";
+import NewsImportPanel from "@/components/NewsImportPanel";
 
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
@@ -38,6 +39,7 @@ export default async function AdminDashboard() {
         <div className="mb-5 flex items-center justify-between"><div><h2 className="font-serif text-2xl">Publishing activity</h2><p className="text-sm text-ink/60">Recent stories by publication day</p></div><span className="text-sm text-press">{published} live</span></div>
         <div className="flex h-36 items-end gap-2 border-b border-line px-2">{articles.slice(0, 12).reverse().map((article, index) => <div key={article.id} className="group flex flex-1 flex-col items-center justify-end gap-2"><div title={article.title} className={`w-full rounded-t-md ${article.published ? "bg-press" : "bg-line"}`} style={{ height: `${Math.max(18, ((index + 1) / 12) * 100)}%` }} /><span className="text-[10px] text-ink/45">{index + 1}</span></div>)}</div>
       </div>
+      <NewsImportPanel />
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs uppercase tracking-[0.18em] text-gold font-semibold">Owner workspace</p><p className="text-sm text-ink/60 mt-1">Review, edit, publish, or remove any story from one place.</p></div><Link href="/admin/articles/new" className="button-primary text-sm">+ New article</Link></div>
       {articles.length === 0 ? (
         <div className="rounded-xl border border-dashed border-line bg-surface p-12 text-center"><p className="font-serif text-2xl">No articles yet</p><p className="mt-2 text-ink/60">Create your first one to start publishing.</p></div>
