@@ -16,18 +16,32 @@ export async function POST(req: Request) {
   const file = form.get("file") as File | null;
   if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
 
-  const kind = form.get("kind") === "video" ? "video" : "image";
-  const allowedTypes = kind === "video" ? new Set(["video/mp4", "video/webm", "video/quicktime"]) : new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
-  const maxSize = kind === "video" ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
-  if (!allowedTypes.has(file.type)) {
-    return NextResponse.json({ error: kind === "video" ? "Please choose an MP4, WEBM, or MOV video." : "Please choose a JPG, PNG, WEBP, or GIF image." }, { status: 400 });
+  const kindValue = form.get("kind");
+  const kind = kindValue === "video" ? "video" : kindValue === "ebook" ? "ebook" : "image";
+  const extension = path.extname(file.name).toLowerCase();
+  const allowedTypes = kind === "video"
+    ? new Set(["video/mp4", "video/webm", "video/quicktime"])
+    : kind === "ebook"
+      ? new Set(["application/pdf", "application/epub+zip", "application/octet-stream", ""])
+      : new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+  const validEbookType = kind !== "ebook" || (extension === ".pdf" || extension === ".epub");
+  const maxSize = kind === "video" ? 100 * 1024 * 1024 : kind === "ebook" ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+  if (!allowedTypes.has(file.type) || !validEbookType) {
+    const error = kind === "video"
+      ? "Please choose an MP4, WEBM, or MOV video."
+      : kind === "ebook"
+        ? "Please choose a PDF or EPUB file."
+        : "Please choose a JPG, PNG, WEBP, or GIF image.";
+    return NextResponse.json({ error }, { status: 400 });
   }
   if (file.size > maxSize) {
-    return NextResponse.json({ error: "Images must be 10 MB or smaller." }, { status: 400 });
+    const limit = kind === "video" ? "100 MB" : kind === "ebook" ? "50 MB" : "10 MB";
+    return NextResponse.json({ error: `Files must be ${limit} or smaller.` }, { status: 400 });
   }
 
   if (process.env.BLOB_READ_WRITE_TOKEN) {
-    const blob = await put(`${kind === "video" ? "videos" : "articles"}/${Date.now()}-${file.name}`, file, {
+    const folder = kind === "video" ? "videos" : kind === "ebook" ? "ebooks" : "articles";
+    const blob = await put(`${folder}/${Date.now()}-${file.name}`, file, {
       access: "public"
     });
 
@@ -42,8 +56,8 @@ export async function POST(req: Request) {
   }
 
   // Keep local and self-hosted development usable without a cloud storage token.
-  const extension = path.extname(file.name).toLowerCase() || ".jpg";
-  const fileName = `${kind}-${Date.now()}-${crypto.randomUUID()}${extension}`;
+  const safeExtension = extension || ".jpg";
+  const fileName = `${kind}-${Date.now()}-${crypto.randomUUID()}${safeExtension}`;
   const uploadDirectory = path.join(process.cwd(), "public", "uploads");
   await mkdir(uploadDirectory, { recursive: true });
   await writeFile(path.join(uploadDirectory, fileName), Buffer.from(await file.arrayBuffer()));

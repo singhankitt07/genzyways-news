@@ -43,6 +43,7 @@ export default function Footer() {
             <li>{session?.user ? <Link href="/account/profile" className="font-semibold hover:text-footer-text">Hello, {readerName}</Link> : <Link href="/account/login" className="inline-flex items-center gap-1.5 hover:text-footer-text"><svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="3.5" /><path d="M5 20c.8-3.4 3.1-5 7-5s6.2 1.6 7 5" /></svg>Login</Link>}</li>
             <li><Link href="/account/profile" className="hover:text-footer-text">My profile</Link></li>
             <li><Link href="/subscribe" className="hover:text-footer-text">Subscribe</Link></li>
+            <li><Link href="/ebooks" className="hover:text-footer-text">Guides & eBooks</Link></li>
             <li><Link href="/shorts" className="hover:text-footer-text">Shorts</Link></li>
             <li><Link href="/videos" className="hover:text-footer-text">Videos</Link></li>
             <li><Link href="/contact" className="hover:text-footer-text">{t("contactUs")}</Link></li>

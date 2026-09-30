@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-const CONTACT_EMAIL = "hello@GenzyWays News.com"; // change this to your real inbox
+const CONTACT_EMAIL = "hello.genzywaysnews@gmail.com";
 
 export default function ContactPage() {
   const [name, setName] = useState("");

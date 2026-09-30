@@ -99,6 +99,32 @@ model MediaVideo {
   updatedAt    DateTime @updatedAt
 }
 
+enum EbookFormat {
+  PDF
+  EPUB
+}
+
+model Ebook {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  title       String
+  titleHi     String?
+  summary     String
+  summaryHi   String?
+  category    String
+  author      String      @default("GenzyWays News Desk")
+  language    String      @default("en")
+  format      EbookFormat
+  fileUrl     String
+  coverUrl    String?
+  sources     String?
+  published   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([published, createdAt])
+}
+
 model Comment {
   id        String   @id @default(cuid())
   body      String

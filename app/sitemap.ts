@@ -19,6 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   let articles: { slug: string; updatedAt: Date }[] = [];
+  let ebooks: { slug: string; updatedAt: Date }[] = [];
   try {
     articles = await prisma.article.findMany({
       where: { published: true },
@@ -26,6 +27,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   } catch {
     articles = [];
+  }
+  try {
+    ebooks = await prisma.ebook.findMany({ where: { published: true }, select: { slug: true, updatedAt: true } });
+  } catch {
+    ebooks = [];
   }
 
   const articleRoutes: MetadataRoute.Sitemap = articles.map((a) => ({
@@ -35,5 +41,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6
   }));
 
-  return [...staticRoutes, ...articleRoutes];
+  const ebookRoutes: MetadataRoute.Sitemap = [
+    { url: `${base}/ebooks`, changeFrequency: "weekly", priority: 0.7 },
+    ...ebooks.map((ebook) => ({
+      url: `${base}/ebooks/${ebook.slug}`,
+      lastModified: ebook.updatedAt,
+      changeFrequency: "monthly" as const,
+      priority: 0.5
+    }))
+  ];
+
+  return [...staticRoutes, ...articleRoutes, ...ebookRoutes];
 }
