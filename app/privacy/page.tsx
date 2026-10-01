@@ -47,11 +47,15 @@ export default function PrivacyPage() {
           <h2 className="font-serif text-xl mb-2 text-ink">Profile and weather</h2>
           <p>
             Profile details are optional and used to personalize your account. The weather
-            widget asks your browser for location access. If allowed, your coordinates are
-            sent directly from your browser to Open-Meteo for weather and air-quality data
-            and to BigDataCloud for a place name. GenzyWays News does not store your precise
-            coordinates; it caches the returned weather and approximate place details in
-            your browser. You can deny or later revoke location permission in browser settings.
+            widget first asks your browser for location access. If allowed, those coordinates
+            are sent from your browser to Open-Meteo for weather and air-quality data and to
+            BigDataCloud for a place name. If browser location is denied or unavailable, the
+            Vercel-hosted app can use Vercel's coarse IP-based coordinates as an approximate
+            fallback. Those approximate coordinates are sent to Open-Meteo for weather and
+            air-quality data. GenzyWays News does not store precise coordinates; it caches
+            returned weather and place details in your browser. IP-based location may be less
+            accurate, especially on mobile networks or VPNs. You can deny or revoke precise
+            browser location in your browser settings.
           </p>
         </section>
         <section>

@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-type Weather = { temperature: number; weatherCode: number; city: string; region?: string; country?: string; aqi?: number | null; pm25?: number | null; updatedAt: number };
+type Weather = { temperature: number; weatherCode: number; city: string; region?: string; country?: string; aqi?: number | null; pm25?: number | null; locationSource: "browser" | "ip"; updatedAt: number };
+type WeatherCoordinates = { latitude: number; longitude: number };
+type ApproximateLocation = WeatherCoordinates & { city?: string; region?: string; country?: string; timezone?: string };
 const CACHE_KEY = "genzywaynews-weather";
 const REFRESH_MS = 15 * 60 * 1000;
 
@@ -50,19 +52,20 @@ export default function WeatherWidget() {
       }
     }
 
-    async function load(coords: GeolocationCoordinates) {
+    async function load(coords: WeatherCoordinates, locationSource: Weather["locationSource"], approximateLocation?: ApproximateLocation) {
       try {
-        const query = `latitude=${coords.latitude}&longitude=${coords.longitude}&timezone=auto`;
+        const timezone = approximateLocation?.timezone || "auto";
+        const query = `latitude=${coords.latitude}&longitude=${coords.longitude}&timezone=${encodeURIComponent(timezone)}`;
         const [weatherResponse, airResponse, locationResponse] = await Promise.all([
           fetch(`https://api.open-meteo.com/v1/forecast?${query}&current=temperature_2m,weather_code`),
           fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?${query}&current=us_aqi,pm2_5,pm10`),
-          fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${coords.latitude}&longitude=${coords.longitude}&localityLanguage=en`)
+          approximateLocation ? Promise.resolve(null) : fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${coords.latitude}&longitude=${coords.longitude}&localityLanguage=en`)
         ]);
-        if (!weatherResponse.ok || !locationResponse.ok) throw new Error("Weather lookup failed");
+        if (!weatherResponse.ok || (locationResponse && !locationResponse.ok)) throw new Error("Weather lookup failed");
         const data = await weatherResponse.json();
         const air = airResponse.ok ? await airResponse.json() : null;
-        const location = await locationResponse.json();
-        const next: Weather = { temperature: Math.round(data.current.temperature_2m), weatherCode: data.current.weather_code, city: location.city || location.locality || location.principalSubdivision || "Your location", region: location.principalSubdivision, country: location.countryName, aqi: air?.current?.us_aqi ?? null, pm25: air?.current?.pm2_5 ?? null, updatedAt: Date.now() };
+        const location = approximateLocation || await locationResponse?.json();
+        const next: Weather = { temperature: Math.round(data.current.temperature_2m), weatherCode: data.current.weather_code, city: location?.city || location?.locality || location?.principalSubdivision || "Your location", region: location?.region || location?.principalSubdivision, country: location?.country || location?.countryName, aqi: air?.current?.us_aqi ?? null, pm25: air?.current?.pm2_5 ?? null, locationSource, updatedAt: Date.now() };
         if (!active) return;
         setWeather(next);
         window.localStorage.setItem(CACHE_KEY, JSON.stringify(next));
@@ -72,25 +75,40 @@ export default function WeatherWidget() {
       }
     }
 
-    const requestLocation = () => {
+    async function loadApproximateLocation() {
+      setStatus("Finding approximate location from network");
+      try {
+        const response = await fetch("/api/weather-location", { cache: "no-store" });
+        if (!response.ok) throw new Error("Approximate location is unavailable");
+        const location = await response.json() as ApproximateLocation;
+        if (!Number.isFinite(location.latitude) || !Number.isFinite(location.longitude)) throw new Error("Approximate coordinates are invalid");
+        await load(location, "ip", location);
+        if (active) refreshTimer = window.setTimeout(loadApproximateLocation, REFRESH_MS);
+      } catch {
+        if (active) setStatus("Location unavailable; try again");
+      }
+    }
+
+    function requestLocation() {
       if (!navigator.geolocation) {
-        setStatus("Location is unavailable in this browser");
+        void loadApproximateLocation();
         return;
       }
       setStatus("Requesting location for local weather");
       navigator.geolocation.getCurrentPosition(({ coords }) => {
         if (!active) return;
-        void load(coords);
+        void load(coords, "browser");
         refreshTimer = window.setTimeout(requestLocation, REFRESH_MS);
-      }, (error) => {
-        if (active) setStatus(error.code === error.PERMISSION_DENIED ? "Location blocked; enable it in browser settings" : "Location unavailable; try again");
+      }, () => {
+        if (active) void loadApproximateLocation();
       }, { maximumAge: REFRESH_MS, timeout: 12000, enableHighAccuracy: false });
-    };
+    }
     requestLocation();
     return () => { active = false; if (refreshTimer) window.clearTimeout(refreshTimer); };
   }, [locationAttempt]);
 
   if (!weather) return <span className="weather-widget weather-widget-loading"><span className="weather-icon weather-icon-cloud" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M8 23h14a5 5 0 0 0 .5-9.97A7.5 7.5 0 0 0 8 15a4 4 0 0 0 0 8Z" /></svg></span><span className="weather-widget-loading-label">{status}</span>{status.startsWith("Location blocked") || status.startsWith("Location unavailable") ? <button type="button" onClick={() => setLocationAttempt((attempt) => attempt + 1)} className="weather-location-action" aria-label="Retry location request">Retry</button> : null}</span>;
   const location = [weather.city, weather.region, weather.country].filter(Boolean).join(", ");
-  return <span className="weather-widget" title={`Live weather for ${location}. Air quality: ${aqiLabel(weather.aqi)}. Data refreshes every 15 minutes.`}><WeatherIcon code={weather.weatherCode} /><span className="weather-reading"><strong>{weather.temperature}°C</strong><span>{weatherLabel(weather.weatherCode)}</span></span><span className={`weather-aqi weather-aqi-${weather.aqi == null ? "unknown" : weather.aqi <= 50 ? "good" : weather.aqi <= 100 ? "moderate" : "poor"}`}><b>AQI</b> {weather.aqi == null ? "—" : Math.round(weather.aqi)}<small>{aqiLabel(weather.aqi)}</small></span><span className="weather-location">{location}</span>{status.startsWith("Location blocked") || status.startsWith("Location unavailable") ? <button type="button" onClick={() => setLocationAttempt((attempt) => attempt + 1)} className="weather-location-action" aria-label="Retry location request">Retry</button> : null}</span>;
+  const locationTitle = weather.locationSource === "ip" ? `Approximate IP-based location: ${location}` : `Precise browser location: ${location}`;
+  return <span className="weather-widget" title={`${locationTitle}. Air quality: ${aqiLabel(weather.aqi)}. Data refreshes every 15 minutes.`}><WeatherIcon code={weather.weatherCode} /><span className="weather-reading"><strong>{weather.temperature}°C</strong><span>{weatherLabel(weather.weatherCode)}</span></span><span className={`weather-aqi weather-aqi-${weather.aqi == null ? "unknown" : weather.aqi <= 50 ? "good" : weather.aqi <= 100 ? "moderate" : "poor"}`}><b>AQI</b> {weather.aqi == null ? "—" : Math.round(weather.aqi)}<small>{aqiLabel(weather.aqi)}</small></span><span className="weather-location">{weather.locationSource === "ip" && <span className="weather-location-approx">Approx. </span>}{location}</span>{status.startsWith("Location unavailable") ? <button type="button" onClick={() => setLocationAttempt((attempt) => attempt + 1)} className="weather-location-action" aria-label="Retry location request">Retry</button> : null}</span>;
 }
