@@ -17,7 +17,6 @@ const MenuIcon = ({ open }: { open: boolean }) => open ? <span aria-hidden="true
 export default function Masthead() {
   const { lang } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [headerHidden, setHeaderHidden] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [menuTop, setMenuTop] = useState(80);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -35,12 +34,6 @@ export default function Masthead() {
 
   useEffect(() => setMenuOpen(false), [pathname]);
   useEffect(() => { if (mobileSearchOpen) mobileSearchRef.current?.focus(); }, [mobileSearchOpen]);
-  useEffect(() => {
-    let previousY = window.scrollY;
-    const handleScroll = () => { const currentY = window.scrollY; setHeaderHidden(currentY > 96 && currentY > previousY); if (currentY < 24) setHeaderHidden(false); previousY = currentY; };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
   useEffect(() => {
     if (!menuOpen) return;
     closeButtonRef.current?.focus();
@@ -63,7 +56,7 @@ export default function Masthead() {
   }, [menuOpen]);
 
   return (
-    <header ref={headerRef} style={{ "--menu-top": `${menuTop}px` } as React.CSSProperties} className={`theme-header masthead sticky top-0 z-30 no-print ${headerHidden && !menuOpen ? "masthead-hidden" : ""}`}>
+    <header ref={headerRef} style={{ "--menu-top": `${menuTop}px` } as React.CSSProperties} className="theme-header masthead sticky top-0 z-30 no-print">
       <div className="masthead-top mx-auto grid max-w-7xl items-center gap-3 px-4 py-3 lg:grid-cols-[1fr_auto_1fr]">
         <div className="hidden min-w-0 items-center gap-3 text-xs text-ink/65 lg:flex"><span className="font-semibold uppercase tracking-[0.14em] text-press">Today</span><span className="truncate">{today}</span><span className="hidden xl:inline">· <WeatherWidget /></span></div>
         <div className="flex items-center justify-between lg:justify-center"><button type="button" onClick={openMenu} aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={menuOpen} aria-controls="site-mega-menu" className="menu-toggle tap-target inline-flex items-center justify-center border border-line md:hidden"><MenuIcon open={menuOpen} /></button><Logo /></div>

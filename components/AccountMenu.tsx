@@ -27,10 +27,16 @@ export default function AccountMenu({ mobile = false, mobileMenu = false, onNavi
   const name = session.user.name || session.user.email?.split("@")[0] || "Reader";
   const role = (session.user as { role?: string }).role;
   const isStaff = role === "ADMIN" || role === "EDITOR" || role === "MODERATOR";
+  const canEdit = role === "ADMIN" || role === "EDITOR";
+  const isAdmin = role === "ADMIN";
+  const canModerate = role === "ADMIN" || role === "MODERATOR";
   if (mobileMenu) {
     return <div className="mega-account-actions">
       <Link onClick={onNavigate} href="/account/profile" className="mega-menu-link">Account</Link>
-      {isStaff && <Link onClick={onNavigate} href="/admin" className="mega-menu-link">Newsroom workspace</Link>}
+      {isStaff && <p className="mega-menu-heading mt-4">Newsroom</p>}
+      {canEdit && <><Link onClick={onNavigate} href="/admin" className="mega-menu-link">Dashboard</Link><Link onClick={onNavigate} href="/admin/articles/new" className="mega-menu-link">New article</Link></>}
+      {isAdmin && <><Link onClick={onNavigate} href="/admin/media" className="mega-menu-link">Media library</Link><Link onClick={onNavigate} href="/admin/ebooks" className="mega-menu-link">Guides & eBooks</Link><Link onClick={onNavigate} href="/admin/staff" className="mega-menu-link">Staff & roles</Link><Link onClick={onNavigate} href="/admin/newsletter" className="mega-menu-link">Newsletter</Link></>}
+      {canModerate && <Link onClick={onNavigate} href="/admin/comment-reports" className="mega-menu-link">Comment reports</Link>}
       <button type="button" onClick={() => { onNavigate?.(); void signOut({ callbackUrl: "/" }); }} className="mega-menu-link text-left">Sign out</button>
     </div>;
   }

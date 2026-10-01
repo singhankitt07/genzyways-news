@@ -925,11 +925,6 @@ body:has(.admin-shell) main {
   background: color-mix(in srgb, var(--surface) 96%, transparent);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(14px);
-  transition: transform 220ms ease;
-}
-
-.masthead-hidden {
-  transform: translateY(-100%);
 }
 
 .mega-menu-backdrop {
@@ -1233,6 +1228,13 @@ body:has(.admin-shell) main {
 
 .masthead-nav {
   min-height: 44px;
+}
+
+@media (max-width: 1023px) {
+  .masthead {
+    position: relative;
+    top: auto;
+  }
 }
 
 .masthead-date-content {
@@ -1828,12 +1830,31 @@ textarea {
   line-height: 1.25;
 }
 
-.article-paper-card .prose-content h2 { font-size: 1.45em; }
-.article-paper-card .prose-content h3 { font-size: 1.25em; }
-.article-paper-card .prose-content h4 { font-size: 1.1em; }
-.article-paper-card .prose-content ul { list-style: disc; padding-left: 1.5em; }
-.article-paper-card .prose-content ol { list-style: decimal; padding-left: 1.5em; }
-.article-paper-card .prose-content blockquote { color: var(--text-muted); }
+.article-paper-card .prose-content h2 {
+  font-size: 1.45em;
+}
+
+.article-paper-card .prose-content h3 {
+  font-size: 1.25em;
+}
+
+.article-paper-card .prose-content h4 {
+  font-size: 1.1em;
+}
+
+.article-paper-card .prose-content ul {
+  list-style: disc;
+  padding-left: 1.5em;
+}
+
+.article-paper-card .prose-content ol {
+  list-style: decimal;
+  padding-left: 1.5em;
+}
+
+.article-paper-card .prose-content blockquote {
+  color: var(--text-muted);
+}
 
 .rich-text-editor .tiptap {
   min-height: 280px;
@@ -1841,7 +1862,10 @@ textarea {
   line-height: 1.7;
 }
 
-.rich-text-editor .tiptap p { margin: 0 0 0.9em; }
+.rich-text-editor .tiptap p {
+  margin: 0 0 0.9em;
+}
+
 .rich-text-editor .tiptap h2,
 .rich-text-editor .tiptap h3 {
   margin: 1.2em 0 0.5em;
@@ -1849,12 +1873,34 @@ textarea {
   font-weight: 700;
   line-height: 1.25;
 }
-.rich-text-editor .tiptap h2 { font-size: 1.45em; }
-.rich-text-editor .tiptap h3 { font-size: 1.25em; }
-.rich-text-editor .tiptap ul { list-style: disc; padding-left: 1.5em; }
-.rich-text-editor .tiptap ol { list-style: decimal; padding-left: 1.5em; }
-.rich-text-editor .tiptap blockquote { border-left: 2px solid var(--color-accent); padding-left: 1em; }
-.rich-text-editor .tiptap a { color: var(--color-link); text-decoration: underline; }
+
+.rich-text-editor .tiptap h2 {
+  font-size: 1.45em;
+}
+
+.rich-text-editor .tiptap h3 {
+  font-size: 1.25em;
+}
+
+.rich-text-editor .tiptap ul {
+  list-style: disc;
+  padding-left: 1.5em;
+}
+
+.rich-text-editor .tiptap ol {
+  list-style: decimal;
+  padding-left: 1.5em;
+}
+
+.rich-text-editor .tiptap blockquote {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 1em;
+}
+
+.rich-text-editor .tiptap a {
+  color: var(--color-link);
+  text-decoration: underline;
+}
 
 .skeleton {
   background: linear-gradient(90deg, var(--color-surface-muted), var(--color-border), var(--color-surface-muted));
