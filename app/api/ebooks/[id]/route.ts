@@ -21,11 +21,12 @@ function matchesFormat(value: string, format: "PDF" | "EPUB") {
   return value.split(/[?#]/, 1)[0].toLowerCase().endsWith(`.${format.toLowerCase()}`);
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!isAdminSession(session)) return NextResponse.json({ error: "Owner access required." }, { status: 403 });
   const body = await request.json().catch(() => null);
-  const existing = await prisma.ebook.findUnique({ where: { id: params.id } });
+  const existing = await prisma.ebook.findUnique({ where: { id } });
   if (!existing) return NextResponse.json({ error: "Ebook not found." }, { status: 404 });
 
   const format = body?.format === undefined ? existing.format : FORMATS.has(body.format) ? body.format as "PDF" | "EPUB" : null;
@@ -40,7 +41,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   }
 
   const ebook = await prisma.ebook.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       title: body?.title === undefined ? existing.title : cleanText(body.title, 180),
       titleHi: body?.titleHi === undefined ? existing.titleHi : cleanText(body.titleHi, 180) || null,
@@ -59,9 +60,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   return NextResponse.json({ ebook });
 }
 
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!isAdminSession(session)) return NextResponse.json({ error: "Owner access required." }, { status: 403 });
-  await prisma.ebook.delete({ where: { id: params.id } });
+  await prisma.ebook.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }

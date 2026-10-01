@@ -1,11 +1,11 @@
 import { getServerSession } from "next-auth";
-import { authOptions, isAdminSession } from "@/lib/auth";
+import { authOptions, hasStaffRole } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import ArticleForm from "@/components/ArticleForm";
 
 export default async function NewArticlePage() {
   const session = await getServerSession(authOptions);
-  if (!isAdminSession(session)) redirect(session ? "/" : "/admin/login");
+  if (!hasStaffRole(session, ["ADMIN", "EDITOR"])) redirect(session ? "/" : "/admin/login");
 
   return (
     <div className="admin-page py-8">

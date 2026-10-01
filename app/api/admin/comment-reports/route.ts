@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions, isAdminSession } from "@/lib/auth";
+import { authOptions, hasStaffRole } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { cleanText } from "@/lib/reader";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
-  return isAdminSession(session);
+  return hasStaffRole(session, ["ADMIN", "MODERATOR"]);
 }
 
 export async function GET(request: Request) {

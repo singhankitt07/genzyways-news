@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions, isAdminSession } from "@/lib/auth";
+import { authOptions, hasStaffRole } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { normalizeArticleContent } from "@/lib/article-content";
 
 function slugify(title: string) {
   return title
@@ -14,7 +15,7 @@ function slugify(title: string) {
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!isAdminSession(session)) return NextResponse.json({ error: "Owner access required" }, { status: 403 });
+  if (!hasStaffRole(session, ["ADMIN", "EDITOR"])) return NextResponse.json({ error: "Editor access required" }, { status: 403 });
 
   const articles = await prisma.article.findMany({ orderBy: { createdAt: "desc" }, include: { media: { orderBy: [{ paragraphIndex: "asc" }, { sortOrder: "asc" }] } } });
   return NextResponse.json(articles);
@@ -22,13 +23,15 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!isAdminSession(session)) return NextResponse.json({ error: "Owner access required" }, { status: 403 });
+  if (!hasStaffRole(session, ["ADMIN", "EDITOR"])) return NextResponse.json({ error: "Editor access required" }, { status: 403 });
 
   const body = await req.json();
   const { title, titleHi, summary, summaryHi, content, contentHi, category, imageUrl, sourceName, sourceUrl, author, breaking, live, subscriberOnly, published, publishedHi } = body;
+  const articleContent = normalizeArticleContent(content, body.contentFormat);
+  const hindiContent = typeof contentHi === "string" && contentHi.trim() ? normalizeArticleContent(contentHi, body.contentHiFormat) : null;
   const media = Array.isArray(body.media) ? body.media : [];
 
-  if (!title || !summary || !content || !category) {
+  if (!title || !summary || !articleContent || (contentHi && !hindiContent) || (publishedHi && (!titleHi?.trim() || !summaryHi?.trim() || !hindiContent)) || !category) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
@@ -43,8 +46,10 @@ export async function POST(req: Request) {
       slug,
       summary,
       summaryHi: typeof summaryHi === "string" ? summaryHi.trim().slice(0, 1000) || null : null,
-      content,
-      contentHi: typeof contentHi === "string" ? contentHi.trim() || null : null,
+      content: articleContent.content,
+      contentFormat: articleContent.format,
+      contentHi: hindiContent?.content || null,
+      contentHiFormat: hindiContent?.format || "MARKDOWN",
       category,
       imageUrl: imageUrl || null,
       sourceName: typeof sourceName === "string" ? sourceName.trim().slice(0, 120) || null : null,

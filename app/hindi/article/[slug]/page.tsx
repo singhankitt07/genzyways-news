@@ -2,20 +2,22 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { renderInline } from "@/lib/markdown";
+import ArticleContent from "@/components/ArticleContent";
 import ArticleEngagement from "@/components/ArticleEngagement";
 import ArticleReadingTools from "@/components/ArticleReadingTools";
 import ReadingFontSizeControl from "@/components/ReadingFontSizeControl";
 import ReadingProgress from "@/components/ReadingProgress";
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const article = await prisma.article.findUnique({ where: { slug: params.slug }, select: { titleHi: true, summaryHi: true } });
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await prisma.article.findUnique({ where: { slug }, select: { titleHi: true, summaryHi: true } });
   if (!article?.titleHi || !article.summaryHi) return {};
-  return { title: `${article.titleHi} | GenzyWays News`, description: article.summaryHi, alternates: { canonical: `/hindi/article/${params.slug}` } };
+  return { title: `${article.titleHi} | GenzyWays News`, description: article.summaryHi, alternates: { canonical: `/hindi/article/${slug}` } };
 }
 
-export default async function HindiArticlePage({ params }: { params: { slug: string } }) {
-  const article = await prisma.article.findUnique({ where: { slug: params.slug }, include: { media: { orderBy: [{ paragraphIndex: "asc" }, { sortOrder: "asc" }] } } });
+export default async function HindiArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const article = await prisma.article.findUnique({ where: { slug }, include: { media: { orderBy: [{ paragraphIndex: "asc" }, { sortOrder: "asc" }] } } });
   if (!article?.titleHi || !article.summaryHi || !article.contentHi || !article.publishedHi) notFound();
   return (
     <div className="article-reading-page">
@@ -34,7 +36,7 @@ export default async function HindiArticlePage({ params }: { params: { slug: str
           {article.imageUrl && <img src={article.imageUrl} alt="" className="mt-8 aspect-[16/9] w-full object-cover" />}
           {article.sourceName && <p className="mt-5 text-xs text-muted">स्रोत: {article.sourceUrl ? <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-press underline">{article.sourceName}</a> : article.sourceName}</p>}
           <div className="prose-content mt-8 space-y-5 font-sans leading-[1.9]">
-            {article.contentHi.split("\n\n").map((paragraph, index) => <div key={index}><p>{renderInline(paragraph)}</p>{article.media.filter((item) => item.paragraphIndex === index + 1).map((item) => <figure key={item.id} className="my-8">{item.type === "VIDEO" ? <video src={item.url} controls preload="metadata" className="w-full" /> : <img src={item.url} alt={item.caption || "समाचार फोटो"} className="w-full" />}{item.caption && <figcaption className="mt-2 text-sm text-muted">{item.caption}</figcaption>}</figure>)}</div>)}
+            <ArticleContent content={article.contentHi} format={article.contentHiFormat} media={article.media} hindi />
           </div>
           <ArticleEngagement articleId={article.id} />
         </main>

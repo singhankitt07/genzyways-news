@@ -49,6 +49,8 @@ model Article {
   summaryHi      String?
   content        String
   contentHi      String?
+  contentFormat  String   @default("MARKDOWN")
+  contentHiFormat String  @default("MARKDOWN")
   imageUrl       String?
   sourceName     String?
   sourceUrl      String?
@@ -254,9 +256,13 @@ model Subscription {
 }
 
 model Subscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id                     String   @id @default(cuid())
+  email                  String   @unique
+  status                 String   @default("ACTIVE")
+  confirmationTokenHash  String?  @unique
+  confirmationExpiresAt  DateTime?
+  unsubscribeTokenHash   String?  @unique
+  createdAt              DateTime @default(now())
 }
 
 model PasswordResetToken {

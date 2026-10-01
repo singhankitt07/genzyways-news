@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions, isAdminSession } from "@/lib/auth";
+import { authOptions, isAdminSession, isStaffSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -14,7 +14,7 @@ export default async function AdminDashboard() {
     redirect("/admin/login");
   }
 
-  if (!isAdminSession(session)) {
+  if (!isStaffSession(session)) {
     return (
       <div className="max-w-xl mx-auto py-16 text-center">
         <p className="text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-3">Access denied</p>
@@ -25,7 +25,10 @@ export default async function AdminDashboard() {
     );
   }
 
+  if ((session.user as { role?: string }).role === "MODERATOR") redirect("/admin/comment-reports");
+
   const articles = await prisma.article.findMany({ orderBy: { createdAt: "desc" } });
+  const isAdmin = isAdminSession(session);
 
   const published = articles.filter((article) => article.published).length;
   const breaking = articles.filter((article) => article.breaking).length;
@@ -39,8 +42,8 @@ export default async function AdminDashboard() {
         <div className="mb-5 flex items-center justify-between"><div><h2 className="font-serif text-2xl">Publishing activity</h2><p className="text-sm text-ink/60">Recent stories by publication day</p></div><span className="text-sm text-press">{published} live</span></div>
         <div className="flex h-36 items-end gap-2 border-b border-line px-2">{articles.slice(0, 12).reverse().map((article, index) => <div key={article.id} className="group flex flex-1 flex-col items-center justify-end gap-2"><div title={article.title} className={`w-full rounded-t-md ${article.published ? "bg-press" : "bg-line"}`} style={{ height: `${Math.max(18, ((index + 1) / 12) * 100)}%` }} /><span className="text-[10px] text-ink/45">{index + 1}</span></div>)}</div>
       </div>
-      <NewsImportPanel />
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs uppercase tracking-[0.18em] text-gold font-semibold">Owner workspace</p><p className="text-sm text-ink/60 mt-1">Review, edit, publish, or remove any story from one place.</p></div><Link href="/admin/articles/new" className="button-primary text-sm">+ New article</Link></div>
+      {isAdmin && <NewsImportPanel />}
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs uppercase tracking-[0.18em] text-gold font-semibold">Newsroom workspace</p><p className="text-sm text-ink/60 mt-1">Review, edit, publish, or remove stories from one place.</p></div><Link href="/admin/articles/new" className="button-primary text-sm">+ New article</Link></div>
       {articles.length === 0 ? (
         <div className="rounded-xl border border-dashed border-line bg-surface p-12 text-center"><p className="font-serif text-2xl">No articles yet</p><p className="mt-2 text-ink/60">Create your first one to start publishing.</p></div>
       ) : (

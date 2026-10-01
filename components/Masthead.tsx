@@ -77,7 +77,40 @@ export default function Masthead() {
         </div>
       </div>
       <div className="masthead-nav border-t border-line"><div className="mx-auto flex max-w-7xl items-center gap-3 px-4"><button type="button" onClick={openMenu} aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={menuOpen} aria-controls="site-mega-menu" className="menu-toggle tap-target hidden items-center justify-center border border-line md:inline-flex"><MenuIcon open={menuOpen} /></button><Link href="/?q=" className="search-link hidden items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-ink/75 hover:text-press md:flex lg:hidden"><SearchIcon /> Search</Link><form action="/" className="search-form hidden items-center border border-line bg-surface lg:flex"><label htmlFor="site-search" className="sr-only">Search news</label><input id="site-search" name="q" placeholder="Search" className="w-28 border-0 bg-transparent px-2 py-1 text-sm outline-none" /><button type="submit" aria-label="Search news" className="tap-target text-ink/70 hover:text-press"><SearchIcon /></button></form><nav className="category-nav scroll-nav flex-1 overflow-x-auto" aria-label="News categories"><ul className="flex min-w-max items-center justify-start gap-5 text-xs font-semibold lg:justify-center"><li><Link href="/" className="category-link">{lang === "hi" ? "होम" : "Home"}</Link></li>{categories.map((cat, index) => <li key={cat.slug} className={index > 6 ? "hidden xl:block" : ""}><Link href={`/category/${cat.slug}`} className="category-link">{cat.label[lang]}</Link></li>)}</ul></nav>{mobileSearchOpen ? <form action="/" className="mobile-search-form flex min-w-0 flex-1 items-center border border-line bg-surface"><label htmlFor="mobile-site-search" className="sr-only">Search news</label><input ref={mobileSearchRef} id="mobile-site-search" name="q" placeholder="Search news" className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm outline-none" /><button type="button" onClick={() => setMobileSearchOpen(false)} aria-label="Close search" className="menu-toggle tap-target inline-flex items-center justify-center border border-line"><span aria-hidden="true">&times;</span></button></form> : <button type="button" onClick={() => setMobileSearchOpen(true)} aria-label="Open search" className="menu-toggle tap-target inline-flex items-center justify-center border border-line md:hidden"><SearchIcon /></button>}</div></div>
-      {menuOpen && <><div className="mega-menu-backdrop fixed inset-0 z-40" onClick={() => setMenuOpen(false)} /><section id="site-mega-menu" ref={menuRef} className="mega-menu-panel fixed left-0 right-0 z-50 overflow-y-auto border-b border-line" style={{ top: `${menuTop}px`, "--menu-top": `${menuTop}px` } as React.CSSProperties} aria-label="Site navigation"><div className="mx-auto max-w-7xl px-4 py-5 sm:py-7"><form action="/" className="mega-menu-search mb-7 flex items-center border border-line bg-surface"><label htmlFor="mega-search" className="sr-only">Search news</label><input id="mega-search" name="q" placeholder="Search the newsroom" className="min-w-0 flex-1 border-0 bg-transparent px-4 py-3 outline-none" /><button type="submit" aria-label="Search news" className="tap-target inline-flex items-center justify-center border-l border-line"><SearchIcon /></button></form><div className="mega-menu-grid"><section><h2 className="mega-menu-heading">Sections</h2><div className="mega-section-list">{categories.map((cat) => <Link key={cat.slug} onClick={() => setMenuOpen(false)} href={`/category/${cat.slug}`} className="mega-menu-link">{cat.label[lang]}</Link>)}</div></section><section><h2 className="mega-menu-heading">Special</h2><div className="mega-special-list"><Link onClick={() => setMenuOpen(false)} href="/category/opinion" className="mega-menu-link">Opinion</Link><Link onClick={() => setMenuOpen(false)} href="/shorts" className="mega-menu-link">Shorts</Link><Link onClick={() => setMenuOpen(false)} href="/videos" className="mega-menu-link">Videos</Link><Link onClick={() => setMenuOpen(false)} href="/ebooks" className="mega-menu-link">Guides & eBooks</Link><Link onClick={() => setMenuOpen(false)} href="/editorial-policy" className="mega-menu-link">Editorial Policy</Link></div></section><aside className="mega-trending"><p className="section-kicker">Trending / Events</p><h2 className="mt-2 font-serif text-2xl">Follow the newsroom</h2><p className="mt-2 text-sm leading-relaxed text-ink/70">Browse the latest reporting, save stories, or follow categories from your reader profile.</p><div className="mt-5 flex flex-wrap gap-3"><Link onClick={() => setMenuOpen(false)} href="/search" className="text-sm font-semibold text-press underline">Search stories</Link><Link onClick={() => setMenuOpen(false)} href="/account/profile" className="text-sm font-semibold text-press underline">Your profile</Link></div></aside></div></div></section></>}
+      {menuOpen && (
+        <>
+          <div className="mega-menu-backdrop fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+          <section id="site-mega-menu" ref={menuRef} className="mega-menu-panel fixed left-0 right-0 z-50 overflow-y-auto border-b border-line" style={{ top: `${menuTop}px`, "--menu-top": `${menuTop}px` } as React.CSSProperties} aria-label="Site navigation">
+            <div className="mx-auto max-w-7xl px-4 py-5 sm:py-7">
+              <form action="/" className="mega-menu-search mb-7 flex items-center border border-line bg-surface">
+                <label htmlFor="mega-search" className="sr-only">Search news</label>
+                <input id="mega-search" name="q" placeholder="Search the newsroom" className="min-w-0 flex-1 border-0 bg-transparent px-4 py-3 outline-none" />
+                <button type="submit" aria-label="Search news" className="tap-target inline-flex items-center justify-center border-l border-line"><SearchIcon /></button>
+              </form>
+              <div className="mega-menu-grid">
+                <section>
+                  <h2 className="mega-menu-heading">Sections</h2>
+                  <div className="mega-section-list">{categories.map((cat) => <Link key={cat.slug} onClick={() => setMenuOpen(false)} href={`/category/${cat.slug}`} className="mega-menu-link">{cat.label[lang]}</Link>)}</div>
+                </section>
+                <section>
+                  <h2 className="mega-menu-heading">Special</h2>
+                  <div className="mega-special-list"><Link onClick={() => setMenuOpen(false)} href="/category/opinion" className="mega-menu-link">Opinion</Link><Link onClick={() => setMenuOpen(false)} href="/shorts" className="mega-menu-link">Shorts</Link><Link onClick={() => setMenuOpen(false)} href="/videos" className="mega-menu-link">Videos</Link><Link onClick={() => setMenuOpen(false)} href="/ebooks" className="mega-menu-link">Guides & eBooks</Link><Link onClick={() => setMenuOpen(false)} href="/editorial-policy" className="mega-menu-link">Editorial Policy</Link></div>
+                </section>
+                <aside className="mega-trending">
+                  <p className="section-kicker">Trending / Events</p>
+                  <h2 className="mt-2 font-serif text-2xl">Follow the newsroom</h2>
+                  <p className="mt-2 text-sm leading-relaxed text-ink/70">Browse the latest reporting, save stories, or follow categories from your reader profile.</p>
+                  <div className="mt-5 flex flex-wrap gap-3"><Link onClick={() => setMenuOpen(false)} href="/search" className="text-sm font-semibold text-press underline">Search stories</Link><Link onClick={() => setMenuOpen(false)} href="/account/profile" className="text-sm font-semibold text-press underline">Your profile</Link></div>
+                  <div className="mt-5 border-t border-line pt-4">
+                    <h3 className="mega-menu-heading">Your account</h3>
+                    <AccountMenu mobileMenu onNavigate={() => setMenuOpen(false)} />
+                  </div>
+                </aside>
+              </div>
+            </div>
+          </section>
+        </>
+      )}
     </header>
   );
 }

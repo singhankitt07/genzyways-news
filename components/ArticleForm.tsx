@@ -1,6 +1,8 @@
 "use client";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ArticleRichTextEditor from "@/components/ArticleRichTextEditor";
+import { parseRichText, richTextToPlainText, type ContentFormat } from "@/lib/article-content";
 
 const CATEGORIES = ["Current Affairs", "Tech News", "AI World", "Business", "Opinion", "Cricket", "India News", "Entertainment", "World News", "Lifestyle"];
 
@@ -12,6 +14,8 @@ type Initial = {
   summaryHi?: string | null;
   content?: string;
   contentHi?: string | null;
+  contentFormat?: string;
+  contentHiFormat?: string;
   category?: string;
   imageUrl?: string | null;
   sourceName?: string | null;
@@ -37,6 +41,8 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
     summaryHi: initial?.summaryHi || "",
     content: initial?.content || "",
     contentHi: initial?.contentHi || "",
+    contentFormat: initial?.contentFormat || "MARKDOWN",
+    contentHiFormat: initial?.contentHiFormat || "MARKDOWN",
     category: initial?.category || CATEGORIES[0],
     imageUrl: initial?.imageUrl || "",
     sourceName: initial?.sourceName || "",
@@ -45,8 +51,8 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
     breaking: initial?.breaking || false,
     live: initial?.live || false,
     subscriberOnly: initial?.subscriberOnly || false,
-    published: initial?.published || false
-    ,publishedHi: initial?.publishedHi || false
+    published: initial?.published || false,
+    publishedHi: initial?.publishedHi || false
   });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -54,23 +60,6 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
   const [enhancing, setEnhancing] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [media, setMedia] = useState<MediaDraft[]>(initial?.media?.map((item) => ({ type: item.type, url: item.url, caption: item.caption || "", paragraphIndex: item.paragraphIndex })) || []);
-  const contentRef = useRef<HTMLTextAreaElement>(null);
-
-  function wrapSelection(before: string, after: string = before) {
-    const el = contentRef.current;
-    if (!el) return;
-    const start = el.selectionStart;
-    const end = el.selectionEnd;
-    const selected = form.content.slice(start, end) || "text";
-    const next = form.content.slice(0, start) + before + selected + after + form.content.slice(end);
-    setForm({ ...form, content: next });
-    requestAnimationFrame(() => {
-      el.focus();
-      el.selectionStart = start + before.length;
-      el.selectionEnd = start + before.length + selected.length;
-    });
-  }
-
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -109,6 +98,12 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
 
   async function handleSubmit(e: React.FormEvent, publishOverride?: boolean) {
     e.preventDefault();
+    const articleHasText = form.contentFormat === "RICH_TEXT" ? richTextToPlainText(parseRichText(form.content) || { type: "doc", content: [] }).trim().length > 0 : Boolean(form.content.trim());
+    const hindiHasText = form.contentHiFormat === "RICH_TEXT" ? richTextToPlainText(parseRichText(form.contentHi) || { type: "doc", content: [] }).trim().length > 0 : Boolean(form.contentHi.trim());
+    if (!articleHasText || (form.publishedHi && (!form.titleHi.trim() || !form.summaryHi.trim() || !hindiHasText))) {
+      setError("Add the required article text before saving.");
+      return;
+    }
     setSaving(true);
     setError("");
     const payload = { ...form, media, published: publishOverride ?? form.published };
@@ -137,7 +132,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
       setError(data.error || "AI enhancement failed.");
       return;
     }
-    setForm((current) => ({ ...current, title: data.title || current.title, titleHi: data.titleHi || current.titleHi, summary: data.summary || current.summary, summaryHi: data.summaryHi || current.summaryHi, content: data.content || current.content, contentHi: data.contentHi || current.contentHi, category: data.category || current.category, published: false, publishedHi: false }));
+    setForm((current) => ({ ...current, title: data.title || current.title, titleHi: data.titleHi || current.titleHi, summary: data.summary || current.summary, summaryHi: data.summaryHi || current.summaryHi, content: data.content || current.content, contentHi: data.contentHi || current.contentHi, contentFormat: data.contentFormat || current.contentFormat, contentHiFormat: data.contentHiFormat || current.contentHiFormat, category: data.category || current.category, published: false, publishedHi: false }));
   }
 
   return (
@@ -167,7 +162,7 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
           {!media.length && <p className="border border-dashed border-line p-5 text-sm text-ink/60">No inline media added yet.</p>}
         </div>
       </section>
-      {form.publishedHi && <div className="border-t border-line pt-5"><p className="section-kicker mb-3">Hindi newsroom version</p><label className="block text-sm mb-3">Hindi headline<input required value={form.titleHi} onChange={(e) => setForm({ ...form, titleHi: e.target.value })} placeholder="हिंदी हेडलाइन" className="mt-1 w-full border border-line bg-surface px-3 py-2 text-lg font-serif" /></label><label className="block text-sm mb-3">Hindi summary<textarea required rows={2} value={form.summaryHi} onChange={(e) => setForm({ ...form, summaryHi: e.target.value })} placeholder="हिंदी सारांश" className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label><label className="block text-sm">Hindi article body<textarea required rows={10} value={form.contentHi} onChange={(e) => setForm({ ...form, contentHi: e.target.value })} placeholder="हिंदी में पूरा लेख लिखें। पैराग्राफ के बीच खाली लाइन रखें।" className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label></div>}
+      {form.publishedHi && <div className="border-t border-line pt-5"><p className="section-kicker mb-3">Hindi newsroom version</p><label className="block text-sm mb-3">Hindi headline<input required value={form.titleHi} onChange={(e) => setForm({ ...form, titleHi: e.target.value })} placeholder="हिंदी हेडलाइन" className="mt-1 w-full border border-line bg-surface px-3 py-2 text-lg font-serif" /></label><label className="block text-sm mb-3">Hindi summary<textarea required rows={2} value={form.summaryHi} onChange={(e) => setForm({ ...form, summaryHi: e.target.value })} placeholder="हिंदी सारांश" className="mt-1 w-full border border-line bg-surface px-3 py-2" /></label><div className="block text-sm">Hindi article body<ArticleRichTextEditor value={form.contentHi} format={form.contentHiFormat} onChange={(content, format: ContentFormat) => setForm({ ...form, contentHi: content, contentHiFormat: format })} label="Hindi article body" /></div></div>}
       <div>
         <label className="block text-sm mb-1">Summary (shown on homepage / listings)</label>
         <textarea
@@ -179,33 +174,8 @@ export default function ArticleForm({ initial }: { initial?: Initial }) {
         />
       </div>
       <div>
-        <label className="block text-sm mb-1">Article body (blank line = new paragraph)</label>
-        <div className="flex flex-wrap gap-2 mb-1.5">
-          <button type="button" onClick={() => wrapSelection("**")} className="border border-line px-2.5 py-1 text-sm font-bold hover:bg-ink/5">
-            B
-          </button>
-          <button type="button" onClick={() => wrapSelection("*")} className="border border-line px-2.5 py-1 text-sm italic hover:bg-ink/5">
-            I
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              const url = prompt("Link URL:");
-              if (url) wrapSelection("[", `](${url})`);
-            }}
-            className="border border-line px-2.5 py-1 text-sm hover:bg-ink/5"
-          >
-            Link
-          </button>
-        </div>
-        <textarea
-          ref={contentRef}
-          required
-          rows={12}
-          value={form.content}
-          onChange={(e) => setForm({ ...form, content: e.target.value })}
-          className="w-full border border-line bg-surface px-3 py-2"
-        />
+        <label className="mb-1 block text-sm">Article body</label>
+        <ArticleRichTextEditor value={form.content} format={form.contentFormat} onChange={(content, format) => setForm({ ...form, content, contentFormat: format })} label="Article body" />
       </div>
       <div className="grid sm:grid-cols-2 gap-4">
         <div>

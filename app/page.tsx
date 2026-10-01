@@ -15,8 +15,9 @@ function StoryImage({ imageUrl, title }: { imageUrl?: string | null; title: stri
   return <div className="home-story-image-wrap"><div className="home-story-image">{imageUrl && <img src={imageUrl} alt={title} className="home-story-image" />}</div></div>;
 }
 
-export default async function HomePage({ searchParams }: { searchParams: { q?: string } }) {
-  const query = searchParams.q?.trim();
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const { q } = await searchParams;
+  const query = q?.trim();
   const articles = await prisma.article.findMany({ where: { published: true, ...(query ? { OR: [{ title: { contains: query, mode: "insensitive" } }, { summary: { contains: query, mode: "insensitive" } }, { category: { contains: query, mode: "insensitive" } }] } : {}) }, orderBy: { createdAt: "desc" }, take: 13 });
   if (articles.length === 0) return <EmptyState variant="home" />;
 

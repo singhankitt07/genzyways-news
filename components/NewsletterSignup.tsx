@@ -10,26 +10,31 @@ export default function NewsletterSignup() {
     e.preventDefault();
     setStatus("loading");
     setErrorMsg("");
-    const res = await fetch("/api/newsletter", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email })
-    });
-    const data = await res.json();
-    if (!res.ok) {
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setStatus("error");
+        setErrorMsg(data.error || "Something went wrong.");
+        return;
+      }
+      setStatus("done");
+      setEmail("");
+    } catch {
       setStatus("error");
-      setErrorMsg(data.error || "Something went wrong.");
-      return;
+      setErrorMsg("Unable to subscribe right now. Try again shortly.");
     }
-    setStatus("done");
-    setEmail("");
   }
 
   if (status === "done") {
     return (
       <div className="newsletter-box p-6 text-center sm:p-8 no-print">
-        <p className="newsletter-heading font-serif text-xl">You're subscribed!</p>
-        <p className="newsletter-description mt-1 text-sm">We'll send new stories straight to your inbox.</p>
+        <p className="newsletter-heading font-serif text-xl">Check your inbox</p>
+        <p className="newsletter-description mt-1 text-sm">Open the confirmation link to start receiving newsroom updates.</p>
       </div>
     );
   }

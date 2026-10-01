@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { renderInline } from "@/lib/markdown";
+import ArticleContent from "@/components/ArticleContent";
+import { parseRichText, richTextToPlainText } from "@/lib/article-content";
 import CategoryBadge from "@/components/CategoryBadge";
 import PrintButton from "@/components/PrintButton";
 import RelatedArticles from "@/components/RelatedArticles";
@@ -17,8 +18,9 @@ import ReadingFontSizeControl from "@/components/ReadingFontSizeControl";
 import ReadingProgress from "@/components/ReadingProgress";
 import Link from "next/link";
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const article = await prisma.article.findUnique({ where: { slug: params.slug }, include: { authorProfile: true, media: { orderBy: [{ paragraphIndex: "asc" }, { sortOrder: "asc" }] } } });
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await prisma.article.findUnique({ where: { slug }, include: { authorProfile: true, media: { orderBy: [{ paragraphIndex: "asc" }, { sortOrder: "asc" }] } } });
   if (!article || !article.published) return {};
 
   const url = `/article/${article.slug}`;
@@ -50,8 +52,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = await prisma.article.findUnique({ where: { slug: params.slug }, include: { authorProfile: true, media: { orderBy: [{ paragraphIndex: "asc" }, { sortOrder: "asc" }] } } });
+export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const article = await prisma.article.findUnique({ where: { slug }, include: { authorProfile: true, media: { orderBy: [{ paragraphIndex: "asc" }, { sortOrder: "asc" }] } } });
   if (!article || !article.published) notFound();
   const session = await getServerSession(authOptions);
   const isReader = Boolean(session?.user);
@@ -59,11 +62,10 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   const subscription = userId ? await prisma.subscription.findUnique({ where: { userId } }) : null;
   const hasSubscription = subscription?.status === "ACTIVE";
   const hasAccess = hasSubscription;
-  const previewLength = Math.max(1, Math.ceil(article.content.length * 0.2));
-  const previewEnd = article.content.lastIndexOf(" ", previewLength);
-  const previewContent = article.content.slice(0, previewEnd > 0 ? previewEnd : previewLength);
-  const visibleContent = hasAccess ? article.content : previewContent;
-  const visibleParagraphs = visibleContent.split("\n\n");
+  const plainContent = article.contentFormat === "RICH_TEXT" ? richTextToPlainText(parseRichText(article.content) || { type: "doc", content: [] }) : article.content;
+  const previewLength = Math.max(1, Math.ceil(plainContent.length * 0.2));
+  const previewEnd = plainContent.lastIndexOf(" ", previewLength);
+  const previewContent = plainContent.slice(0, previewEnd > 0 ? previewEnd : previewLength);
 
   return (
     <>
@@ -106,7 +108,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           <img src={article.imageUrl} alt="" className="w-full aspect-[16/9] object-cover mb-8" />
         )}
         <div className="prose-content space-y-5 font-sans text-[17px] leading-[1.7] sm:text-lg">
-          {visibleParagraphs.map((para, i) => <div key={i}><p>{renderInline(para)}</p>{article.media.filter((item) => item.paragraphIndex === i + 1).map((item) => <figure key={item.id} className="my-8">{item.type === "VIDEO" ? <video src={item.url} controls preload="metadata" className="w-full" /> : <img src={item.url} alt={item.caption || "Article photo"} className="w-full" />}{item.caption && <figcaption className="mt-2 text-sm text-ink/60">{item.caption}</figcaption>}</figure>)}</div>)}
+          <ArticleContent content={hasAccess ? article.content : previewContent} format={hasAccess ? article.contentFormat : "MARKDOWN"} media={hasAccess ? article.media : []} />
         </div>
         {!hasAccess && <ArticleAccessPrompt />}
 

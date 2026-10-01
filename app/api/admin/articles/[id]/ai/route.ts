@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions, isAdminSession } from "@/lib/auth";
+import { authOptions, hasStaffRole } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const CATEGORIES = new Set(["Current Affairs", "Tech News", "AI World", "Business", "Opinion", "Cricket", "India News", "Entertainment", "World News", "Lifestyle"]);
@@ -10,14 +10,15 @@ function parseJson(value: string) {
   return JSON.parse(cleaned) as Record<string, unknown>;
 }
 
-export async function POST(_req: Request, { params }: { params: { id: string } }) {
+export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
-  if (!isAdminSession(session)) return NextResponse.json({ error: "Owner access required" }, { status: 403 });
+  if (!hasStaffRole(session, ["ADMIN", "EDITOR"])) return NextResponse.json({ error: "Editor access required" }, { status: 403 });
 
   const apiKey = process.env.AI_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "AI is not configured. Add AI_API_KEY to the server environment." }, { status: 503 });
 
-  const article = await prisma.article.findUnique({ where: { id: params.id } });
+  const article = await prisma.article.findUnique({ where: { id } });
   if (!article) return NextResponse.json({ error: "Article not found." }, { status: 404 });
 
   const baseUrl = (process.env.AI_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, "");
@@ -48,15 +49,19 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
     const result = parseJson(text);
     const stringValue = (key: string, fallback: string) => typeof result[key] === "string" && result[key].trim() ? result[key].trim() : fallback;
     const category = stringValue("category", article.category);
+    const content = typeof result.content === "string" && result.content.trim() ? result.content.trim() : null;
+    const contentHi = typeof result.contentHi === "string" && result.contentHi.trim() ? result.contentHi.trim() : null;
     const updated = await prisma.article.update({
       where: { id: article.id },
       data: {
         title: stringValue("title", article.title).slice(0, 240),
         summary: stringValue("summary", article.summary).slice(0, 1000),
-        content: stringValue("content", article.content),
+        content: content || article.content,
+        contentFormat: content ? "MARKDOWN" : article.contentFormat,
         titleHi: stringValue("titleHi", article.titleHi || "").slice(0, 240) || null,
         summaryHi: stringValue("summaryHi", article.summaryHi || "").slice(0, 1000) || null,
-        contentHi: stringValue("contentHi", article.contentHi || "") || null,
+        contentHi: contentHi || article.contentHi,
+        contentHiFormat: contentHi ? "MARKDOWN" : article.contentHiFormat,
         category: CATEGORIES.has(category) ? category : article.category,
         published: false,
         publishedHi: false

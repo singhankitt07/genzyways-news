@@ -4,8 +4,9 @@ import { prisma } from "@/lib/prisma";
 import EbookDetail from "@/components/EbookDetail";
 import type { PublicEbook } from "@/components/EbookLibrary";
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const ebook = await prisma.ebook.findUnique({ where: { slug: params.slug } });
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const ebook = await prisma.ebook.findUnique({ where: { slug } });
   if (!ebook || !ebook.published) return {};
   return {
     title: `${ebook.title} | Guides & eBooks | GenzyWays News`,
@@ -14,8 +15,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function EbookPage({ params }: { params: { slug: string } }) {
-  const ebook = await prisma.ebook.findUnique({ where: { slug: params.slug } });
+export default async function EbookPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const ebook = await prisma.ebook.findUnique({ where: { slug } });
   if (!ebook || !ebook.published) notFound();
   const data: PublicEbook = { ...ebook, updatedAt: ebook.updatedAt.toISOString() };
   return <section className="ebooks-page"><EbookDetail ebook={data} /></section>;

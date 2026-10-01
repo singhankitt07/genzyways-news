@@ -5,7 +5,14 @@ import AppleProvider from "next-auth/providers/apple";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
-async function validateCredentials(email: string | undefined, password: string | undefined, expectedRole?: "ADMIN" | "READER") {
+export const STAFF_ROLES = ["ADMIN", "EDITOR", "MODERATOR"] as const;
+export type StaffRole = typeof STAFF_ROLES[number];
+
+function isStaffRole(role: string | null | undefined): role is StaffRole {
+  return STAFF_ROLES.includes(role as StaffRole);
+}
+
+async function validateCredentials(email: string | undefined, password: string | undefined, expectedRole?: "STAFF" | "READER") {
   if (!email || !password) return null;
   const lookup = email.trim();
   const user = await prisma.user.findFirst({
@@ -14,7 +21,8 @@ async function validateCredentials(email: string | undefined, password: string |
     }
   });
   if (!user) return null;
-  if (expectedRole && user.role !== expectedRole) return null;
+  if (expectedRole === "READER" && user.role !== "READER") return null;
+  if (expectedRole === "STAFF" && !isStaffRole(user.role)) return null;
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) return null;
   return { id: user.id, email: user.email, name: user.name, role: user.role };
@@ -43,7 +51,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        return validateCredentials(credentials?.email, credentials?.password, "ADMIN");
+        return validateCredentials(credentials?.email, credentials?.password, "STAFF");
       }
     }),
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
@@ -104,4 +112,14 @@ export const authOptions: NextAuthOptions = {
 export function isAdminSession(session: unknown) {
   const user = (session as { user?: { role?: string } } | null | undefined)?.user;
   return user?.role === "ADMIN";
+}
+
+export function hasStaffRole(session: unknown, roles: StaffRole[]) {
+  const user = (session as { user?: { role?: string } } | null | undefined)?.user;
+  return Boolean(user?.role && roles.includes(user.role as StaffRole));
+}
+
+export function isStaffSession(session: unknown) {
+  const user = (session as { user?: { role?: string } } | null | undefined)?.user;
+  return isStaffRole(user?.role);
 }

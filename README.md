@@ -11,6 +11,9 @@ A working Next.js news site for GenzyWays News.com: public site (breaking ticker
 - `/admin`: RSS draft import and optional AI-assisted editing for imported stories
 - Database: Prisma (SQLite for local dev, swap to Postgres for production — see below)
 - Auth: NextAuth credentials login, bcrypt-hashed password, JWT session
+- Staff roles: administrators manage the newsroom, editors manage articles, moderators review comment reports
+- Newsletter: Resend double opt-in, admin campaign sending, and unsubscribe links
+- Article writing: visual rich-text editor for English and Hindi; older Markdown stories remain supported
 
 ## 1. Run it locally
 You'll need Node.js 18+ installed.
@@ -27,6 +30,12 @@ npm run dev
 ```
 
 Open http://localhost:3000 for the site, http://localhost:3000/admin/login to sign in.
+
+For newsletter confirmation and campaign delivery, set `RESEND_API_KEY` and `NEWSLETTER_FROM`
+to a verified sender in Resend. If `NEWSLETTER_FROM` is unset, the app reuses `SMTP_FROM`,
+`EMAIL_FROM`, or `SMTP_USER`. Subscribers must confirm by email before they appear in the
+send list. Administrators can compose a campaign at `/admin/newsletter`; every campaign
+includes a per-subscriber unsubscribe link.
 
 ### News automation
 

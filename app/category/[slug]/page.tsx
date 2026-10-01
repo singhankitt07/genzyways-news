@@ -5,8 +5,9 @@ import { categoryFromSlug } from "@/lib/i18n-data";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const category = categoryFromSlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const category = categoryFromSlug(slug);
   if (!category) return {};
   const title = `${category.label.en} News | GenzyWays News`;
   const description = `Latest ${category.label.en} stories, updated daily on GenzyWays News.`;
@@ -31,8 +32,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function CategoryPage({ params }: { params: { slug: string } }) {
-  const category = categoryFromSlug(params.slug);
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const category = categoryFromSlug(slug);
   if (!category) notFound();
 
   const articles = await prisma.article.findMany({
