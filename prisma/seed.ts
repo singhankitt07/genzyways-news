@@ -6,13 +6,13 @@ const prisma = new PrismaClient();
 async function main() {
   const email = process.env.ADMIN_EMAIL || "you@example.com";
   const password = process.env.ADMIN_PASSWORD || "ChangeThisPassword123!";
-  const hash = await bcrypt.hash(password, 10);
-
-  await prisma.user.upsert({
-    where: { email },
-    update: { password: hash, role: "ADMIN", name: "Abhi" },
-    create: { email, password: hash, name: "Abhi", role: "ADMIN" }
-  });
+  const existingAdmin = await prisma.user.findUnique({ where: { email }, select: { id: true, role: true } });
+  if (!existingAdmin) {
+    const hash = await bcrypt.hash(password, 10);
+    await prisma.user.create({ data: { email, password: hash, name: "Abhi", role: "ADMIN" } });
+  } else if (existingAdmin.role !== "ADMIN") {
+    await prisma.user.update({ where: { id: existingAdmin.id }, data: { role: "ADMIN" } });
+  }
   console.log(`Admin user ready: ${email}`);
 
   const authors = [
