@@ -8,9 +8,11 @@ export default function PrivacyPage() {
         <section>
           <h2 className="font-serif text-xl mb-2 text-ink">Information We Collect</h2>
           <p>
-            GenzyWays News collects minimal information: your language preference (stored
-            locally in your browser), and any information you voluntarily submit through
-            our Contact Us form (name, email, message).
+            If you create an account, we store your email, display name, password hash,
+            and any profile details you choose to provide. We also store comments and
+            reader activity needed for account features. Newsletter subscribers' email
+            addresses are stored separately. Contact form submissions include the details
+            you provide, such as your name, email, and message.
           </p>
         </section>
         <section>
@@ -23,10 +25,13 @@ export default function PrivacyPage() {
         <section>
           <h2 className="font-serif text-xl mb-2 text-ink">Cookies &amp; Local Storage</h2>
           <p>
-            We use your browser's local storage to remember your chosen display language
-            and analytics consent. This stays on your device and is not transmitted to our
-            servers. When enabled after consent, Google AdSense may set cookies or use
-            similar technologies to serve and measure advertising.
+            Essential authentication cookies keep reader and staff accounts signed in.
+            Local storage remembers display settings, weather results, and your privacy
+            choice. Google Analytics and personalized ads are enabled only after you accept
+            optional cookies. If you reject them, non-personalized ads may still appear for
+            non-subscribers. Google says non-personalized ads can still use cookies or
+            similar storage for frequency capping and aggregate reporting where permitted.
+            Use the Privacy settings control in the footer to change your choice.
           </p>
         </section>
         <section>
@@ -41,9 +46,12 @@ export default function PrivacyPage() {
         <section>
           <h2 className="font-serif text-xl mb-2 text-ink">Profile and weather</h2>
           <p>
-            Profile details are optional and used to personalize your account. If you allow
-            browser location access, the weather widget requests current conditions from
-            Open-Meteo. GenzyWays News does not store your precise coordinates.
+            Profile details are optional and used to personalize your account. The weather
+            widget asks your browser for location access. If allowed, your coordinates are
+            sent directly from your browser to Open-Meteo for weather and air-quality data
+            and to BigDataCloud for a place name. GenzyWays News does not store your precise
+            coordinates; it caches the returned weather and approximate place details in
+            your browser. You can deny or later revoke location permission in browser settings.
           </p>
         </section>
         <section>
@@ -57,10 +65,12 @@ export default function PrivacyPage() {
         <section>
           <h2 className="font-serif text-xl mb-2 text-ink">Advertising</h2>
           <p>
-            Google AdSense and its partners may use cookies or similar technologies to serve
-            and measure advertisements. Advertising scripts load only after the site's consent
-            choice and are subject to Google's policies. You can change your browser cookie
-            settings at any time.
+            Active paid subscribers do not receive ad slots. Other visitors may receive
+            non-personalized ads before choosing optional cookies; accepting enables ad
+            personalization. Ad delivery transmits technical request data such as IP address,
+            and Google or its partners may use cookies or similar storage for frequency and
+            reporting purposes subject to applicable rules. See Google's policies and local
+            requirements for details.
           </p>
         </section>
         <section>

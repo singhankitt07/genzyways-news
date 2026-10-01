@@ -1084,10 +1084,33 @@ body:has(.admin-shell) main {
 }
 
 .weather-widget-loading {
-  max-width: 190px;
+  max-width: min(280px, 70vw);
+  min-width: 0;
+  overflow: hidden;
+  font-size: 11px;
+}
+
+.weather-widget-loading-label {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.weather-location-action {
+  min-height: 32px;
+  flex: 0 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0 8px;
+  color: var(--text-primary);
   font-size: 11px;
+  font-weight: 700;
+}
+
+.weather-location-action:hover,
+.weather-location-action:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent-text-on-dark);
 }
 
 .weather-icon {

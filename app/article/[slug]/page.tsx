@@ -119,7 +119,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       </article>
       </div>
 
-      <div className="mx-auto w-full max-w-[760px] px-4"><AdSense slot={process.env.NEXT_PUBLIC_ADSENSE_ARTICLE_SLOT} /></div>
+      <div className="mx-auto w-full max-w-[760px] px-4"><AdSense slot={process.env.NEXT_PUBLIC_ADSENSE_ARTICLE_SLOT} isPremiumSubscriber={hasSubscription} /></div>
       <div className="mx-auto w-full max-w-[760px] px-4"><RelatedArticles category={article.category} excludeId={article.id} /></div>
 
       <div className="mx-auto w-full max-w-[720px] pb-16 no-print">

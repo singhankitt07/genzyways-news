@@ -34,10 +34,12 @@ function WeatherIcon({ code }: { code: number }) {
 
 export default function WeatherWidget() {
   const [weather, setWeather] = useState<Weather | null>(null);
-  const [status, setStatus] = useState("Allow location for local weather");
+  const [status, setStatus] = useState("Requesting location for local weather");
+  const [locationAttempt, setLocationAttempt] = useState(0);
 
   useEffect(() => {
     let active = true;
+    let refreshTimer: number | undefined;
     const cached = window.localStorage.getItem(CACHE_KEY);
     if (cached) {
       try {
@@ -70,14 +72,25 @@ export default function WeatherWidget() {
       }
     }
 
-    const requestLocation = () => navigator.geolocation.getCurrentPosition(({ coords }) => load(coords), () => setStatus("Allow location for local weather"), { maximumAge: REFRESH_MS, timeout: 12000, enableHighAccuracy: false });
-    if (navigator.geolocation) requestLocation();
-    else setStatus("Weather unavailable");
-    const refresh = window.setInterval(requestLocation, REFRESH_MS);
-    return () => { active = false; window.clearInterval(refresh); };
-  }, []);
+    const requestLocation = () => {
+      if (!navigator.geolocation) {
+        setStatus("Location is unavailable in this browser");
+        return;
+      }
+      setStatus("Requesting location for local weather");
+      navigator.geolocation.getCurrentPosition(({ coords }) => {
+        if (!active) return;
+        void load(coords);
+        refreshTimer = window.setTimeout(requestLocation, REFRESH_MS);
+      }, (error) => {
+        if (active) setStatus(error.code === error.PERMISSION_DENIED ? "Location blocked; enable it in browser settings" : "Location unavailable; try again");
+      }, { maximumAge: REFRESH_MS, timeout: 12000, enableHighAccuracy: false });
+    };
+    requestLocation();
+    return () => { active = false; if (refreshTimer) window.clearTimeout(refreshTimer); };
+  }, [locationAttempt]);
 
-  if (!weather) return <span className="weather-widget weather-widget-loading"><span className="weather-icon weather-icon-cloud" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M8 23h14a5 5 0 0 0 .5-9.97A7.5 7.5 0 0 0 8 15a4 4 0 0 0 0 8Z" /></svg></span><span>{status}</span></span>;
+  if (!weather) return <span className="weather-widget weather-widget-loading"><span className="weather-icon weather-icon-cloud" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M8 23h14a5 5 0 0 0 .5-9.97A7.5 7.5 0 0 0 8 15a4 4 0 0 0 0 8Z" /></svg></span><span className="weather-widget-loading-label">{status}</span>{status.startsWith("Location blocked") || status.startsWith("Location unavailable") ? <button type="button" onClick={() => setLocationAttempt((attempt) => attempt + 1)} className="weather-location-action" aria-label="Retry location request">Retry</button> : null}</span>;
   const location = [weather.city, weather.region, weather.country].filter(Boolean).join(", ");
-  return <span className="weather-widget" title={`Live weather for ${location}. Air quality: ${aqiLabel(weather.aqi)}. Data refreshes every 15 minutes.`}><WeatherIcon code={weather.weatherCode} /><span className="weather-reading"><strong>{weather.temperature}°C</strong><span>{weatherLabel(weather.weatherCode)}</span></span><span className={`weather-aqi weather-aqi-${weather.aqi == null ? "unknown" : weather.aqi <= 50 ? "good" : weather.aqi <= 100 ? "moderate" : "poor"}`}><b>AQI</b> {weather.aqi == null ? "—" : Math.round(weather.aqi)}<small>{aqiLabel(weather.aqi)}</small></span><span className="weather-location">{location}</span></span>;
+  return <span className="weather-widget" title={`Live weather for ${location}. Air quality: ${aqiLabel(weather.aqi)}. Data refreshes every 15 minutes.`}><WeatherIcon code={weather.weatherCode} /><span className="weather-reading"><strong>{weather.temperature}°C</strong><span>{weatherLabel(weather.weatherCode)}</span></span><span className={`weather-aqi weather-aqi-${weather.aqi == null ? "unknown" : weather.aqi <= 50 ? "good" : weather.aqi <= 100 ? "moderate" : "poor"}`}><b>AQI</b> {weather.aqi == null ? "—" : Math.round(weather.aqi)}<small>{aqiLabel(weather.aqi)}</small></span><span className="weather-location">{location}</span>{status.startsWith("Location blocked") || status.startsWith("Location unavailable") ? <button type="button" onClick={() => setLocationAttempt((attempt) => attempt + 1)} className="weather-location-action" aria-label="Retry location request">Retry</button> : null}</span>;
 }

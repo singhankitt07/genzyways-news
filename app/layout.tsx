@@ -11,9 +11,9 @@ import { authOptions } from "@/lib/auth";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import CookieConsent from "@/components/CookieConsent";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
-import AdSenseLoader from "@/components/AdSenseLoader";
 import ThemeProvider from "@/components/ThemeProvider";
 import ScrollToTop from "@/components/ScrollToTop";
+import { PRIVACY_CONSENT_KEY } from "@/lib/privacy-consent";
 
 const sourceSerif = Source_Serif_4({ subsets: ["latin"], variable: "--font-source-serif" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -57,6 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   let breakingTitles: { title: string; slug: string; live?: boolean; updatedAt?: string }[] = [];
   let initialTheme: "light" | "sepia" | "dark" | "auto" = "auto";
   let initialFontSize = 18;
+  let isPremiumSubscriber = false;
   try {
     const breaking = await prisma.article.findMany({
       where: { published: true, OR: [{ breaking: true }, { live: true }] },
@@ -73,6 +74,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     const reader = session?.user as { theme?: string; readingFontSize?: number } | undefined;
     if (reader?.theme && ["light", "sepia", "dark", "auto"].includes(reader.theme)) initialTheme = reader.theme as typeof initialTheme;
     if (reader?.readingFontSize && Number.isInteger(reader.readingFontSize) && reader.readingFontSize >= 16 && reader.readingFontSize <= 24) initialFontSize = reader.readingFontSize;
+    const userId = (session?.user as { id?: string } | undefined)?.id;
+    if (userId) {
+      isPremiumSubscriber = true;
+      const subscription = await prisma.subscription.findUnique({ where: { userId }, select: { status: true } });
+      isPremiumSubscriber = subscription?.status === "ACTIVE";
+    }
   } catch {
     initialTheme = "auto";
   }
@@ -80,14 +87,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={`${sourceSerif.variable} ${inter.variable} ${notoHindi.variable}`}>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `try { const saved = localStorage.getItem('genzywaynews-theme'); const server = ${JSON.stringify(initialTheme)}; const choice = saved || server; const system = window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.dataset.theme = ['light','sepia','dark'].includes(choice) ? choice : (system ? 'dark' : 'light'); const storedSize = localStorage.getItem('genzywaynews-reading-font-size'); const size = storedSize === null ? ${initialFontSize} : Number(storedSize); if (Number.isInteger(size) && size >= 16 && size <= 24) document.documentElement.style.setProperty('--reader-font-size', size + 'px'); } catch (error) { document.documentElement.dataset.theme = ${JSON.stringify(initialTheme === "auto" ? "light" : initialTheme)}; }` }} />
+        <script dangerouslySetInnerHTML={{ __html: `try { const saved = localStorage.getItem('genzywaynews-theme'); const server = ${JSON.stringify(initialTheme)}; const choice = saved || server; const system = window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.dataset.theme = ['light','sepia','dark'].includes(choice) ? choice : (system ? 'dark' : 'light'); const storedSize = localStorage.getItem('genzywaynews-reading-font-size'); const size = storedSize === null ? ${initialFontSize} : Number(storedSize); if (Number.isInteger(size) && size >= 16 && size <= 24) document.documentElement.style.setProperty('--reader-font-size', size + 'px'); window.adsbygoogle = window.adsbygoogle || []; window.adsbygoogle.requestNonPersonalizedAds = localStorage.getItem(${JSON.stringify(PRIVACY_CONSENT_KEY)}) === 'accepted' ? 0 : 1; } catch (error) { document.documentElement.dataset.theme = ${JSON.stringify(initialTheme === "auto" ? "light" : initialTheme)}; }` }} />
+        {!isPremiumSubscriber && process.env.NEXT_PUBLIC_ADSENSE_CLIENT && <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT}`} crossOrigin="anonymous" />}
       </head>
       <body className="font-sans">
         <SessionProviderWrapper>
           <ThemeProvider initialTheme={initialTheme} initialFontSize={initialFontSize}>
           <div className="print-watermark" aria-hidden="true"><img src="/brand/genzywaynews-icon.svg" alt="" /></div>
           <GoogleAnalytics />
-          <AdSenseLoader />
           <CookieConsent />
           <LanguageProvider>
             <Masthead />

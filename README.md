@@ -101,8 +101,15 @@ servers, and it comfortably handles traffic spikes on the free/Pro tier.
 4. Submit the sitemap in Google Search Console (https://search.google.com/search-console).
 
 ## 4. Monetize
-- **Google AdSense**: apply once you have real traffic and content; drop the ad script
-  into `app/layout.tsx`.
+- **Google AdSense**: set `NEXT_PUBLIC_ADSENSE_CLIENT` and enable Auto ads in the AdSense
+  dashboard. The site loads ads for non-premium visitors; active paid subscribers are
+  excluded. Ads are requested as non-personalized until a visitor accepts optional
+  personalization. Non-personalized ads may still use storage for frequency capping and
+  aggregate reporting where permitted. Fixed ad units can also use the optional home/article
+  slot environment variables.
+- **Consent setup**: this site's preference UI is not an IAB TCF-certified CMP. For visitors
+  in the EEA, UK, or Switzerland, configure Google's certified CMP through AdSense Privacy &
+  Messaging and review local consent requirements before serving ads there.
 - **Paywall**: the `published` field on each article is a start — a real paywall needs a
   payments provider (Razorpay/Stripe) and a subscription check, which I can build next.
 - **Affiliate/sponsored posts**: just author them as normal articles.
@@ -136,9 +143,8 @@ International, Technology). Either:
   Storage → Create Database → Blob, connect it to this project, and redeploy — Vercel
   injects the required token automatically. Until you do that, pasting an image URL still
   works fine.
-- **Basic rich text** — B / I / Link buttons in the article editor wrap your selected text
-  with `**bold**`, `*italic*`, `[text](url)`, which render properly formatted on the
-  published article page.
+- **Rich text editor** — visually format article bodies with headings, lists, quotes,
+  emphasis, and links in English or Hindi. Existing Markdown articles remain supported.
 
 ## What's new in this update (v3)
 - **More sample articles** — now 3 per category across Current Affairs, Tech News, AI

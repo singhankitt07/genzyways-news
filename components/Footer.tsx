@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useLanguage } from "@/lib/i18n";
 import { useSession } from "next-auth/react";
 import Logo from "./Logo";
+import { OPEN_PRIVACY_SETTINGS_EVENT } from "@/lib/privacy-consent";
 
 const SOCIAL_LINKS = [
   { label: "Instagram", href: "https://www.instagram.com/GenzyWays News/", icon: <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none" /></svg> },
@@ -48,6 +49,7 @@ export default function Footer() {
             <li><Link href="/videos" className="hover:text-footer-text">Videos</Link></li>
             <li><Link href="/contact" className="hover:text-footer-text">{t("contactUs")}</Link></li>
             <li><Link href="/privacy" className="hover:text-footer-text">{t("privacyPolicy")}</Link></li>
+            <li><button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_PRIVACY_SETTINGS_EVENT))} className="text-left hover:text-footer-text">Privacy settings</button></li>
             <li><Link href="/editorial-policy" className="hover:text-footer-text">Editorial Policy</Link></li>
             <li><Link href="/search" className="hover:text-footer-text">Search the newsroom</Link></li>
             <li><Link href="/hindi" className="hover:text-footer-text">हिंदी न्यूज़</Link></li>

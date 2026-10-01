@@ -4,6 +4,8 @@ import ArticleCard from "@/components/ArticleCard";
 import EmptyState from "@/components/EmptyState";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import AdSense from "@/components/AdSense";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import Trending from "@/components/Trending";
 import ForYou from "@/components/ForYou";
 
@@ -20,6 +22,10 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const query = q?.trim();
   const articles = await prisma.article.findMany({ where: { published: true, ...(query ? { OR: [{ title: { contains: query, mode: "insensitive" } }, { summary: { contains: query, mode: "insensitive" } }, { category: { contains: query, mode: "insensitive" } }] } : {}) }, orderBy: { createdAt: "desc" }, take: 13 });
   if (articles.length === 0) return <EmptyState variant="home" />;
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as { id?: string } | undefined)?.id;
+  const subscription = userId ? await prisma.subscription.findUnique({ where: { userId }, select: { status: true } }) : null;
+  const isPremiumSubscriber = subscription?.status === "ACTIVE";
 
   const [lead, ...rest] = articles;
   const supporting = rest.slice(0, 4);
@@ -37,7 +43,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         <section aria-labelledby="top-stories-heading"><h2 id="top-stories-heading" className="section-kicker mb-3">Top stories</h2><div>{supporting.map((article) => <article key={article.id} className="home-news-item py-4 first:pt-0"><Link href={`/article/${article.slug}`} className="group block"><StoryMeta category={article.category} live={article.live} /><h3 className="font-serif text-xl leading-snug group-hover:text-press">{article.title}</h3><p className="home-time mt-2">By {article.author}</p></Link></article>)}</div></section>
         <aside className="border-t border-line pt-4 lg:border-l lg:border-t-0 lg:pl-6"><section aria-labelledby="editorials-heading"><h2 id="editorials-heading" className="section-kicker mb-3">Editorials / Opinion</h2>{(opinion.length ? opinion : supporting.slice(0, 2)).map((article) => <article key={article.id} className="home-news-item py-4 first:pt-0"><Link href={`/article/${article.slug}`} className="group block"><h3 className="font-serif text-xl leading-snug group-hover:text-press">{article.title}</h3><p className="home-time mt-2">By {article.author}</p></Link></article>)}</section><section className="mt-8 border-t border-line pt-4" aria-labelledby="latest-heading"><h2 id="latest-heading" className="section-kicker mb-3">Latest news</h2>{latest.slice(0, 3).map((article) => <Link key={article.id} href={`/article/${article.slug}`} className="mb-3 flex items-start justify-between gap-3 text-sm hover:text-press"><span>{article.title}</span><span className="home-time shrink-0">{article.live ? "LIVE" : "12 mins ago"}</span></Link>)}</section></aside>
       </div>
-      <AdSense slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT} />
+      <AdSense slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT} isPremiumSubscriber={isPremiumSubscriber} />
       <div className="mb-14 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_300px]"><section aria-labelledby="more-stories-heading"><div className="mb-5 flex items-end justify-between border-b-2 border-press pb-3"><h2 id="more-stories-heading" className="font-serif text-2xl">More stories</h2><Link href="/category/current-affairs" className="text-xs font-semibold text-press hover:underline">Browse all</Link></div><div className="grid gap-8 sm:grid-cols-2">{remaining.map((article) => <ArticleCard key={article.id} {...article} />)}</div></section><Trending items={articles.slice(0, 5).map(({ title, slug, category }) => ({ title, slug, category }))} /></div>
       <NewsletterSignup />
     </div>
