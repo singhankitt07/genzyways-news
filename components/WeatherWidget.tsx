@@ -104,8 +104,14 @@ export default function WeatherWidget() {
         if (active) void loadApproximateLocation();
       }, { maximumAge: REFRESH_MS, timeout: 12000, enableHighAccuracy: false });
     }
+    // Mobile browsers often ignore permission prompts that are not triggered by a tap, so also locate on user request.
+    function locateFromGesture() {
+      if (refreshTimer) window.clearTimeout(refreshTimer);
+      requestLocation();
+    }
+    window.addEventListener(WEATHER_LOCATE_EVENT, locateFromGesture);
     requestLocation();
-    return () => { active = false; if (refreshTimer) window.clearTimeout(refreshTimer); };
+    return () => { active = false; window.removeEventListener(WEATHER_LOCATE_EVENT, locateFromGesture); if (refreshTimer) window.clearTimeout(refreshTimer); };
   }, [locationAttempt]);
 
   if (!weather) return <span className="weather-widget weather-widget-loading"><span className="weather-icon weather-icon-cloud" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M8 23h14a5 5 0 0 0 .5-9.97A7.5 7.5 0 0 0 8 15a4 4 0 0 0 0 8Z" /></svg></span><span className="weather-widget-loading-label">{status}</span>{status.startsWith("Location blocked") || status.startsWith("Location unavailable") ? <button type="button" onClick={() => setLocationAttempt((attempt) => attempt + 1)} className="weather-location-action" aria-label="Retry location request">Retry</button> : null}</span>;
