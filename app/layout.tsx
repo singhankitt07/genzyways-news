@@ -13,6 +13,7 @@ import CookieConsent from "@/components/CookieConsent";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
 import ThemeProvider from "@/components/ThemeProvider";
 import ScrollToTop from "@/components/ScrollToTop";
+import { MotionProvider } from "@/components/Motion";
 import { PRIVACY_CONSENT_KEY } from "@/lib/privacy-consent";
 
 const sourceSerif = Source_Serif_4({ subsets: ["latin"], variable: "--font-source-serif" });
@@ -97,11 +98,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <GoogleAnalytics />
           <CookieConsent />
           <LanguageProvider>
-            <Masthead />
-            {breakingTitles.length > 0 && <Ticker items={breakingTitles} />}
-            <main className="max-w-6xl mx-auto px-4">{children}</main>
-            <Footer />
-            <ScrollToTop />
+            <MotionProvider>
+              <Masthead />
+              {breakingTitles.length > 0 && <Ticker items={breakingTitles} />}
+              <main className="max-w-6xl mx-auto px-4">{children}</main>
+              <Footer />
+              <ScrollToTop />
+            </MotionProvider>
           </LanguageProvider>
           </ThemeProvider>
         </SessionProviderWrapper>

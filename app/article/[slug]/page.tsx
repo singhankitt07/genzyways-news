@@ -17,6 +17,7 @@ import ArticleReadingTools from "@/components/ArticleReadingTools";
 import ReadingFontSizeControl from "@/components/ReadingFontSizeControl";
 import ReadingProgress from "@/components/ReadingProgress";
 import Link from "next/link";
+import { Sequence, SequenceItem } from "@/components/Motion";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -86,10 +87,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       <div className="article-reading-layout">
       <ArticleReadingTools articleId={article.id} title={article.title} path={`/article/${article.slug}`} />
       <article className="article-paper-card mx-auto py-10">
-        <div className="mb-2 flex items-center gap-2"><CategoryBadge category={article.category} />{article.live && <span className="live-dot text-xs font-semibold">LIVE · <LiveTimestamp value={article.updatedAt} /></span>}{article.subscriberOnly && <span className="text-xs uppercase tracking-wider text-gold">Subscriber edition</span>}</div>
+        <Sequence>
+        <SequenceItem><div className="mb-2 flex items-center gap-2"><CategoryBadge category={article.category} />{article.live && <span className="live-dot text-xs font-semibold">LIVE · <LiveTimestamp value={article.updatedAt} /></span>}{article.subscriberOnly && <span className="text-xs uppercase tracking-wider text-gold">Subscriber edition</span>}</div></SequenceItem>
+        <SequenceItem>
         <h1 className="font-serif text-4xl sm:text-5xl leading-tight mb-4">{article.title}</h1>
         <p className="text-lg text-ink/70 mb-4">{article.summary}</p>
         {(article.sourceName || article.sourceUrl) && <p className="mb-5 text-xs text-ink/60">Source: {article.sourceUrl ? <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-press underline">{article.sourceName || article.sourceUrl}</a> : article.sourceName}</p>}
+        </SequenceItem>
+        <SequenceItem>
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-ink/50 border-b border-line pb-6 mb-8">
           <div className="flex items-center gap-3">
             <span>By <Link href={`/author/${article.authorProfile?.slug || encodeURIComponent(article.author)}`} className="font-semibold text-ink hover:text-press hover:underline">{article.author}</Link></span>
@@ -103,13 +108,18 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <PrintButton />
           </div>
         </div>
+        </SequenceItem>
         {article.imageUrl && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={article.imageUrl} alt="" className="w-full aspect-[16/9] object-cover mb-8" />
+          <SequenceItem>
+          <img src={article.imageUrl} alt="" className="w-full aspect-[16/9] object-cover mb-8" /></SequenceItem>
         )}
+        <SequenceItem>
         <div className="prose-content space-y-5 font-sans text-[17px] leading-[1.7] sm:text-lg">
           <ArticleContent content={hasAccess ? article.content : previewContent} format={hasAccess ? article.contentFormat : "MARKDOWN"} media={hasAccess ? article.media : []} />
         </div>
+        </SequenceItem>
+        </Sequence>
         {!hasAccess && <ArticleAccessPrompt />}
 
         <ArticleEngagement articleId={article.id} />

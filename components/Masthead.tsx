@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import { useLanguage, categories } from "@/lib/i18n";
 import LanguageSwitcher from "./LanguageSwitcher";
 import HindiNewsLink from "./HindiNewsLink";
@@ -10,6 +11,9 @@ import WeatherWidget from "./WeatherWidget";
 import ThemeToggle from "./ThemeToggle";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+
+const MotionLink = motion.create(Link);
+const tapFeedback = { whileHover: { scale: 1.03 }, whileTap: { scale: 0.97 }, transition: { duration: 0.15 } };
 
 const SearchIcon = () => <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>;
 const MenuIcon = ({ open }: { open: boolean }) => open ? <span aria-hidden="true" className="text-2xl leading-none">&times;</span> : <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 6h16M4 12h16M4 18h16" /></svg>;
@@ -56,11 +60,11 @@ export default function Masthead() {
   }, [menuOpen]);
 
   return (
-    <header ref={headerRef} style={{ "--menu-top": `${menuTop}px` } as React.CSSProperties} className="theme-header masthead sticky top-0 z-30 no-print">
+    <motion.header ref={headerRef} initial={{ y: -24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} style={{ "--menu-top": `${menuTop}px` } as React.CSSProperties} className="theme-header masthead sticky top-0 z-30 no-print">
       <div className="masthead-top mx-auto grid max-w-7xl items-center gap-3 px-4 py-3 lg:grid-cols-[1fr_auto_1fr]">
         <div className="hidden min-w-0 items-center gap-3 text-xs text-ink/65 lg:flex"><span className="font-semibold uppercase tracking-[0.14em] text-press">Today</span><span className="truncate">{today}</span><span className="hidden xl:inline">· <WeatherWidget /></span></div>
-        <div className="flex items-center justify-between lg:justify-center"><button type="button" onClick={openMenu} aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={menuOpen} aria-controls="site-mega-menu" className="menu-toggle tap-target inline-flex items-center justify-center border border-line md:hidden"><MenuIcon open={menuOpen} /></button><Logo /></div>
-        <div className="flex items-center justify-end gap-3"><div className="hidden lg:block"><AccountMenu /></div><Link href="/subscribe" className="subscribe-button">Subscribe</Link><div className="hidden lg:block"><ThemeToggle /></div><div className="hidden xl:flex items-center gap-3"><HindiNewsLink /><LanguageSwitcher /></div></div>
+        <div className="flex items-center justify-between lg:justify-center"><motion.button whileTap={{ scale: 0.94 }} type="button" onClick={openMenu} aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={menuOpen} aria-controls="site-mega-menu" className="menu-toggle tap-target inline-flex items-center justify-center border border-line md:hidden"><MenuIcon open={menuOpen} /></motion.button><Logo /></div>
+        <div className="flex items-center justify-end gap-3"><div className="hidden lg:block"><AccountMenu /></div><MotionLink href="/subscribe" className="subscribe-button" {...tapFeedback}>Subscribe</MotionLink><div className="hidden lg:block"><ThemeToggle /></div><div className="hidden xl:flex items-center gap-3"><HindiNewsLink /><LanguageSwitcher /></div></div>
       </div>
       <div className="masthead-date border-t border-line lg:hidden">
         <div className="masthead-date-content mx-auto max-w-7xl px-4 py-1.5 text-[11px] text-ink/65">
@@ -69,11 +73,9 @@ export default function Masthead() {
           <div className="masthead-mobile-actions"><AccountMenu mobile /><ThemeToggle /></div>
         </div>
       </div>
-      <div className="masthead-nav border-t border-line"><div className="mx-auto flex max-w-7xl items-center gap-3 px-4"><button type="button" onClick={openMenu} aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={menuOpen} aria-controls="site-mega-menu" className="menu-toggle tap-target hidden items-center justify-center border border-line md:inline-flex"><MenuIcon open={menuOpen} /></button><Link href="/?q=" className="search-link hidden items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-ink/75 hover:text-press md:flex lg:hidden"><SearchIcon /> Search</Link><form action="/" className="search-form hidden items-center border border-line bg-surface lg:flex"><label htmlFor="site-search" className="sr-only">Search news</label><input id="site-search" name="q" placeholder="Search" className="w-28 border-0 bg-transparent px-2 py-1 text-sm outline-none" /><button type="submit" aria-label="Search news" className="tap-target text-ink/70 hover:text-press"><SearchIcon /></button></form><nav className="category-nav scroll-nav flex-1 overflow-x-auto" aria-label="News categories"><ul className="flex min-w-max items-center justify-start gap-5 text-xs font-semibold lg:justify-center"><li><Link href="/" className="category-link">{lang === "hi" ? "होम" : "Home"}</Link></li>{categories.map((cat, index) => <li key={cat.slug} className={index > 6 ? "hidden xl:block" : ""}><Link href={`/category/${cat.slug}`} className="category-link">{cat.label[lang]}</Link></li>)}</ul></nav>{mobileSearchOpen ? <form action="/" className="mobile-search-form flex min-w-0 flex-1 items-center border border-line bg-surface"><label htmlFor="mobile-site-search" className="sr-only">Search news</label><input ref={mobileSearchRef} id="mobile-site-search" name="q" placeholder="Search news" className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm outline-none" /><button type="button" onClick={() => setMobileSearchOpen(false)} aria-label="Close search" className="menu-toggle tap-target inline-flex items-center justify-center border border-line"><span aria-hidden="true">&times;</span></button></form> : <button type="button" onClick={() => setMobileSearchOpen(true)} aria-label="Open search" className="menu-toggle tap-target inline-flex items-center justify-center border border-line md:hidden"><SearchIcon /></button>}</div></div>
-      {menuOpen && (
-        <>
-          <div className="mega-menu-backdrop fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-          <section id="site-mega-menu" ref={menuRef} className="mega-menu-panel fixed left-0 right-0 z-50 overflow-y-auto border-b border-line" style={{ top: `${menuTop}px`, "--menu-top": `${menuTop}px` } as React.CSSProperties} aria-label="Site navigation">
+      <div className="masthead-nav border-t border-line"><div className="mx-auto flex max-w-7xl items-center gap-3 px-4"><motion.button whileTap={{ scale: 0.94 }} type="button" onClick={openMenu} aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={menuOpen} aria-controls="site-mega-menu" className="menu-toggle tap-target hidden items-center justify-center border border-line md:inline-flex"><MenuIcon open={menuOpen} /></motion.button><Link href="/?q=" className="search-link hidden items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-ink/75 hover:text-press md:flex lg:hidden"><SearchIcon /> Search</Link><form action="/" className="search-form hidden items-center border border-line bg-surface lg:flex"><label htmlFor="site-search" className="sr-only">Search news</label><input id="site-search" name="q" placeholder="Search" className="w-28 border-0 bg-transparent px-2 py-1 text-sm outline-none" /><button type="submit" aria-label="Search news" className="tap-target text-ink/70 hover:text-press"><SearchIcon /></button></form><nav className="category-nav scroll-nav flex-1 overflow-x-auto" aria-label="News categories"><ul className="flex min-w-max items-center justify-start gap-5 text-xs font-semibold lg:justify-center"><li><Link href="/" className="category-link">{lang === "hi" ? "होम" : "Home"}</Link></li>{categories.map((cat, index) => <li key={cat.slug} className={index > 6 ? "hidden xl:block" : ""}><Link href={`/category/${cat.slug}`} className="category-link">{cat.label[lang]}</Link></li>)}</ul></nav>{mobileSearchOpen ? <form action="/" className="mobile-search-form flex min-w-0 flex-1 items-center border border-line bg-surface"><label htmlFor="mobile-site-search" className="sr-only">Search news</label><input ref={mobileSearchRef} id="mobile-site-search" name="q" placeholder="Search news" className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm outline-none" /><button type="button" onClick={() => setMobileSearchOpen(false)} aria-label="Close search" className="menu-toggle tap-target inline-flex items-center justify-center border border-line"><span aria-hidden="true">&times;</span></button></form> : <button type="button" onClick={() => setMobileSearchOpen(true)} aria-label="Open search" className="menu-toggle tap-target inline-flex items-center justify-center border border-line md:hidden"><SearchIcon /></button>}</div></div>
+      <AnimatePresence>{menuOpen && <motion.div key="menu-backdrop" className="mega-menu-backdrop fixed inset-0 z-40" onClick={() => setMenuOpen(false)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} />}
+      {menuOpen && (<motion.section key="menu-panel" initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }} id="site-mega-menu" ref={menuRef} className="mega-menu-panel fixed left-0 right-0 z-50 overflow-y-auto border-b border-line" style={{ top: `${menuTop}px`, "--menu-top": `${menuTop}px` } as React.CSSProperties} aria-label="Site navigation">
             <div className="mx-auto max-w-7xl px-4 py-5 sm:py-7">
               <form action="/" className="mega-menu-search mb-7 flex items-center border border-line bg-surface">
                 <label htmlFor="mega-search" className="sr-only">Search news</label>
@@ -101,9 +103,8 @@ export default function Masthead() {
                 </aside>
               </div>
             </div>
-          </section>
-        </>
-      )}
-    </header>
+          </motion.section>
+      )}</AnimatePresence>
+    </motion.header>
   );
 }

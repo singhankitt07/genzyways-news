@@ -941,7 +941,6 @@ body:has(.admin-shell) main {
   box-shadow: 0 12px 32px rgba(0, 0, 0, .6);
   color: var(--text-primary);
   transform-origin: top;
-  animation: mega-menu-in 300ms ease-out both;
 }
 
 .mega-menu-search {
@@ -2015,6 +2014,27 @@ textarea {
   }
 }
 
+/* Subtle tap feedback for shared interactive elements */
+.button-primary:not(:disabled):active,
+.button-secondary:not(:disabled):active,
+.button-ghost:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+.button-primary:not(:disabled):hover,
+.button-secondary:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button-primary:active,
+  .button-secondary:active,
+  .button-ghost:active,
+  .button-primary:hover,
+  .button-secondary:hover {
+    transform: none;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import CategoryBadge from "./CategoryBadge";
 import LiveTimestamp from "./LiveTimestamp";
+import { MotionCard, Reveal } from "./Motion";
 
 type Props = {
   title: string;
@@ -17,11 +18,11 @@ export default function ArticleCard({ title, slug, summary, category, imageUrl, 
   const isLead = size === "lead";
   if (size === "compact") {
     return (
-      <article className="group flex gap-3 border-b border-line pb-4 last:border-0">
+      <Reveal as="article" className="group flex gap-3 border-b border-line pb-4 last:border-0">
         <Link href={`/article/${slug}`} className="block w-28 shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-line to-ink/10 aspect-[16/9]">
           {imageUrl && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={imageUrl} alt="" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+            <img src={imageUrl} alt="" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
           )}
         </Link>
         <div className="min-w-0">
@@ -29,11 +30,11 @@ export default function ArticleCard({ title, slug, summary, category, imageUrl, 
           <Link href={`/article/${slug}`} className="block"><h3 className="line-clamp-3 font-serif text-lg leading-snug group-hover:text-press">{title}</h3></Link>
           {updatedAt && <span className="mt-1 block text-[11px] text-ink/50"><LiveTimestamp value={updatedAt} /></span>}
         </div>
-      </article>
+      </Reveal>
     );
   }
   return (
-    <div className={`group ${isLead ? "" : "rounded-lg p-3 -m-3 transition-all duration-200 hover:-translate-y-0.5 hover:bg-surface-hover hover:shadow-md"}`}>
+    <MotionCard className={`group ${isLead ? "" : "rounded-lg p-3 -m-3 transition-[background-color,box-shadow] duration-200 hover:bg-surface-hover hover:shadow-md"}`}>
       <Link href={`/article/${slug}`} className="block">
         <div className={`relative overflow-hidden bg-gradient-to-br from-line to-ink/10 mb-3 aspect-[16/9] rounded-lg`}>
           {imageUrl && (
@@ -54,6 +55,6 @@ export default function ArticleCard({ title, slug, summary, category, imageUrl, 
         </h3>
         <p className={`text-ink/70 mt-2 ${isLead ? "text-base" : "text-sm"} line-clamp-3`}>{summary}</p>
       </Link>
-    </div>
+    </MotionCard>
   );
 }
