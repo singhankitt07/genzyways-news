@@ -69,6 +69,7 @@ model Article {
   bookmarks      Bookmark[]
   readingHistory ReadingHistory[]
   media          ArticleMedia[]
+  views          ArticleView[]
   authorProfile  Author? @relation(fields: [authorId], references: [id], onDelete: SetNull)
 }
 
@@ -275,4 +276,236 @@ model PasswordResetToken {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+
+// ---------------------------------------------------------------------------
+// AI newsroom automation. AI state is kept separate from the published Article.
+// ---------------------------------------------------------------------------
+
+model NewsSource {
+  id            String     @id @default(cuid())
+  name          String
+  provider      String     @default("rss") // rss | newsapi
+  kind          String     @default("PUBLISHER") // OFFICIAL | GOVERNMENT | PUBLISHER | AGGREGATOR
+  url           String     @unique
+  category      String     @default("Current Affairs")
+  config        Json?
+  enabled       Boolean    @default(true)
+  pollMinutes   Int        @default(30)
+  lastFetchedAt DateTime?
+  lastStatus    String?
+  lastError     String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  items         NewsItem[]
+}
+
+model NewsItem {
+  id               String     @id @default(cuid())
+  sourceId         String
+  externalId       String?
+  originalUrl      String
+  urlHash          String     @unique
+  title            String
+  titleFingerprint String
+  description      String?
+  publishedAt      DateTime?
+  retrievedAt      DateTime   @default(now())
+  category         String
+  meta             Json?
+  clusterId        String?
+  source           NewsSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  cluster          StoryCluster? @relation(fields: [clusterId], references: [id], onDelete: SetNull)
+
+  @@index([clusterId])
+  @@index([titleFingerprint])
+  @@index([publishedAt])
+  @@index([sourceId, retrievedAt])
+}
+
+model AIProcessingJob {
+  id          String    @id @default(cuid())
+  type        String
+  key         String    @unique
+  status      String    @default("PENDING") // PENDING | RUNNING | DONE | FAILED
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(3)
+  runAt       DateTime  @default(now())
+  lockedAt    DateTime?
+  payload     Json?
+  error       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  finishedAt  DateTime?
+
+  @@index([status, runAt])
+}
+
+model AutomationLog {
+  id        String   @id @default(cuid())
+  level     String   @default("INFO") // INFO | WARN | ERROR
+  action    String
+  message   String
+  entity    String?
+  entityId  String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([entity, entityId])
+}
+
+model AutomationSettings {
+  id                String   @id @default("default")
+  enabled           Boolean  @default(false)
+  pollMinutes       Int      @default(30)
+  categories        String[] @default([])
+  minImportance     Int      @default(2)
+  autoResearch      Boolean  @default(false)
+  autoDraft         Boolean  @default(false)
+  requireApproval   Boolean  @default(true)
+  aiProvider        String   @default("openai-compatible")
+  aiModel           String?
+  maxRequestsPerDay Int      @default(200)
+  maxTokensPerDay   Int      @default(200000)
+  updatedAt         DateTime @updatedAt
+}
+
+model StoryCluster {
+  id                String     @id @default(cuid())
+  title             String
+  titleFingerprint  String
+  category          String
+  status            String     @default("NEW") // NEW | IGNORED | RESEARCHING | RESEARCHED | DRAFTED | PUBLISHED
+  importance        Int        @default(0)
+  riskLevel         String     @default("LOW") // LOW | MEDIUM | HIGH
+  sourceCount       Int        @default(1)
+  itemCount         Int        @default(1)
+  existingArticleId String?
+  firstSeenAt       DateTime   @default(now())
+  lastSeenAt        DateTime   @default(now())
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  items             NewsItem[]
+  reports           ResearchReport[]
+  drafts            ArticleDraft[]
+
+  @@index([status, importance])
+  @@index([lastSeenAt])
+}
+
+model ResearchReport {
+  id        String               @id @default(cuid())
+  clusterId String
+  summary   String
+  model     String?
+  status    String               @default("DONE") // DONE | FAILED
+  error     String?
+  createdAt DateTime             @default(now())
+  cluster   StoryCluster         @relation(fields: [clusterId], references: [id], onDelete: Cascade)
+  sources   ResearchSource[]
+  claims    FactClaim[]
+  result    VerificationResult?
+
+  @@index([clusterId, createdAt])
+}
+
+model ResearchSource {
+  id          String         @id @default(cuid())
+  reportId    String
+  position    Int
+  title       String
+  url         String
+  domain      String
+  sourceName  String
+  kind        String         // OFFICIAL | GOVERNMENT | PUBLISHER | AGGREGATOR
+  credibility Int            @default(50)
+  snippet     String?
+  publishedAt DateTime?
+  report      ResearchReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+}
+
+model FactClaim {
+  id          String         @id @default(cuid())
+  reportId    String
+  text        String
+  status      String         // SUPPORTED | SINGLE_SOURCE | CONFLICTING
+  sourceCount Int            @default(1)
+  sourceRefs  Int[]
+  note        String?
+  report      ResearchReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+}
+
+model VerificationResult {
+  id            String         @id @default(cuid())
+  reportId      String         @unique
+  verdict       String         // VERIFIED | PARTIAL | UNVERIFIED | CONFLICTING
+  confidence    Int            @default(0)
+  riskLevel     String         @default("LOW")
+  needsHuman    Boolean        @default(true)
+  conflicts     String[]       @default([])
+  notes         String?
+  createdAt     DateTime       @default(now())
+  report        ResearchReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+}
+
+model ArticleDraft {
+  id             String        @id @default(cuid())
+  clusterId      String
+  reportId       String?
+  title          String
+  summary        String
+  content        String
+  titleHi        String?
+  summaryHi      String?
+  contentHi      String?
+  category       String
+  slug           String
+  seoTitle       String
+  seoDescription String
+  keywords       String[]      @default([])
+  status         String        @default("IN_REVIEW") // IN_REVIEW | APPROVED | REJECTED | PUBLISHED
+  riskLevel      String        @default("LOW")
+  needsHuman     Boolean       @default(true)
+  verdict        String?
+  confidence     Int           @default(0)
+  model          String?
+  articleId      String?
+  reviewedBy     String?
+  reviewedAt     DateTime?
+  reviewNote     String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  cluster        StoryCluster  @relation(fields: [clusterId], references: [id], onDelete: Cascade)
+  reviews        AIReview[]
+
+  @@index([status, createdAt])
+  @@index([clusterId])
+}
+
+model AIReview {
+  id        String       @id @default(cuid())
+  draftId   String
+  action    String       // CREATED | EDITED | APPROVED | REJECTED | PUBLISHED | REGENERATED
+  actor     String
+  note      String?
+  createdAt DateTime     @default(now())
+  draft     ArticleDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+
+  @@index([draftId, createdAt])
+}
+
+model ArticleView {
+  articleId String
+  day       DateTime @db.Date
+  views     Int      @default(1)
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, day])
+  @@index([day])
 }

@@ -49,6 +49,17 @@ OpenAI-compatible provider in the server environment with `AI_API_KEY`, `AI_BASE
 is always saved as an unpublished draft; editors remain responsible for fact-checking,
 source attribution, copyright, and publication.
 
+## AI newsroom (admin only)
+
+Admins manage this at `/admin/ai-news`. Flow: **collect -> group -> research -> verify -> draft -> human approval -> publish**. AI never publishes anything.
+
+- **Setup:** add `CRON_SECRET` (required for the schedule) and, for AI steps, `AI_API_KEY` (+ optional `AI_BASE_URL`, `AI_MODEL`). `NEWS_API_KEY` is optional (NewsAPI provider). Vercel Cron calls `/api/cron/newsroom` every 15 minutes (see `vercel.json`).
+- **Safe by default:** automation is OFF until you turn it on in Settings. Auto-research and auto-drafting are separate switches. HIGH-risk stories (deaths, arrests, courts, elections, health claims...) always need a human, regardless of settings.
+- **Cost limits:** daily AI request and token caps (Settings) are enforced from the activity log.
+- **Housekeeping:** the 03:00 UTC run prunes logs older than 30 days, finished jobs older than 7 days and stale unreviewed items older than 60 days.
+- **Trending** uses recent views (a small anonymous per-day counter), reactions, bookmarks and comments, and falls back to the newest stories.
+- **Tests:** `npm test` runs the newsroom unit tests.
+
 ## 2. Deploy it live (free tier works to start)
 
 **Step 1 - Prepare the project for Vercel.**

@@ -16,6 +16,7 @@ import ArticleEngagement from "@/components/ArticleEngagement";
 import ArticleReadingTools from "@/components/ArticleReadingTools";
 import ReadingFontSizeControl from "@/components/ReadingFontSizeControl";
 import ReadingProgress from "@/components/ReadingProgress";
+import ViewTracker from "@/components/ViewTracker";
 import Link from "next/link";
 import { Sequence, SequenceItem } from "@/components/Motion";
 
@@ -84,6 +85,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       }) }} />
       <div className="article-reading-page">
       <ReadingProgress />
+      <ViewTracker articleId={article.id} />
       <div className="article-reading-layout">
       <ArticleReadingTools articleId={article.id} title={article.title} path={`/article/${article.slug}`} />
       <article className="article-paper-card mx-auto py-10">

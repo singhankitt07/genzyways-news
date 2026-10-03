@@ -7,6 +7,7 @@
     "build": "prisma migrate deploy && prisma generate && npm run seed && next build",
     "start": "next start",
     "seed": "tsx prisma/seed.ts",
+    "test": "tsx --test tests/newsroom.test.ts",
     "brand:lockups": "node scripts/generate-circular-lockups.mjs",
     "brand:png": "node scripts/export-brand-pngs.mjs",
     "brand:supplied": "node scripts/export-supplied-logo-assets.mjs",
