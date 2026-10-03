@@ -39,6 +39,7 @@ export default function WeatherWidget() {
   const [weather, setWeather] = useState<Weather | null>(null);
   const [status, setStatus] = useState("Requesting location for local weather");
   const [locationAttempt, setLocationAttempt] = useState(0);
+  const [geoIssue, setGeoIssue] = useState<"denied" | "unavailable" | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -98,24 +99,45 @@ export default function WeatherWidget() {
       setStatus("Requesting location for local weather");
       navigator.geolocation.getCurrentPosition(({ coords }) => {
         if (!active) return;
+        setGeoIssue(null);
         void load(coords, "browser");
         refreshTimer = window.setTimeout(requestLocation, REFRESH_MS);
-      }, () => {
-        if (active) void loadApproximateLocation();
-      }, { maximumAge: REFRESH_MS, timeout: 12000, enableHighAccuracy: false });
+      }, (error) => {
+        if (!active) return;
+        // 1 = permission denied, 2 = position unavailable (usually device location/GPS is switched off)
+        setGeoIssue(error.code === 1 ? "denied" : "unavailable");
+        void loadApproximateLocation();
+      }, { maximumAge: REFRESH_MS, timeout: 20000, enableHighAccuracy: false });
     }
     // Mobile browsers often ignore permission prompts that are not triggered by a tap, so also locate on user request.
     function locateFromGesture() {
       if (refreshTimer) window.clearTimeout(refreshTimer);
       requestLocation();
     }
+    // Re-check automatically when the user comes back after switching GPS on or changing the site permission.
+    function onVisible() {
+      if (document.visibilityState === "visible" && window.localStorage.getItem(CACHE_KEY)?.includes("\"locationSource\":\"ip\"")) locateFromGesture();
+    }
+    let permission: PermissionStatus | undefined;
+    const onPermissionChange = () => { if (permission?.state === "granted") locateFromGesture(); };
+    navigator.permissions?.query({ name: "geolocation" }).then((status) => {
+      permission = status;
+      status.addEventListener("change", onPermissionChange);
+    }).catch(() => undefined);
     window.addEventListener(WEATHER_LOCATE_EVENT, locateFromGesture);
+    document.addEventListener("visibilitychange", onVisible);
     requestLocation();
-    return () => { active = false; window.removeEventListener(WEATHER_LOCATE_EVENT, locateFromGesture); if (refreshTimer) window.clearTimeout(refreshTimer); };
+    return () => {
+      active = false;
+      window.removeEventListener(WEATHER_LOCATE_EVENT, locateFromGesture);
+      document.removeEventListener("visibilitychange", onVisible);
+      permission?.removeEventListener("change", onPermissionChange);
+      if (refreshTimer) window.clearTimeout(refreshTimer);
+    };
   }, [locationAttempt]);
 
   if (!weather) return <span className="weather-widget weather-widget-loading"><span className="weather-icon weather-icon-cloud" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M8 23h14a5 5 0 0 0 .5-9.97A7.5 7.5 0 0 0 8 15a4 4 0 0 0 0 8Z" /></svg></span><span className="weather-widget-loading-label">{status}</span>{status.startsWith("Location blocked") || status.startsWith("Location unavailable") ? <button type="button" onClick={() => setLocationAttempt((attempt) => attempt + 1)} className="weather-location-action" aria-label="Retry location request">Retry</button> : null}</span>;
   const location = [weather.city, weather.region, weather.country].filter(Boolean).join(", ");
   const locationTitle = weather.locationSource === "ip" ? `Approximate IP-based location: ${location}` : `Precise browser location: ${location}`;
-  return <span className="weather-widget" title={`${locationTitle}. Air quality: ${aqiLabel(weather.aqi)}. Data refreshes every 15 minutes.`}><WeatherIcon code={weather.weatherCode} /><span className="weather-reading"><strong>{weather.temperature}°C</strong><span>{weatherLabel(weather.weatherCode)}</span></span><span className={`weather-aqi weather-aqi-${weather.aqi == null ? "unknown" : weather.aqi <= 50 ? "good" : weather.aqi <= 100 ? "moderate" : "poor"}`}><b>AQI</b> {weather.aqi == null ? "—" : Math.round(weather.aqi)}<small>{aqiLabel(weather.aqi)}</small></span><span className="weather-location">{weather.locationSource === "ip" && <span className="weather-location-approx">Approx. </span>}{location}</span>{weather.locationSource === "ip" ? <button type="button" onClick={() => window.dispatchEvent(new Event(WEATHER_LOCATE_EVENT))} className="weather-location-action" aria-label="Use my precise location for weather and air quality">Use my location</button> : null}{status.startsWith("Location unavailable") ? <button type="button" onClick={() => setLocationAttempt((attempt) => attempt + 1)} className="weather-location-action" aria-label="Retry location request">Retry</button> : null}</span>;
+  return <span className="weather-widget" title={`${locationTitle}. Air quality: ${aqiLabel(weather.aqi)}. Data refreshes every 15 minutes.`}><WeatherIcon code={weather.weatherCode} /><span className="weather-reading"><strong>{weather.temperature}°C</strong><span>{weatherLabel(weather.weatherCode)}</span></span><span className={`weather-aqi weather-aqi-${weather.aqi == null ? "unknown" : weather.aqi <= 50 ? "good" : weather.aqi <= 100 ? "moderate" : "poor"}`}><b>AQI</b> {weather.aqi == null ? "—" : Math.round(weather.aqi)}<small>{aqiLabel(weather.aqi)}</small></span><span className="weather-location">{weather.locationSource === "ip" && <span className="weather-location-approx">Approx. </span>}{location}</span>{weather.locationSource === "ip" ? <button type="button" onClick={() => window.dispatchEvent(new Event(WEATHER_LOCATE_EVENT))} className="weather-location-action" aria-label="Use my precise location for weather and air quality">{geoIssue === "unavailable" ? "Turn on GPS" : "Use my location"}</button> : null}{weather.locationSource === "ip" && geoIssue ? <span className="weather-location-hint">{geoIssue === "denied" ? "Location is blocked. Allow it in your browser site settings, then come back." : "Turn on your phone location (GPS), then tap the button."}</span> : null}{status.startsWith("Location unavailable") ? <button type="button" onClick={() => setLocationAttempt((attempt) => attempt + 1)} className="weather-location-action" aria-label="Retry location request">Retry</button> : null}</span>;
 }

@@ -2095,3 +2095,26 @@ textarea {
     text-decoration: none !important;
   }
 }
+.weather-location-hint {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .masthead-date-weather .weather-location-hint {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: 100%;
+    z-index: 30;
+    display: block;
+    white-space: normal;
+    background: var(--surface, #fff);
+    border: 1px solid var(--border);
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+}
+
+.masthead-date-weather {
+  position: relative;
+}
