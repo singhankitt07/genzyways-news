@@ -41,6 +41,15 @@ export function sanitizeDraft(raw: Record<string, unknown>, fallbackCategory: st
   };
 }
 
+// Free-tier providers often answer 429/503 under load; a couple of short retries makes calls far more reliable.
+async function fetchWithRetry(url: string, init: RequestInit & { signal?: AbortSignal }, attempts = 3): Promise<Response> {
+  let response = await fetch(url, init);
+  for (let attempt = 1; attempt < attempts && [429, 500, 502, 503, 504].includes(response.status); attempt++) {
+    await new Promise((resolve) => setTimeout(resolve, 1500 * attempt));
+    response = await fetch(url, init);
+  }
+  return response;
+}
 export function createOpenAICompatibleProvider(model?: string | null): AIProvider {
   const apiKey = process.env.AI_API_KEY;
   if (!apiKey) throw new AIConfigError("AI is not configured. Add AI_API_KEY to the server environment.");
@@ -61,7 +70,7 @@ export function createOpenAICompatibleProvider(model?: string | null): AIProvide
         `Story: ${input.headline}`, `Suggested category: ${input.category}`, `Research summary: ${input.summary}`,
         `Claims:\n${claims}`, input.conflicts.length ? `Disagreements:\n- ${input.conflicts.join("\n- ")}` : "", `Sources: ${input.sourceNames.join(", ")}`
       ].filter(Boolean).join("\n\n");
-      const response = await fetch(`${baseUrl}/chat/completions`, {
+      const response = await fetchWithRetry(`${baseUrl}/chat/completions`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({ model: chosen, temperature: 0.3, response_format: { type: "json_object" }, messages: [{ role: "user", content: prompt }] }),
@@ -84,7 +93,7 @@ export function createOpenAICompatibleProvider(model?: string | null): AIProvide
         `Story: ${headline}`,
         `Sources:\n${material}`
       ].join("\n\n");
-      const response = await fetch(`${baseUrl}/chat/completions`, {
+      const response = await fetchWithRetry(`${baseUrl}/chat/completions`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({ model: chosen, temperature: 0, response_format: { type: "json_object" }, messages: [{ role: "user", content: prompt }] }),
