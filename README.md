@@ -53,12 +53,62 @@ source attribution, copyright, and publication.
 
 Admins manage this at `/admin/ai-news`. Flow: **collect -> group -> research -> verify -> draft -> human approval -> publish**. AI never publishes anything.
 
-- **Setup:** add `CRON_SECRET` (required for the schedule) and, for AI steps, `AI_API_KEY` (+ optional `AI_BASE_URL`, `AI_MODEL`). `NEWS_API_KEY` is optional (NewsAPI provider). Vercel Cron calls `/api/cron/newsroom` every 15 minutes (see `vercel.json`).
+- **Setup:** add `CRON_SECRET` (required for the schedule) and, for AI steps, `AI_API_KEY` (+ optional `AI_BASE_URL`, `AI_MODEL`). `NEWS_API_KEY` is optional (NewsAPI provider). Vercel Cron calls `/api/cron/newsroom` once a day at 03:00 UTC (the Vercel Hobby plan only allows daily crons; see `vercel.json`). Use **Fetch & group now** in the admin for on-demand runs.
 - **Safe by default:** automation is OFF until you turn it on in Settings. Auto-research and auto-drafting are separate switches. HIGH-risk stories (deaths, arrests, courts, elections, health claims...) always need a human, regardless of settings.
 - **Cost limits:** daily AI request and token caps (Settings) are enforced from the activity log.
 - **Housekeeping:** the 03:00 UTC run prunes logs older than 30 days, finished jobs older than 7 days and stale unreviewed items older than 60 days.
 - **Trending** uses recent views (a small anonymous per-day counter), reactions, bookmarks and comments, and falls back to the newest stories.
 - **Tests:** `npm test` runs the newsroom unit tests.
+
+## Complete change log (everything built so far)
+
+### Brand, design and responsive layout (29-30 Sep 2026)
+- Rebranded to **GenzyWays News**; supplied logo assets integrated, circular Devanagari badge and geometric "G" explorations, consistent asset paths and metadata.
+- Refreshed homepage and subscription experience; responsive layouts for phone, tablet and laptop.
+- Responsive slide-down **mega menu**, laptop navigation drawer, fixed header scroll, search focus and mobile drawer/viewport bugs, tappable mobile header controls, dark-mode drawer contrast.
+- Live **weather with icons and AQI** (and a Vercel IP-based location fallback), shown on mobile too.
+
+### Reader features
+- Reader accounts, sign-in renamed to "Login", improved account identity, OAuth flows, name-change history, reader preferences.
+- Email-link **password reset**.
+- Reader engagement: reactions, bookmarks, comments (with moderation), improved article reading experience.
+- Search with filters, author profiles and author pages, article source transparency, newsroom **RSS feed** (`/rss.xml`).
+- Separate **Hindi newsroom** (`/hindi`) with independent English/Hindi publication of each story.
+- Guides and **ebooks** publishing, shorts and videos sections, article media.
+- Newsletter with Resend double opt-in, unsubscribe links, and admin campaigns.
+- Plans and subscriptions via **Razorpay** and **Stripe**, paywall-ready article access.
+
+### Admin / newsroom tools
+- Staff roles (administrator, editor, moderator), responsive admin panel with unified mobile navigation.
+- Rich-text editor (English and Hindi), media library, comment moderation, RSS draft import, "Enhance with AI" for drafts.
+- Editorial-trust pages (about, editorial policy, contact, privacy, terms) for ad review.
+- **Consent-aware Google AdSense** ads (non-personalized by default, subscribers excluded).
+
+### 3 Oct 2026 - Videos, animations, AI newsroom
+- **Videos fix:** media cards now open an in-site watch page at `/videos/[id]` (previously clicking a video article did nothing).
+- **Animations:** Framer Motion transitions across the site, with reduced-motion support.
+- **AI News Automation System** (admin only, `/admin/ai-news`), built in 8 phases:
+  1. **Sources** - add RSS/Atom, NewsAPI and other providers; per-source poll interval, status and error tracking.
+  2. **Ingestion** - fetches items, de-duplicates, stores them in the database.
+  3. **Clustering** - groups items about the same event into story clusters, scores importance and flags risk (LOW / MEDIUM / HIGH).
+  4. **Research and verification** - the AI extracts atomic claims from the sources; each claim is marked SUPPORTED (2+ publishers), SINGLE_SOURCE or CONFLICTING, giving an overall verdict and confidence.
+  5. **Drafting** - original-wording English and Hindi drafts with SEO fields, using only verified claims (single-source claims are attributed, conflicts shown as disputed). Stories with no verifiable claims are refused.
+  6. **Human approval** - drafts land as IN_REVIEW; an admin edits, approves or rejects at `/admin/ai-news/drafts/[id]`. Editing resets approval. HIGH-risk stories always need a human.
+  7. **Publish** - only APPROVED drafts can be published, by an admin, and they are saved as an **unpublished article** by default. The AI never publishes.
+  8. **Operations** - Settings (enable, poll interval, categories, auto-research/auto-draft switches, daily request and token caps), activity log, idempotent jobs with retry/backoff, scheduled cron endpoint (`CRON_SECRET`), housekeeping, and a trending score (views, reactions, bookmarks, comments).
+- New database tables (migrations `20261003130000` to `20261003170000`): ingested items, story clusters, research reports, article drafts, article views.
+- **Production fixes and hardening:**
+  - Cron changed to daily for the Vercel Hobby plan.
+  - Fixed a job-claim bug where "Fetch & group now" did nothing because the database clock was ahead of the server clock (`runAt` is now backdated by 60 s).
+  - AI client retries on 429/5xx (3 attempts) for free-tier providers.
+  - Cron endpoint returns 401 without the secret and 503 if `CRON_SECRET` is missing; admin APIs return 401 without a session; manual run is rate limited.
+- **AI provider:** switched from OpenAI (no credit) to **Google Gemini** through its OpenAI-compatible endpoint. Production env vars: `AI_API_KEY`, `AI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai`, `AI_MODEL=gemini-3.5-flash`. Any OpenAI-compatible provider (OpenAI, Groq, OpenRouter...) works by changing these three values. Gemini model names are retired often, so if you see 404/503 errors, check the models list and pick a stable one.
+- **Tested end to end on production:** collect (8 RSS feeds, 242 items) -> group -> research -> draft -> approve -> publish. Unit tests: `npm test` (9 pass).
+
+### Deployment
+- Hosted on **Vercel** (`genzywaynews`), code on GitHub (`singhankitt07/genzyways-news`, branch `main`), database on **Neon Postgres**.
+- Build command runs `prisma migrate deploy`, `prisma generate`, the seed, then `next build`.
+- Secrets (`DATABASE_URL`, `NEXTAUTH_SECRET`, `CRON_SECRET`, `AI_API_KEY`, payment and email keys) live only in Vercel environment variables, never in git.
 
 ## 2. Deploy it live (free tier works to start)
 
