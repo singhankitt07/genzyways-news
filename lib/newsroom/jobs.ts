@@ -9,18 +9,19 @@ export type JobResult = { status: "done" | "skipped" | "failed"; detail?: unknow
 
 // Runs `work` at most once per unique key. Completed jobs are skipped, running jobs are protected by an atomic
 // claim, and failed jobs are retried (with backoff) until maxAttempts, so repeated cron hits never double-process a story.
-export async function runIdempotentJob<T>(type: string, key: string, work: () => Promise<T>, options: { payload?: Prisma.InputJsonValue; maxAttempts?: number } = {}): Promise<JobResult & { value?: T }> {
+export async function runIdempotentJob<T>(type: string, key: string, work: () => Promise<T>, options: { payload?: Prisma.InputJsonValue; maxAttempts?: number; retryFailed?: boolean } = {}): Promise<JobResult & { value?: T }> {
   await prisma.aIProcessingJob.upsert({ where: { key }, update: {}, create: { type, key, payload: options.payload, maxAttempts: options.maxAttempts ?? 3, runAt: new Date(Date.now() - 60_000) } });
 
   const now = new Date();
   const claimed = await prisma.aIProcessingJob.updateMany({
     where: {
       key,
-      attempts: { lt: options.maxAttempts ?? 3 },
       OR: [
-        { status: "PENDING", runAt: { lte: now } },
-        { status: "FAILED", runAt: { lte: now } },
-        { status: "RUNNING", lockedAt: { lt: new Date(now.getTime() - STALE_LOCK_MS) } }
+        { status: "PENDING", attempts: { lt: options.maxAttempts ?? 3 }, runAt: { lte: now } },
+        ...(options.retryFailed
+          ? [{ status: "FAILED", runAt: { lte: now } }]
+          : [{ status: "FAILED", attempts: { lt: options.maxAttempts ?? 3 }, runAt: { lte: now } }]),
+        { status: "RUNNING", attempts: { lt: options.maxAttempts ?? 3 }, lockedAt: { lt: new Date(now.getTime() - STALE_LOCK_MS) } }
       ]
     },
     data: { status: "RUNNING", lockedAt: now, attempts: { increment: 1 } }

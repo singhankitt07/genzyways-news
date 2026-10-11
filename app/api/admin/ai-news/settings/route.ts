@@ -2,11 +2,13 @@ import { NextResponse } from "next/server";
 import { requireNewsroomAccess } from "@/lib/newsroom/guard";
 import { logAutomation } from "@/lib/newsroom/log";
 import { getSettings, parseSettingsInput, saveSettings } from "@/lib/newsroom/settings";
+import { getProviderStatuses } from "@/lib/ai/providers";
 
 export async function GET() {
   const access = await requireNewsroomAccess("read");
   if ("error" in access) return access.error;
-  return NextResponse.json({ settings: await getSettings() });
+  const [settings, providers] = await Promise.all([getSettings(), getProviderStatuses()]);
+  return NextResponse.json({ settings, providers });
 }
 
 export async function PUT(request: Request) {

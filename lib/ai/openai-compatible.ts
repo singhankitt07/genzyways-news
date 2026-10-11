@@ -1,7 +1,14 @@
-import { AIConfigError, type AIProvider, type DraftInput, type GeneratedDraft, type ExtractedClaim, type ResearchAnalysis, type SourceMaterial } from "./provider";
+import { AIConfigError, AIProviderError, AIResponseError, type AIProvider, type DraftInput, type GeneratedDraft, type ExtractedClaim, type ResearchAnalysis, type SourceMaterial } from "./provider";
 
-function parseJson(value: string) {
-  return JSON.parse(value.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim()) as Record<string, unknown>;
+function parseJson(value: string): Record<string, unknown> {
+  try {
+    const parsed: unknown = JSON.parse(value.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim());
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new AIResponseError("AI response was not a JSON object.");
+    return parsed as Record<string, unknown>;
+  } catch (error) {
+    if (error instanceof AIResponseError) throw error;
+    throw new AIResponseError("AI response contained invalid JSON.");
+  }
 }
 
 // Validates untrusted model output: only keeps claims that cite real source indexes.
@@ -50,14 +57,46 @@ async function fetchWithRetry(url: string, init: RequestInit & { signal?: AbortS
   }
   return response;
 }
-export function createOpenAICompatibleProvider(model?: string | null): AIProvider {
-  const apiKey = process.env.AI_API_KEY;
-  if (!apiKey) throw new AIConfigError("AI is not configured. Add AI_API_KEY to the server environment.");
-  const baseUrl = (process.env.AI_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, "");
-  const chosen = model || process.env.AI_MODEL || "gpt-4o-mini";
+
+async function throwProviderError(response: Response, apiKey: string): Promise<never> {
+  let detail = "";
+  try {
+    const body: unknown = await response.json();
+    if (body && typeof body === "object" && "error" in body) {
+      const error = body.error;
+      if (typeof error === "string") detail = error;
+      else if (error && typeof error === "object" && "message" in error && typeof error.message === "string") detail = error.message;
+    }
+  } catch {
+    // Provider error bodies are optional; the HTTP status remains actionable.
+  }
+  const safeDetail = detail.split(apiKey).join("[redacted]");
+  throw new AIProviderError(`AI provider returned ${response.status}${safeDetail ? `: ${safeDetail.slice(0, 300)}` : ""}`, response.status);
+}
+
+function validateAnalysis(raw: Record<string, unknown>): ResearchAnalysis {
+  if (typeof raw.summary !== "string" || !Array.isArray(raw.claims) || !Array.isArray(raw.conflicts)) {
+    throw new AIResponseError("AI research response must include a summary, claims array, and conflicts array.");
+  }
+  if (!raw.claims.every((claim) => claim && typeof claim === "object" && !Array.isArray(claim))) {
+    throw new AIResponseError("AI research response contained malformed claims.");
+  }
+  if (!raw.conflicts.every((conflict) => typeof conflict === "string")) {
+    throw new AIResponseError("AI research response contained malformed conflicts.");
+  }
+  return raw as unknown as ResearchAnalysis;
+}
+
+export type OpenAICompatibleProviderConfig = { name: string; baseUrl: string; apiKey: string; model: string };
+
+export function createOpenAICompatibleProvider(config: OpenAICompatibleProviderConfig): AIProvider {
+  if (!config.apiKey || !config.baseUrl || !config.model) throw new AIConfigError("AI provider configuration is incomplete.");
+  const apiKey = config.apiKey;
+  const baseUrl = config.baseUrl.replace(/\/$/, "");
+  const chosen = config.model;
 
   return {
-    name: "openai-compatible",
+    name: config.name,
     model: chosen,
     async generateDraft(input: DraftInput) {
       const claims = input.claims.map((c, i) => `${i + 1}. [${c.status}] ${c.text} (from: ${c.sources.join(", ")})`).join("\n");
@@ -79,7 +118,7 @@ export function createOpenAICompatibleProvider(model?: string | null): AIProvide
       if (!response.ok) throw new Error(`AI provider returned ${response.status}`);
       const payload = await response.json();
       const text = payload.choices?.[0]?.message?.content;
-      if (typeof text !== "string") throw new Error("AI response did not contain content");
+      if (typeof text !== "string") throw new AIResponseError("AI response did not contain content.");
       const draft = sanitizeDraft(parseJson(text), input.category);
       if (!draft) throw new Error("AI draft was incomplete.");
       return { draft, tokens: Number(payload.usage?.total_tokens) || 0 };
@@ -93,17 +132,17 @@ export function createOpenAICompatibleProvider(model?: string | null): AIProvide
         `Story: ${headline}`,
         `Sources:\n${material}`
       ].join("\n\n");
-      const response = await fetchWithRetry(`${baseUrl}/chat/completions`, {
+      const response = await fetch(`${baseUrl}/chat/completions`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({ model: chosen, temperature: 0, response_format: { type: "json_object" }, messages: [{ role: "user", content: prompt }] }),
-        signal: AbortSignal.timeout(45000)
+        signal: AbortSignal.timeout(12000)
       });
-      if (!response.ok) throw new Error(`AI provider returned ${response.status}`);
+      if (!response.ok) await throwProviderError(response, apiKey);
       const payload = await response.json();
       const text = payload.choices?.[0]?.message?.content;
-      if (typeof text !== "string") throw new Error("AI response did not contain content");
-      return { analysis: sanitizeAnalysis(parseJson(text), sources.length), tokens: Number(payload.usage?.total_tokens) || 0 };
+      if (typeof text !== "string") throw new AIResponseError("AI response did not contain content.");
+      return { analysis: sanitizeAnalysis(validateAnalysis(parseJson(text)), sources.length), tokens: Number(payload.usage?.total_tokens) || 0 };
     }
   };
 }

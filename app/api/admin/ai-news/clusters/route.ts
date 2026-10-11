@@ -17,5 +17,25 @@ export async function GET(request: Request) {
     take,
     include: { items: { select: { id: true, title: true, originalUrl: true, publishedAt: true, source: { select: { name: true, kind: true } } }, orderBy: { publishedAt: "desc" }, take: 10 } }
   });
-  return NextResponse.json({ clusters });
+  const failures = clusters.length ? await prisma.automationLog.findMany({
+    where: { action: "research.failed", entity: "StoryCluster", entityId: { in: clusters.map((cluster) => cluster.id) } },
+    orderBy: { createdAt: "desc" },
+    distinct: ["entityId"],
+    select: { entityId: true, message: true, meta: true }
+  }) : [];
+  const failureById = new Map(failures.map((failure) => [failure.entityId, failure]));
+  return NextResponse.json({
+    clusters: clusters.map((cluster) => {
+      const failure = cluster.status === "NEW" ? failureById.get(cluster.id) : undefined;
+      const meta = failure?.meta;
+      const retryable = !!meta && typeof meta === "object" && !Array.isArray(meta) && meta.retryable === true;
+      return {
+        ...cluster,
+        researchFailure: failure ? {
+          retryable,
+          message: failure.message.replace(/^[^:]+:\s*/, "")
+        } : null
+      };
+    })
+  });
 }

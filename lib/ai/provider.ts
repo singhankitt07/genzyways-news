@@ -17,3 +17,8 @@ export type GeneratedDraft = { title: string; summary: string; content: string; 
 
 export class AIConfigError extends Error {}
 export class AIBudgetError extends Error {}
+export class AIProviderError extends Error {
+  constructor(message: string, readonly status: number) { super(message); }
+}
+
+export class AIResponseError extends Error {}

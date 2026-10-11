@@ -8,9 +8,17 @@ import { sanitizeAnalysis, sanitizeDraft } from "../lib/ai/openai-compatible";
 import { parseDraftEdit } from "../lib/newsroom/draft";
 import { trendingScore } from "../lib/newsroom/trending";
 import { parseSettingsInput } from "../lib/newsroom/settings";
+import { AIProviderError, AIBudgetError, type AIProvider } from "../lib/ai/provider";
+import { AllProvidersFailedError, classifyProviderError, runWithProviders } from "../lib/ai/retry";
 
 const tokens = (s: string) => new Set(titleFingerprint(s).split(" "));
 const sources = [{ index: 1, sourceName: "A", kind: "PUBLISHER" }, { index: 2, sourceName: "B", kind: "PUBLISHER" }, { index: 3, sourceName: "PIB", kind: "GOVERNMENT" }];
+const fakeProvider = (name: string): AIProvider => ({
+  name,
+  model: `${name}-model`,
+  async generateDraft() { throw new Error("not used"); },
+  async analyzeSources() { throw new Error("not used"); }
+});
 
 test("URL hashing ignores tracking params, fragments and www", () => {
   assert.equal(hashUrl("https://www.a.com/x/?utm_source=1#f"), hashUrl("https://a.com/x"));
@@ -72,4 +80,85 @@ test("settings input is clamped and ignores unknown keys", () => {
   assert.equal(next.enabled, true); assert.equal(next.pollMinutes, 5); assert.equal(next.minImportance, 5);
   assert.equal(next.maxRequestsPerDay, 0); assert.equal(next.requireApproval, true);
   assert.ok(!("apiKey" in next));
+});
+
+test("provider errors distinguish temporary, quota, auth, fatal, and per-minute limits", () => {
+  assert.equal(classifyProviderError(new AIProviderError("AI provider returned 503", 503)), "temporary");
+  assert.equal(classifyProviderError(new AIProviderError("429 quota exceeded for today", 429)), "quota");
+  assert.equal(classifyProviderError(new AIProviderError("429 per-minute rate limit", 429)), "temporary");
+  assert.equal(classifyProviderError(new AIProviderError("AI provider returned 401", 401)), "auth");
+  assert.equal(classifyProviderError(new AIProviderError("AI provider returned 422", 422)), "fatal");
+  assert.equal(classifyProviderError(new AIBudgetError("Daily AI request limit reached.")), "switch");
+});
+
+test("provider runner retries a temporary failure, cools it down, and switches providers", async () => {
+  const statuses = new Map<string, { blockedUntil: Date; reason: string | null }>();
+  const events: { action: string; provider: string; attempt: number }[] = [];
+  const [primary, backup] = [fakeProvider("primary"), fakeProvider("backup")];
+  let primaryCalls = 0;
+  const result = await runWithProviders([primary, backup], async (provider) => {
+    if (provider.name === "primary") {
+      primaryCalls++;
+      throw new AIProviderError("AI provider returned 503", 503);
+    }
+    return provider.name;
+  }, {
+    getStatus: async (name) => statuses.get(name) ?? null,
+    setCooldown: async (name, blockedUntil, reason) => { statuses.set(name, { blockedUntil, reason }); },
+    wait: async () => {},
+    random: () => 0,
+    onEvent: (event) => { events.push(event); }
+  });
+  assert.equal(primaryCalls, 4);
+  assert.equal(result.provider.name, "backup");
+  assert.equal(result.result, "backup");
+  assert.equal(events.filter((event) => event.action === "ai.retry").length, 3);
+  assert.ok((statuses.get("primary")?.blockedUntil.getTime() ?? 0) > Date.now());
+});
+
+test("quota exhaustion sets cooldown and a later story skips that provider", async () => {
+  const statuses = new Map<string, { blockedUntil: Date; reason: string | null }>();
+  const [primary, backup] = [fakeProvider("primary"), fakeProvider("backup")];
+  let primaryCalls = 0;
+  const options = {
+    getStatus: async (name: string) => statuses.get(name) ?? null,
+    setCooldown: async (name: string, blockedUntil: Date, reason: string) => { statuses.set(name, { blockedUntil, reason }); },
+    wait: async () => {},
+    random: () => 0
+  };
+  const first = await runWithProviders([primary, backup], async (provider) => {
+    if (provider.name === "primary") {
+      primaryCalls++;
+      throw new AIProviderError("429 daily quota exceeded", 429);
+    }
+    return provider.name;
+  }, options);
+  const second = await runWithProviders([primary, backup], async (provider) => provider.name, options);
+  assert.equal(first.provider.name, "backup");
+  assert.equal(second.provider.name, "backup");
+  assert.equal(primaryCalls, 1);
+  assert.ok((statuses.get("primary")?.blockedUntil.getTime() ?? 0) - Date.now() > 5 * 60 * 60_000);
+});
+
+test("provider runner reports all failures and does not retry its own budget errors", async () => {
+  const [primary, backup] = [fakeProvider("primary"), fakeProvider("backup")];
+  const statuses = new Map<string, { blockedUntil: Date; reason: string | null }>();
+  let primaryCalls = 0;
+  let backupCalls = 0;
+  const options = {
+    getStatus: async (name: string) => statuses.get(name) ?? null,
+    setCooldown: async (name: string, blockedUntil: Date, reason: string) => { statuses.set(name, { blockedUntil, reason }); },
+    wait: async () => {},
+    random: () => 0
+  };
+  await assert.rejects(
+    () => runWithProviders([primary, backup], async (provider) => {
+      if (provider.name === "primary") { primaryCalls++; throw new AIBudgetError("Daily request limit reached."); }
+      backupCalls++;
+      throw new AIProviderError("429 quota exceeded", 429);
+    }, options),
+    (error: unknown) => error instanceof AllProvidersFailedError && /primary: Daily request limit reached/.test(error.message) && /backup: 429 quota exceeded/.test(error.message)
+  );
+  assert.equal(primaryCalls, 1);
+  assert.equal(backupCalls, 1);
 });

@@ -1,7 +1,9 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { AIBudgetError } from "@/lib/ai/provider";
+import { AIBudgetError, AIResponseError } from "@/lib/ai/provider";
 import { createOpenAICompatibleProvider } from "@/lib/ai/openai-compatible";
+import { getProviderChain } from "@/lib/ai/providers";
+import { AllProvidersFailedError, isRetryableProviderError, runWithProviders } from "@/lib/ai/retry";
 import { runIdempotentJob } from "./jobs";
 import { errorMessage, logAutomation } from "./log";
 import { getSettings } from "./settings";
@@ -11,10 +13,18 @@ import type { RiskLevel } from "./risk";
 const MAX_SOURCES = 12;
 
 // Enforces the daily request and token caps from the audit log, so limits hold across serverless instances.
-export async function assertBudget(requestLimit: number, tokenLimit = Infinity) {
+export async function assertBudget(requestLimit: number, tokenLimit = Infinity, provider?: string) {
   const start = new Date();
   start.setUTCHours(0, 0, 0, 0);
-  const calls = await prisma.automationLog.findMany({ where: { action: "ai.call", createdAt: { gte: start } }, select: { meta: true }, take: Math.max(requestLimit, 1) + 1 });
+  const calls = await prisma.automationLog.findMany({
+    where: {
+      action: "ai.call",
+      createdAt: { gte: start },
+      ...(provider ? { meta: { path: ["provider"], equals: provider } } : {})
+    },
+    select: { meta: true },
+    take: Math.max(requestLimit, 0) + 1
+  });
   if (calls.length >= requestLimit) throw new AIBudgetError("Daily AI request limit reached.");
   const tokens = calls.reduce((sum, row) => sum + (Number((row.meta as { tokens?: number } | null)?.tokens) || 0), 0);
   if (tokens >= tokenLimit) throw new AIBudgetError("Daily AI token limit reached.");
@@ -25,6 +35,14 @@ function domainOf(url: string) {
 
 export type ResearchOutcome = { reportId: string; verdict: string; confidence: number; needsHuman: boolean };
 
+function assertAnalysisShape(analysis: unknown): asserts analysis is { summary: string; claims: unknown[]; conflicts: string[] } {
+  if (!analysis || typeof analysis !== "object") throw new AIResponseError("AI research response was malformed.");
+  const value = analysis as Record<string, unknown>;
+  if (typeof value.summary !== "string" || !Array.isArray(value.claims) || !Array.isArray(value.conflicts)) {
+    throw new AIResponseError("AI research response was malformed.");
+  }
+}
+
 // Builds a research report for one story cluster from its collected sources and verifies each claim.
 export async function researchCluster(clusterId: string): Promise<ResearchOutcome> {
   const cluster = await prisma.storyCluster.findUnique({ where: { id: clusterId }, include: { items: { include: { source: { select: { name: true, kind: true } } }, orderBy: { publishedAt: "desc" }, take: MAX_SOURCES } } });
@@ -32,21 +50,33 @@ export async function researchCluster(clusterId: string): Promise<ResearchOutcom
   if (!cluster.items.length) throw new Error("Story has no source items.");
 
   const settings = await getSettings();
-  const provider = createOpenAICompatibleProvider(settings.aiModel);
-  await assertBudget(settings.maxRequestsPerDay, settings.maxTokensPerDay);
+  const chain = getProviderChain(settings.aiModel).map(createOpenAICompatibleProvider);
 
   await prisma.storyCluster.update({ where: { id: clusterId }, data: { status: "RESEARCHING" } });
   const sources = cluster.items.map((item, i) => ({ index: i + 1, sourceName: item.source.name, kind: item.source.kind, title: item.title, snippet: item.description, publishedAt: item.publishedAt?.toISOString().slice(0, 10) ?? null, url: item.originalUrl }));
 
   try {
-    const { analysis, tokens } = await provider.analyzeSources({ headline: cluster.title, sources });
-    await logAutomation("ai.call", `Research analysis for story ${clusterId}`, { entity: "StoryCluster", entityId: clusterId, meta: { tokens, model: provider.model } });
+    if (!chain.length) throw new Error("AI is not configured. Add AI_PROVIDERS or AI_API_KEY to the server environment.");
+    const { result: response, provider } = await runWithProviders(chain, async (candidate) => {
+      await assertBudget(settings.maxRequestsPerDay, settings.maxTokensPerDay, candidate.name);
+      const result = await candidate.analyzeSources({ headline: cluster.title, sources });
+      assertAnalysisShape(result.analysis);
+      return result;
+    }, {
+      onEvent: (event) => logAutomation(event.action, `${event.provider} attempt ${event.attempt}: ${event.error}`, {
+        entity: "StoryCluster",
+        entityId: clusterId,
+        meta: { provider: event.provider, attempt: event.attempt, error: event.error }
+      })
+    });
+    const { analysis, tokens } = response;
+    await logAutomation("ai.call", `Research analysis for story ${clusterId}`, { entity: "StoryCluster", entityId: clusterId, meta: { tokens, model: provider.model, provider: provider.name } });
 
     const verification = verifyClaims(analysis.claims, sources, analysis.conflicts, cluster.riskLevel as RiskLevel, settings.requireApproval);
     const report = await prisma.$transaction(async (tx) => {
       const created = await tx.researchReport.create({
         data: {
-          clusterId, summary: analysis.summary || cluster.title, model: provider.model,
+          clusterId, summary: analysis.summary || cluster.title, model: `${provider.name}/${provider.model}`,
           sources: { create: sources.map((s) => ({ position: s.index, title: s.title.slice(0, 300), url: s.url, domain: domainOf(s.url), sourceName: s.sourceName, kind: s.kind, credibility: CREDIBILITY[s.kind] ?? 40, snippet: s.snippet, publishedAt: cluster.items[s.index - 1].publishedAt })) },
           claims: { create: verification.claims.map((c) => ({ text: c.text, status: c.status, sourceCount: c.sourceCount, sourceRefs: c.sourceRefs, note: c.note })) },
           result: { create: { verdict: verification.verdict, confidence: verification.confidence, riskLevel: cluster.riskLevel, needsHuman: verification.needsHuman, conflicts: verification.conflicts, notes: verification.notes } }
@@ -58,8 +88,22 @@ export async function researchCluster(clusterId: string): Promise<ResearchOutcom
     await logAutomation("research.ok", `${cluster.title}: ${verification.verdict} (${verification.confidence})`, { entity: "StoryCluster", entityId: clusterId, meta: { verdict: verification.verdict, needsHuman: verification.needsHuman } as Prisma.InputJsonValue });
     return { reportId: report.id, verdict: verification.verdict, confidence: verification.confidence, needsHuman: verification.needsHuman };
   } catch (error) {
-    await prisma.storyCluster.update({ where: { id: clusterId }, data: { status: "NEW" } }).catch(() => undefined);
-    await logAutomation("research.failed", `${cluster.title}: ${errorMessage(error)}`, { level: "ERROR", entity: "StoryCluster", entityId: clusterId });
+    let resetError: unknown;
+    try {
+      await prisma.storyCluster.update({ where: { id: clusterId }, data: { status: "NEW" } });
+    } catch (failure) {
+      resetError = failure;
+    }
+    await logAutomation("research.failed", `${cluster.title}: ${errorMessage(error)}`, {
+      level: "ERROR",
+      entity: "StoryCluster",
+      entityId: clusterId,
+      meta: { retryable: error instanceof AllProvidersFailedError || error instanceof AIBudgetError || isRetryableProviderError(error) }
+    });
+    if (resetError) {
+      await logAutomation("research.reset_failed", `${cluster.title}: ${errorMessage(resetError)}`, { level: "ERROR", entity: "StoryCluster", entityId: clusterId });
+      throw new Error(`Research failed (${errorMessage(error)}); story status reset failed (${errorMessage(resetError)}).`);
+    }
     throw error;
   }
 }
@@ -68,13 +112,15 @@ export async function researchCluster(clusterId: string): Promise<ResearchOutcom
 export async function runAutoResearch(limit = 3): Promise<{ researched: number; skipped?: string }> {
   const settings = await getSettings();
   if (!settings.autoResearch) return { researched: 0, skipped: "autoResearch is off" };
-  if (!process.env.AI_API_KEY) return { researched: 0, skipped: "AI not configured" };
-  const clusters = await prisma.storyCluster.findMany({ where: { status: "NEW", importance: { gte: settings.minImportance }, existingArticleId: null, reports: { none: {} } }, orderBy: [{ importance: "desc" }, { lastSeenAt: "desc" }], take: limit });
+  if (!getProviderChain(settings.aiModel).length) return { researched: 0, skipped: "AI not configured" };
+  const clusters = await prisma.storyCluster.findMany({ where: { status: "NEW", importance: { gte: settings.minImportance }, existingArticleId: null, reports: { none: {} } }, orderBy: [{ importance: "desc" }, { lastSeenAt: "desc" }], take: Math.min(Math.max(limit, 0), 3) });
   let researched = 0;
   for (const cluster of clusters) {
-    const job = await runIdempotentJob("research", `research:${cluster.id}`, () => researchCluster(cluster.id));
+    const job = await runIdempotentJob("research", `research:${cluster.id}`, () => researchCluster(cluster.id), { maxAttempts: 3, retryFailed: true });
     if (job.status === "done") researched++;
-    if (job.status === "failed" && /limit reached/i.test(job.error ?? "")) return { researched, skipped: "daily AI limit reached" };
+    if (job.status === "failed" && (/limit reached|All AI providers failed/i.test(job.error ?? "") || /429|503|timeout|timed out|fetch failed|ECONNRESET/i.test(job.error ?? ""))) {
+      return { researched, skipped: "AI providers exhausted, will retry next run" };
+    }
   }
   return { researched };
 }

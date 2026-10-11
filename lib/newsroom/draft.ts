@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createOpenAICompatibleProvider } from "@/lib/ai/openai-compatible";
+import { getProviderChain } from "@/lib/ai/providers";
 import { runIdempotentJob } from "./jobs";
 import { logAutomation } from "./log";
 import { assertBudget } from "./research";
@@ -32,8 +33,10 @@ export async function generateDraft(clusterId: string, actor: string, options: {
   if (active?.status === "PUBLISHED") throw new DraftError("This story is already published.", 409);
 
   const settings = await getSettings();
-  const provider = createOpenAICompatibleProvider(settings.aiModel);
-  await assertBudget(settings.maxRequestsPerDay, settings.maxTokensPerDay);
+  const config = getProviderChain(settings.aiModel)[0];
+  if (!config) throw new DraftError("AI is not configured. Add AI_PROVIDERS or AI_API_KEY to the server environment.", 503);
+  const provider = createOpenAICompatibleProvider(config);
+  await assertBudget(settings.maxRequestsPerDay, settings.maxTokensPerDay, provider.name);
 
   const names = (refs: number[]) => refs.map((i) => report.sources.find((s) => s.position === i)?.sourceName).filter((n): n is string => !!n);
   const { draft, tokens } = await provider.generateDraft({
@@ -41,7 +44,7 @@ export async function generateDraft(clusterId: string, actor: string, options: {
     claims: report.claims.map((c) => ({ text: c.text, status: c.status, sources: names(c.sourceRefs) })),
     sourceNames: [...new Set(report.sources.map((s) => s.sourceName))]
   });
-  await logAutomation("ai.call", `Draft generation for story ${clusterId}`, { entity: "StoryCluster", entityId: clusterId, meta: { tokens, model: provider.model } });
+  await logAutomation("ai.call", `Draft generation for story ${clusterId}`, { entity: "StoryCluster", entityId: clusterId, meta: { tokens, model: provider.model, provider: provider.name } });
 
   const risk = maxRisk(cluster.riskLevel as RiskLevel, result.riskLevel as RiskLevel);
   const created = await prisma.$transaction(async (tx) => {
@@ -146,7 +149,7 @@ export async function publishDraft(id: string, actor: string, options: { live: b
 export async function runAutoDraft(limit = 2): Promise<{ drafted: number; skipped?: string }> {
   const settings = await getSettings();
   if (!settings.autoDraft) return { drafted: 0, skipped: "autoDraft is off" };
-  if (!process.env.AI_API_KEY) return { drafted: 0, skipped: "AI not configured" };
+  if (!getProviderChain().length) return { drafted: 0, skipped: "AI not configured" };
   const clusters = await prisma.storyCluster.findMany({ where: { status: "RESEARCHED", drafts: { none: {} }, existingArticleId: null }, orderBy: [{ importance: "desc" }, { lastSeenAt: "desc" }], take: limit });
   let drafted = 0;
   for (const cluster of clusters) {

@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   const ingestion = await stage("ingestion", () => runDueIngestion());
   const disabled = "disabled" in ingestion && ingestion.disabled;
   const clustering = disabled ? undefined : await stage("clustering", () => runClustering());
-  const research = disabled ? undefined : await stage("research", () => runAutoResearch());
+  const research = disabled ? undefined : await stage("research", () => runAutoResearch(3));
   const drafts = disabled ? undefined : await stage("drafts", () => runAutoDraft());
   const now = new Date();
   const cleanup = now.getUTCHours() === 3 && now.getUTCMinutes() < 15 ? await stage("cleanup", () => runCleanup()) : undefined;
