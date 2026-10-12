@@ -107,7 +107,7 @@ Admins manage this at `/admin/ai-news`. Flow: **collect -> group -> research -> 
 
 ### Deployment
 - Hosted on **Vercel** (`genzywaynews`), code on GitHub (`singhankitt07/genzyways-news`, branch `main`), database on **Neon Postgres**.
-- Build command runs `prisma migrate deploy`, `prisma generate`, the seed, then `next build`.
+- Build command (`scripts/build.mjs`) runs `prisma migrate deploy`, `prisma generate`, the seed, then `next build`. Migrate and seed are skipped with a warning if `DATABASE_URL` is not set.
 - Secrets (`DATABASE_URL`, `NEXTAUTH_SECRET`, `CRON_SECRET`, `AI_API_KEY`, payment and email keys) live only in Vercel environment variables, never in git.
 
 ## 2. Deploy it live (free tier works to start)

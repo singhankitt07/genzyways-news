@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma migrate deploy && prisma generate && npm run seed && next build",
+    "build": "node scripts/build.mjs",
     "start": "next start",
     "seed": "tsx prisma/seed.ts",
     "test": "tsx --test tests/newsroom.test.ts",

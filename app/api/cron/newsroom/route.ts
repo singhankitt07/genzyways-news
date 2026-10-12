@@ -17,7 +17,7 @@ function authorised(request: Request) {
   return supplied.length === expected.length && timingSafeEqual(supplied, expected);
 }
 
-// Called by Vercel Cron (see vercel.json). Each stage is its own idempotent job, so overlapping runs are harmless.
+// Called daily by netlify/functions/newsroom-cron.mts (and Vercel Cron via vercel.json). Each stage is its own idempotent job, so overlapping runs are harmless.
 export async function GET(request: Request) {
   const ok = authorised(request);
   if (ok === null) return NextResponse.json({ error: "CRON_SECRET is not configured." }, { status: 503 });
