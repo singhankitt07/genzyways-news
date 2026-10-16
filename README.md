@@ -53,7 +53,7 @@ source attribution, copyright, and publication.
 
 Admins manage this at `/admin/ai-news`. Flow: **collect -> group -> research -> verify -> draft -> human approval -> publish**. AI never publishes anything.
 
-- **Setup:** add `CRON_SECRET` (required for the schedule) and, for AI steps, `AI_API_KEY` (+ optional `AI_BASE_URL`, `AI_MODEL`). `NEWS_API_KEY` is optional (NewsAPI provider). Vercel Cron calls `/api/cron/newsroom` once a day at 03:00 UTC (the Vercel Hobby plan only allows daily crons; see `vercel.json`). Use **Fetch & group now** in the admin for on-demand runs.
+- **Setup:** add `CRON_SECRET` (required for the schedule). For AI, either set the legacy `AI_API_KEY` (+ optional `AI_BASE_URL`, `AI_MODEL`) or set `AI_PROVIDERS=primary,backup1` and each provider's server-only `AI_<NAME>_URL`, `AI_<NAME>_KEY`, and `AI_<NAME>_MODEL`. Providers missing any value are skipped. Quota and auth failures are stored in the database as provider cooldowns. `NEWS_API_KEY` is optional (NewsAPI provider). Vercel Cron calls `/api/cron/newsroom` once a day at 03:00 UTC (the Vercel Hobby plan only allows daily crons; see `vercel.json`). Use **Fetch & group now** in the admin for on-demand runs.
 - **Safe by default:** automation is OFF until you turn it on in Settings. Auto-research and auto-drafting are separate switches. HIGH-risk stories (deaths, arrests, courts, elections, health claims...) always need a human, regardless of settings.
 - **Cost limits:** daily AI request and token caps (Settings) are enforced from the activity log.
 - **Housekeeping:** the 03:00 UTC run prunes logs older than 30 days, finished jobs older than 7 days and stale unreviewed items older than 60 days.
