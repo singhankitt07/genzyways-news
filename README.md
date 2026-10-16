@@ -105,6 +105,9 @@ Copy `.env.example` to `.env.local`. Never commit real values to GitHub.
 | `ADMIN_EMAIL` / `ADMIN_PASSWORD` | Initial seed | Used to create the first administrator |
 | `CRON_SECRET` | Scheduled newsroom | Bearer secret used by Vercel Cron |
 | `NEWS_API_KEY` | NewsAPI sources | Server-only NewsAPI.org credential |
+| `RAZORPAY_KEY_ID` | Paid access | Razorpay API key ID |
+| `RAZORPAY_KEY_SECRET` | Paid access | Server-only Razorpay API secret |
+| `RAZORPAY_WEBHOOK_SECRET` | Payment reliability | Secret configured for `/api/razorpay/webhook` |
 | `AI_API_KEY` / `AI_BASE_URL` / `AI_MODEL` | AI newsroom | Legacy single-provider configuration |
 | `AI_PROVIDERS` and `AI_<NAME>_*` | AI failover | Optional ordered provider chain |
 | `RESEND_API_KEY` / `NEWSLETTER_FROM` | Newsletter | Optional email delivery |
@@ -128,7 +131,9 @@ Production deployment requirements:
 2. Ensure `DATABASE_URL` points to the production PostgreSQL database.
 3. Ensure `CRON_SECRET` matches the scheduled request configuration.
 4. Add `NEWS_API_KEY` only as a Vercel Secret when NewsAPI sources are used.
-5. Redeploy after changing environment variables; existing deployments do not automatically receive new values.
+5. Add Razorpay live keys as Vercel environment variables and enable automatic capture in Razorpay.
+6. Configure the Razorpay webhook URL as `https://your-domain.example/api/razorpay/webhook` with `payment.captured`, `payment.failed`, and `order.paid` events.
+7. Redeploy after changing environment variables; existing deployments do not automatically receive new values.
 
 The build entry point is `scripts/build.mjs`. It runs Prisma migrations and seed when `DATABASE_URL` is available, generates Prisma Client, and then builds Next.js. The repository also contains an optional Netlify scheduled-function adapter for installations that use Netlify instead of Vercel.
 
