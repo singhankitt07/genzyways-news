@@ -14,9 +14,10 @@
 - Fast, responsive news homepage with breaking-news ticker and category browsing.
 - English and Hindi editions with independent publication controls.
 - Search, author pages, related stories, trending stories, and source attribution.
+- Article trust panels with summaries, publication/update timestamps, and original-source links.
 - Reader accounts, profiles, bookmarks, reactions, comments, follows, and reading preferences.
 - Dark, light, sepia, and automatic themes with adjustable reading tools.
-- Newsroom RSS feed at `/rss.xml`, sitemap generation, and robots rules for discoverability.
+- Newsroom RSS feed at `/rss.xml`, standard sitemap, dedicated 48-hour News sitemap, and robots rules for discoverability.
 - Articles, videos, shorts, guides, ebooks, newsletter signup, and contact pages.
 - Consent-aware analytics and advertising integration.
 
@@ -51,6 +52,8 @@ The pipeline supports:
 - AI provider retries, cooldowns, budget limits, and ordered provider failover.
 - Human approval gates for drafts and high-risk stories.
 - Idempotent jobs with retry/backoff so repeated cron calls do not duplicate work.
+
+Published articles expose `NewsArticle` structured data, canonical metadata, Open Graph fields, author information, publication/update timestamps, and source links. The `/news-sitemap.xml` endpoint includes only published stories from the latest 48 hours for Google News discovery.
 
 Automation is controlled from newsroom settings. Vercel Cron runs `/api/cron/newsroom` daily at 03:00 UTC; editors can also use **Fetch & group now** for an on-demand ingestion run.
 
