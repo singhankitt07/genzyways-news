@@ -9,7 +9,7 @@ export const newsApiProvider: NewsProvider = {
   id: "newsapi",
   label: "NewsAPI.org",
   async fetchItems(source, { limit }) {
-    const key = process.env.NEWS_API_KEY;
+    const key = process.env.NEWS_API_KEY?.trim();
     if (!key) throw new Error("NEWS_API_KEY is not configured.");
     const config = (source.config || {}) as Record<string, unknown>;
     const params = new URLSearchParams({ pageSize: String(Math.min(limit, 50)) });
