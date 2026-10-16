@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import RazorpayCheckout from "@/components/RazorpayCheckout";
+import CashfreeCheckout from "@/components/CashfreeCheckout";
 
 export default async function PlansPage() {
   const session = await getServerSession(authOptions);
@@ -23,9 +23,9 @@ export default async function PlansPage() {
         <p className="text-xs uppercase tracking-[0.2em] text-gold font-semibold">Full Access</p>
         <p className="font-serif text-5xl mt-4">₹99 <span className="text-base font-sans text-ink/55">one-time</span></p>
         <ul className="text-sm text-ink/70 space-y-2 mt-6 mb-8"><li>Complete access to every article</li><li>Breaking and live coverage</li><li>No recurring subscription commitment</li></ul>
-        {session?.user && !active ? <RazorpayCheckout email={session.user.email} /> : active ? <p className="text-sm text-gold font-semibold">Subscription active</p> : <Link href="/account/login" className="button-primary w-full">Sign in to subscribe</Link>}
+        {session?.user && !active ? <CashfreeCheckout email={session.user.email} /> : active ? <p className="text-sm text-gold font-semibold">Subscription active</p> : <Link href="/account/login" className="button-primary w-full">Sign in to subscribe</Link>}
       </article>
-      <p className="text-xs text-ink/45 mt-8">Payments are processed securely by Razorpay. Your subscription activates only after server-side signature verification.</p>
+      <p className="text-xs text-ink/45 mt-8">Payments are processed securely by Cashfree. Your subscription activates only after server-side payment verification.</p>
     </div>
   );
 }
