@@ -19,6 +19,7 @@ import ReadingProgress from "@/components/ReadingProgress";
 import ViewTracker from "@/components/ViewTracker";
 import Link from "next/link";
 import { Sequence, SequenceItem } from "@/components/Motion";
+import ArticleContextPanel from "@/components/ArticleContextPanel";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -78,6 +79,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         description: article.summary,
         datePublished: article.createdAt.toISOString(),
         dateModified: article.updatedAt.toISOString(),
+        articleSection: article.category,
+        isAccessibleForFree: !article.subscriberOnly,
+        wordCount: plainContent.split(/\s+/).filter(Boolean).length,
         mainEntityOfPage: { "@type": "WebPage", "@id": `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"}/article/${article.slug}` },
         author: { "@type": "Person", name: article.author },
         publisher: { "@type": "Organization", name: "GenzyWays News", url: process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000", logo: { "@type": "ImageObject", url: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"}/brand/genzywaynews-icon.svg` } },
@@ -94,8 +98,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <SequenceItem>
         <h1 className="font-serif text-4xl sm:text-5xl leading-tight mb-4">{article.title}</h1>
         <p className="text-lg text-ink/70 mb-4">{article.summary}</p>
-        {(article.sourceName || article.sourceUrl) && <p className="mb-5 text-xs text-ink/60">Source: {article.sourceUrl ? <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-press underline">{article.sourceName || article.sourceUrl}</a> : article.sourceName}</p>}
         </SequenceItem>
+        <SequenceItem><ArticleContextPanel summary={article.summary} sourceName={article.sourceName} sourceUrl={article.sourceUrl} publishedAt={article.createdAt} updatedAt={article.updatedAt} live={article.live} /></SequenceItem>
         <SequenceItem>
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-ink/50 border-b border-line pb-6 mb-8">
           <div className="flex items-center gap-3">
