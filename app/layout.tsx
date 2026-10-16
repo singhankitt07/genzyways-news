@@ -86,7 +86,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <html lang="en" className={`${sourceSerif.variable} ${inter.variable} ${notoHindi.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${sourceSerif.variable} ${inter.variable} ${notoHindi.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `try { const saved = localStorage.getItem('genzywaynews-theme'); const server = ${JSON.stringify(initialTheme)}; const choice = saved || server; const system = window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.dataset.theme = ['light','sepia','dark'].includes(choice) ? choice : (system ? 'dark' : 'light'); const storedSize = localStorage.getItem('genzywaynews-reading-font-size'); const size = storedSize === null ? ${initialFontSize} : Number(storedSize); if (Number.isInteger(size) && size >= 16 && size <= 24) document.documentElement.style.setProperty('--reader-font-size', size + 'px'); window.adsbygoogle = window.adsbygoogle || []; window.adsbygoogle.requestNonPersonalizedAds = localStorage.getItem(${JSON.stringify(PRIVACY_CONSENT_KEY)}) === 'accepted' ? 0 : 1; } catch (error) { document.documentElement.dataset.theme = ${JSON.stringify(initialTheme === "auto" ? "light" : initialTheme)}; }` }} />
         {!isPremiumSubscriber && process.env.NEXT_PUBLIC_ADSENSE_CLIENT && <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT}`} crossOrigin="anonymous" />}

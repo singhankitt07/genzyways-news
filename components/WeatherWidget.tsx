@@ -76,6 +76,7 @@ async function reverseGeocode(latitude: number, longitude: number): Promise<Plac
 }
 
 async function fetchIpPlace(): Promise<Place | null> {
+  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") return null;
   try {
     const response = await fetch("/api/weather-location", { cache: "no-store" });
     if (!response.ok) return null;
