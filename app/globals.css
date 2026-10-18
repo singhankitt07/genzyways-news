@@ -2143,6 +2143,10 @@ textarea {
     display: none !important;
   }
 
+  .reading-progress {
+    display: none !important;
+  }
+
   body {
     background: var(--color-surface);
   }
